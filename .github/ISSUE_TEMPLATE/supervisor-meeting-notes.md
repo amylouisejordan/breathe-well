@@ -21,11 +21,6 @@ assignees: ''
 - [ ] [Implemented feedback or changes]
 - [ ] [Other relevant updates]
 
-### 💬 Key Discussion Points  
-- [Summary of main topics discussed]
-- [Decisions made or advice received]
-- [Any concerns or clarifications]
-
 ### 📌 Agreed Actions  
 - [ ] [Action 1 — who’s responsible]
 - [ ] [Action 2 — deadline if applicable]
