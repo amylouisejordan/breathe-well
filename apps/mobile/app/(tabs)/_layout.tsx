@@ -1,11 +1,18 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "react-native";
 
-export default function TabsLayout() {
+const TabsLayout = () => {
   return (
     <Tabs
       screenOptions={({ route }) => ({
-        headerShown: true,
+        headerTitleAlign: "center",
+        headerTitle: () => (
+          <Image
+            source={require("../../assets/logo.png")}
+            style={{ width: 120, height: 32, resizeMode: "contain" }}
+          />
+        ),
         tabBarIcon: ({ color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap;
 
@@ -17,18 +24,11 @@ export default function TabsLayout() {
         },
       })}
     >
-      <Tabs.Screen
-        name="ai"
-        options={{ title: "AI Companion" }}
-      />
-      <Tabs.Screen
-        name="forum"
-        options={{ title: "Forum" }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{ title: "Profile" }}
-      />
+      <Tabs.Screen name="ai" />
+      <Tabs.Screen name="forum" />
+      <Tabs.Screen name="profile" />
     </Tabs>
   );
-}
+};
+
+export default TabsLayout;
