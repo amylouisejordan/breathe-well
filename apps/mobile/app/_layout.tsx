@@ -1,9 +1,19 @@
 import { Stack } from "expo-router";
 
-export default function RootLayout() {
+const RootLayout = () => {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+      <Stack.Screen
+        name="add-symptom"
+        options={{
+          presentation: "modal",
+          title: "Add Symptom",
+        }}
+      />
     </Stack>
   );
-}
+};
+
+export default RootLayout;
