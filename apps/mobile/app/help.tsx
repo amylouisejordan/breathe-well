@@ -24,22 +24,34 @@ const HelpScreen = () => {
         <View style={styles.card}>
           <Text style={styles.sectionLabel}>Quick help</Text>
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => router.push("/help/how-to-log-symptoms")}
+          >
             <Text style={styles.rowText}>How to log symptoms</Text>
             <Ionicons name="chevron-forward" size={20} color="#bbb" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => router.push("/help/how-to-log-medication")}
+          >
             <Text style={styles.rowText}>How to log medication</Text>
             <Ionicons name="chevron-forward" size={20} color="#bbb" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => router.push("/help/using-ai")}
+          >
             <Text style={styles.rowText}>Using the AI companion</Text>
             <Ionicons name="chevron-forward" size={20} color="#bbb" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => router.push("/help/community-safety")}
+          >
             <Text style={styles.rowText}>Staying safe in the community</Text>
             <Ionicons name="chevron-forward" size={20} color="#bbb" />
           </TouchableOpacity>
@@ -49,17 +61,26 @@ const HelpScreen = () => {
         <View style={styles.card}>
           <Text style={styles.sectionLabel}>Frequently asked questions</Text>
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => router.push("/help/data-privacy")}
+          >
             <Text style={styles.rowText}>Is my data private?</Text>
             <Ionicons name="chevron-forward" size={20} color="#bbb" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => router.push("/help/editing-entries")}
+          >
             <Text style={styles.rowText}>Can I edit or delete entries?</Text>
             <Ionicons name="chevron-forward" size={20} color="#bbb" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => router.push("/help/changing-preferences")}
+          >
             <Text style={styles.rowText}>How do I change my preferences?</Text>
             <Ionicons name="chevron-forward" size={20} color="#bbb" />
           </TouchableOpacity>
@@ -73,7 +94,10 @@ const HelpScreen = () => {
             If something isn’t working or you need help, you can reach us at:
           </Text>
 
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => router.push("/help/contact-support")}
+          >
             <Text style={[styles.rowText, styles.linkText]}>
               support@breathewell.app
             </Text>
