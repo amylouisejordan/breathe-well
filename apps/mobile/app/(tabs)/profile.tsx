@@ -25,7 +25,13 @@ const ProfileScreen = () => {
         <SettingRow
           icon="leaf"
           label="Breathing preferences"
-          href="/breathing"
+          href="/breathing-preferences"
+          danger={undefined}
+        />
+        <SettingRow
+          icon="medkit"
+          label="My medications"
+          href="/medications"
           danger={undefined}
         />
       </Section>
