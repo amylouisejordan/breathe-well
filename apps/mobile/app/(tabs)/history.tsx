@@ -7,9 +7,9 @@ const HistoryScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>History</Text>
+        <Text style={styles.title}>Your Progress</Text>
         <Text style={styles.subtext}>
-          View your symptoms and medication over time
+          A gentle look at how you’ve been feeling over time
         </Text>
       </View>
 
@@ -19,6 +19,8 @@ const HistoryScreen = () => {
             key={item}
             style={[styles.toggle, range === item && styles.toggleActive]}
             onPress={() => setRange(item as any)}
+            accessibilityRole="button"
+            accessibilityLabel={`Show ${item} view`}
           >
             <Text
               style={[
@@ -26,44 +28,54 @@ const HistoryScreen = () => {
                 range === item && styles.toggleTextActive,
               ]}
             >
-              {item.toUpperCase()}
+              {item.charAt(0).toUpperCase() + item.slice(1)}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Symptoms</Text>
-        <GraphPlaceholder label="Symptom intensity" />
-      </View>
+      <HistorySection title="Symptoms">
+        <GraphPlaceholder label="Breathlessness & mood" />
+      </HistorySection>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Medication</Text>
+      <HistorySection title="Medication">
         <GraphPlaceholder label="Medication taken" />
-      </View>
+      </HistorySection>
     </View>
   );
 };
 
-type GraphPlaceholderProps = {
-  label: string;
-};
+const HistorySection: React.FC<{
+  title: string;
+  children: React.ReactNode;
+}> = ({ title, children }) => (
+  <View style={styles.section}>
+    <Text style={styles.sectionTitle}>{title}</Text>
+    {children}
+  </View>
+);
 
-const GraphPlaceholder = (props: GraphPlaceholderProps) => {
-  const { label } = props;
-
+const GraphPlaceholder: React.FC<{ label: string }> = ({ label }) => {
   return (
     <View style={styles.card}>
       <Text style={styles.graphLabel}>{label}</Text>
 
-      <View style={styles.barRow}>
-        {[40, 70, 30, 80, 50, 65].map((height, index) => (
-          <View key={index} style={[styles.bar, { height }]} />
-        ))}
+      <View style={styles.graphArea}>
+        <View style={styles.grid}>
+          {[...Array(4)].map((_, i) => (
+            <View key={i} style={styles.gridLine} />
+          ))}
+        </View>
+
+        <View style={styles.barRow}>
+          {[40, 70, 30, 80, 50, 65].map((height, index) => (
+            <View key={index} style={[styles.bar, { height }]} />
+          ))}
+        </View>
       </View>
 
       <Text style={styles.graphHint}>
-        Placeholder graph - data will appear here
+        Your data will appear here as you log symptoms
       </Text>
     </View>
   );
@@ -72,26 +84,26 @@ const GraphPlaceholder = (props: GraphPlaceholderProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9fb",
+    backgroundColor: "#fafafb",
     paddingHorizontal: 20,
-    paddingTop: 24,
+    paddingTop: 28,
   },
   header: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
     color: "#6c63ff",
   },
   subtext: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#666",
-    marginTop: 2,
+    marginTop: 4,
   },
   toggleRow: {
     flexDirection: "row",
-    marginBottom: 28,
+    marginBottom: 32,
     backgroundColor: "#fff",
     borderRadius: 24,
     padding: 4,
@@ -102,7 +114,7 @@ const styles = StyleSheet.create({
   },
   toggle: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 20,
     alignItems: "center",
   },
@@ -110,7 +122,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#6c63ff",
   },
   toggleText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
     color: "#666",
   },
@@ -118,14 +130,13 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   section: {
-    marginBottom: 28,
+    marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "600",
     color: "#6c63ff",
     marginBottom: 12,
-    textTransform: "uppercase",
   },
   card: {
     backgroundColor: "#fff",
@@ -137,26 +148,38 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
   },
   graphLabel: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: "600",
     marginBottom: 12,
     color: "#333",
   },
+  graphArea: {
+    height: 120,
+    marginBottom: 12,
+    position: "relative",
+  },
+  grid: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "space-between",
+  },
+  gridLine: {
+    height: 1,
+    backgroundColor: "#eee",
+  },
   barRow: {
     flexDirection: "row",
     alignItems: "flex-end",
-    height: 100,
+    height: "100%",
     gap: 8,
-    marginBottom: 12,
   },
   bar: {
     flex: 1,
     backgroundColor: "#6c63ff",
     borderRadius: 6,
-    opacity: 0.8,
+    opacity: 0.85,
   },
   graphHint: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#999",
   },
 });

@@ -1,73 +1,123 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
 
 const ProfileScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <Ionicons name="person" size={36} color="#fff" />
+          <Ionicons name="person" size={40} color="#fff" />
         </View>
         <View>
-          <Text style={styles.name}>Your Profile</Text>
-          <Text style={styles.subtext}>Manage your health & app settings</Text>
+          <Text style={styles.name}>Welcome back</Text>
+          <Text style={styles.subtext}>Your wellbeing and app settings</Text>
         </View>
       </View>
 
       <Section title="Health">
-        <SettingRow icon="pulse" label="Symptom history" />
-        <SettingRow icon="leaf" label="Breathing preferences" />
+        <SettingRow
+          icon="pulse"
+          label="Symptom history"
+          href="/history"
+          danger={undefined}
+        />
+        <SettingRow
+          icon="leaf"
+          label="Breathing preferences"
+          href="/breathing"
+          danger={undefined}
+        />
       </Section>
 
       <Section title="App">
-        <SettingRow icon="notifications" label="Notifications" />
-        <SettingRow icon="lock-closed" label="Privacy & data" />
-        <SettingRow icon="color-palette" label="Appearance" />
+        <SettingRow
+          icon="notifications"
+          label="Notifications"
+          href="/notifications"
+          danger={undefined}
+        />
+        <SettingRow
+          icon="lock-closed"
+          label="Privacy & data"
+          href="/privacy"
+          danger={undefined}
+        />
+        <SettingRow
+          icon="color-palette"
+          label="Appearance"
+          href="/appearance"
+          danger={undefined}
+        />
       </Section>
 
       <Section title="Account">
-        <SettingRow icon="help-circle" label="Help & support" />
-        <SettingRow icon="log-out" label="Sign out" danger />
+        <SettingRow
+          icon="help-circle"
+          label="Help & support"
+          href="/help"
+          danger={undefined}
+        />
+        <SettingRow icon="log-out" label="Sign out" danger href={undefined} />
       </Section>
     </View>
   );
 };
 
-type SectionProps = {
-  title: string;
-  children: React.ReactNode;
-};
+const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
+  title,
+  children,
+}) => (
+  <View style={styles.section}>
+    <Text style={styles.sectionTitle}>{title}</Text>
+    <View style={styles.card}>{children}</View>
+  </View>
+);
 
-const Section = (props: SectionProps) => {
-  const { title, children } = props;
-
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.card}>{children}</View>
-    </View>
-  );
-};
-
-type SettingRowProps = {
-  icon: keyof typeof Ionicons.glyphMap;
+interface SettingRowProps {
+  icon: React.ComponentProps<typeof Ionicons>["name"];
   label: string;
   danger?: boolean;
-};
+  href?: string;
+}
 
-const SettingRow = (props: SettingRowProps) => {
-  const { icon, label, danger } = props;
-
-  return (
-    <TouchableOpacity style={styles.row}>
+const SettingRow: React.FC<SettingRowProps> = ({
+  icon,
+  label,
+  danger,
+  href,
+}) => {
+  const RowContent = (
+    <View style={styles.row}>
       <Ionicons
         name={icon}
-        size={20}
-        color={danger ? "#e57373" : "#6c63ff"}
+        size={22}
+        color={danger ? "#d9534f" : "#6c63ff"}
         style={styles.rowIcon}
       />
-      <Text style={[styles.rowText, danger && styles.dangerText]}>{label}</Text>
+      <Text
+        style={[styles.rowText, danger && styles.dangerText]}
+        accessibilityRole="text"
+      >
+        {label}
+      </Text>
       <Ionicons name="chevron-forward" size={18} color="#bbb" />
+    </View>
+  );
+
+  if (href) {
+    return (
+      <Link href={href as any} asChild>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel={label}>
+          {RowContent}
+        </TouchableOpacity>
+      </Link>
+    );
+  }
+
+  return (
+    <TouchableOpacity accessibilityRole="button" accessibilityLabel={label}>
+      {RowContent}
     </TouchableOpacity>
   );
 };
@@ -75,62 +125,57 @@ const SettingRow = (props: SettingRowProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9fb",
+    backgroundColor: "#fafafb",
     paddingHorizontal: 20,
-    paddingTop: 24,
+    paddingTop: 28,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 36,
   },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: "#6c63ff",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
+    marginRight: 18,
   },
   name: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
-    color: "#333",
+    color: "#222",
   },
   subtext: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#666",
-    marginTop: 2,
+    marginTop: 4,
   },
   section: {
-    marginBottom: 28,
+    marginBottom: 32,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "600",
     color: "#6c63ff",
     marginBottom: 12,
-    textTransform: "uppercase",
   },
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 4,
     shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
@@ -139,12 +184,12 @@ const styles = StyleSheet.create({
   },
   rowText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 17,
     color: "#333",
-    marginLeft: 8,
+    marginLeft: 10,
   },
   dangerText: {
-    color: "#e57373",
+    color: "#d9534f",
   },
 });
 

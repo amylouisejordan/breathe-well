@@ -7,38 +7,60 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 
 const AddMedicationForm = () => {
+  const [name, setName] = useState("");
+  const [dose, setDose] = useState("");
+  const [notes, setNotes] = useState("");
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Log Medication</Text>
-      <Text style={styles.subtitle}>Record medication you’ve taken</Text>
+      <Text style={styles.subtitle}>What medication did you take today?</Text>
 
       <View style={styles.card}>
-        <Text style={styles.label}>Medication name</Text>
-        <TextInput
-          placeholder="e.g. Salbutamol"
-          placeholderTextColor="#aaa"
-          style={styles.input}
-        />
+        <View style={styles.field}>
+          <Text style={styles.label}>Medication name</Text>
+          <TextInput
+            placeholder="e.g. Salbutamol inhaler"
+            placeholderTextColor="#999"
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+          />
+        </View>
 
-        <Text style={styles.label}>Dosage</Text>
-        <TextInput
-          placeholder="e.g. 2 puffs"
-          placeholderTextColor="#aaa"
-          style={styles.input}
-        />
+        <View style={styles.field}>
+          <Text style={styles.label}>Dosage</Text>
+          <TextInput
+            placeholder="e.g. 2 puffs"
+            placeholderTextColor="#999"
+            style={styles.input}
+            value={dose}
+            onChangeText={setDose}
+          />
+        </View>
 
-        <Text style={styles.label}>Notes</Text>
-        <TextInput
-          placeholder="Optional notes"
-          placeholderTextColor="#aaa"
-          style={[styles.input, styles.textArea]}
-          multiline
-        />
+        <View style={styles.field}>
+          <Text style={styles.label}>Notes</Text>
+          <TextInput
+            placeholder="Add anything you'd like to remember"
+            placeholderTextColor="#999"
+            style={[styles.input, styles.textArea]}
+            multiline
+            value={notes}
+            onChangeText={setNotes}
+          />
+        </View>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => router.back()}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.back()}
+        accessibilityRole="button"
+        accessibilityLabel="Save medication entry"
+      >
         <Ionicons name="checkmark" size={22} color="#fff" />
         <Text style={styles.buttonText}>Save Medication</Text>
       </TouchableOpacity>
@@ -49,53 +71,56 @@ const AddMedicationForm = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9fb",
+    backgroundColor: "#fafafb",
     padding: 20,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
     color: "#6c63ff",
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 15,
     color: "#666",
-    marginBottom: 24,
+    marginBottom: 28,
   },
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 20,
-    marginBottom: 32,
+    marginBottom: 36,
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
   },
+  field: {
+    marginBottom: 20,
+  },
   label: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
     color: "#444",
-    marginBottom: 6,
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#e5e5e5",
+    borderColor: "#e0e0e0",
     borderRadius: 12,
-    padding: 12,
-    fontSize: 14,
-    marginBottom: 16,
+    padding: 14,
+    fontSize: 16,
     backgroundColor: "#fafafa",
+    color: "#333",
   },
   textArea: {
-    height: 90,
+    height: 100,
     textAlignVertical: "top",
   },
   button: {
     flexDirection: "row",
     backgroundColor: "#6c63ff",
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
@@ -103,7 +128,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: "600",
   },
 });
