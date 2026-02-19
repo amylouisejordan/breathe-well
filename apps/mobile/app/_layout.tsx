@@ -14,7 +14,7 @@ const RootLayout = () => {
       <Stack.Screen name="privacy" options={{ title: "Privacy & Data" }} />
       <Stack.Screen name="appearance" options={{ title: "Appearance" }} />
       <Stack.Screen name="help" options={{ title: "Help & Support" }} />
-
+      <Stack.Screen name="account" options={{ title: "Manage Account" }} />
       <Stack.Screen
         name="add-symptom"
         options={{ presentation: "modal", title: "Add Symptom" }}

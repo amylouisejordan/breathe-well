@@ -1,60 +1,78 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 const AddEntry = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add Entry</Text>
-      <Text style={styles.subtitle}>
-        Take a moment to record how you’re doing today
-      </Text>
-
-      <TouchableOpacity
-        style={styles.optionCard}
-        onPress={() => router.push("/add-symptom-form")}
-        accessibilityRole="button"
-        accessibilityLabel="Log a symptom"
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
       >
-        <View style={styles.iconWrap}>
-          <Ionicons name="pulse" size={30} color="#6c63ff" />
-        </View>
+        <Text accessibilityRole="header" style={styles.title}>
+          Add Entry
+        </Text>
+        <Text style={styles.subtitle}>
+          Take a moment to record how you’re doing today
+        </Text>
 
-        <View style={styles.textWrap}>
-          <Text style={styles.optionTitle}>Symptom</Text>
-          <Text style={styles.optionText}>
-            Track breathlessness, mood, or changes in how you feel
-          </Text>
-        </View>
+        <View style={styles.divider} />
 
-        <Ionicons name="chevron-forward" size={22} color="#ccc" />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.optionCard}
+          onPress={() => router.push("/add-symptom-form")}
+          accessibilityRole="button"
+          accessibilityLabel="Log a symptom"
+          accessibilityHint="Track breathlessness, mood, or changes in how you feel"
+          activeOpacity={0.7}
+        >
+          <View style={styles.iconWrap}>
+            <Ionicons name="pulse" size={28} color="#6c63ff" />
+          </View>
 
-      <TouchableOpacity
-        style={styles.optionCard}
-        onPress={() => router.push("/add-medication-form")}
-        accessibilityRole="button"
-        accessibilityLabel="Log medication"
-      >
-        <View style={styles.iconWrap}>
-          <Ionicons name="medkit" size={28} color="#6c63ff" />
-        </View>
+          <View style={styles.textWrap}>
+            <Text style={styles.optionTitle}>Symptom</Text>
+            <Text style={styles.optionText}>
+              Track breathlessness, mood, or changes in how you feel
+            </Text>
+          </View>
 
-        <View style={styles.textWrap}>
-          <Text style={styles.optionTitle}>Medication</Text>
-          <Text style={styles.optionText}>
-            Record medication taken, dosage, or timing
-          </Text>
-        </View>
+          <Ionicons name="chevron-forward" size={22} color="#ccc" />
+        </TouchableOpacity>
 
-        <Ionicons name="chevron-forward" size={22} color="#ccc" />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.optionCard}
+          onPress={() => router.push("/add-medication-form")}
+          accessibilityRole="button"
+          accessibilityLabel="Log medication"
+          accessibilityHint="Record medication taken, dosage, or timing"
+          activeOpacity={0.7}
+        >
+          <View style={styles.iconWrap}>
+            <Ionicons name="medkit" size={28} color="#6c63ff" />
+          </View>
+
+          <View style={styles.textWrap}>
+            <Text style={styles.optionTitle}>Medication</Text>
+            <Text style={styles.optionText}>
+              Record medication taken, dosage, or timing
+            </Text>
+          </View>
+
+          <Ionicons name="chevron-forward" size={22} color="#ccc" />
+        </TouchableOpacity>
+
+        <Text style={styles.footerNote}>
+          Logging regularly helps you notice patterns over time
+        </Text>
+      </ScrollView>
 
       <TouchableOpacity
         style={styles.cancel}
         onPress={() => router.back()}
         accessibilityRole="button"
         accessibilityLabel="Cancel and go back"
+        activeOpacity={0.7}
       >
         <Text style={styles.cancelText}>Cancel</Text>
       </TouchableOpacity>
@@ -68,8 +86,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fafafb",
     padding: 20,
   },
+
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "700",
     color: "#6c63ff",
     marginBottom: 4,
@@ -77,8 +96,15 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 15,
     color: "#666",
-    marginBottom: 28,
+    marginBottom: 20,
   },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#e5e5e5",
+    marginBottom: 24,
+  },
+
   optionCard: {
     flexDirection: "row",
     alignItems: "center",
@@ -91,6 +117,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
   },
+
   iconWrap: {
     width: 52,
     height: 52,
@@ -100,9 +127,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 18,
   },
+
   textWrap: {
     flex: 1,
   },
+
   optionTitle: {
     fontSize: 17,
     fontWeight: "600",
@@ -113,6 +142,14 @@ const styles = StyleSheet.create({
     color: "#777",
     marginTop: 4,
   },
+
+  footerNote: {
+    textAlign: "center",
+    fontSize: 13,
+    color: "#999",
+    marginTop: 8,
+  },
+
   cancel: {
     marginTop: "auto",
     alignItems: "center",

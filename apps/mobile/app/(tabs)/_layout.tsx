@@ -8,6 +8,13 @@ const TabsLayout = () => {
       screenOptions={{
         headerTitleAlign: "center",
         tabBarShowLabel: false,
+        tabBarActiveTintColor: "#6c63ff",
+        tabBarInactiveTintColor: "#999",
+        tabBarStyle: {
+          backgroundColor: "#fff",
+          borderTopColor: "#ddd",
+          height: 70,
+        },
         headerTitle: () => (
           <Image
             source={require("../../assets/logo.png")}
@@ -20,7 +27,12 @@ const TabsLayout = () => {
         name="ai"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="sparkles" size={size} color={color} />
+            <Ionicons
+              name="sparkles"
+              size={size}
+              color={color}
+              accessibilityLabel="AI companion"
+            />
           ),
         }}
       />
@@ -29,7 +41,12 @@ const TabsLayout = () => {
         name="forum"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles" size={size} color={color} />
+            <Ionicons
+              name="chatbubbles"
+              size={size}
+              color={color}
+              accessibilityLabel="Community forum"
+            />
           ),
         }}
       />
@@ -53,7 +70,12 @@ const TabsLayout = () => {
         name="history"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="stats-chart" size={size} color={color} />
+            <Ionicons
+              name="stats-chart"
+              size={size}
+              color={color}
+              accessibilityLabel="Symptom history"
+            />
           ),
         }}
       />
@@ -62,7 +84,12 @@ const TabsLayout = () => {
         name="profile"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Ionicons
+              name="person"
+              size={size}
+              color={color}
+              accessibilityLabel="Profile"
+            />
           ),
         }}
       />

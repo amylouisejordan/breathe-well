@@ -1,4 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { useState } from "react";
 
 const HistoryScreen = () => {
@@ -7,10 +13,13 @@ const HistoryScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Your Progress</Text>
+        <Text accessibilityRole="header" style={styles.title}>
+          Your Progress
+        </Text>
         <Text style={styles.subtext}>
           A gentle look at how you’ve been feeling over time
         </Text>
+        <Text style={styles.updatedText}>Last updated: today</Text>
       </View>
 
       <View style={styles.toggleRow}>
@@ -34,13 +43,15 @@ const HistoryScreen = () => {
         ))}
       </View>
 
-      <HistorySection title="Symptoms">
-        <GraphPlaceholder label="Breathlessness & mood" />
-      </HistorySection>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <HistorySection title="Symptoms">
+          <GraphPlaceholder label="Breathlessness & mood" />
+        </HistorySection>
 
-      <HistorySection title="Medication">
-        <GraphPlaceholder label="Medication taken" />
-      </HistorySection>
+        <HistorySection title="Medication">
+          <GraphPlaceholder label="Medication taken" />
+        </HistorySection>
+      </ScrollView>
     </View>
   );
 };
@@ -59,6 +70,11 @@ const GraphPlaceholder: React.FC<{ label: string }> = ({ label }) => {
   return (
     <View style={styles.card}>
       <Text style={styles.graphLabel}>{label}</Text>
+
+      <View style={styles.legendRow}>
+        <View style={styles.legendDot} />
+        <Text style={styles.legendText}>Your logged data</Text>
+      </View>
 
       <View style={styles.graphArea}>
         <View style={styles.grid}>
@@ -88,11 +104,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 28,
   },
+
   header: {
     marginBottom: 28,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "700",
     color: "#6c63ff",
   },
@@ -101,6 +118,12 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 4,
   },
+  updatedText: {
+    fontSize: 13,
+    color: "#999",
+    marginTop: 6,
+  },
+
   toggleRow: {
     flexDirection: "row",
     marginBottom: 32,
@@ -129,6 +152,7 @@ const styles = StyleSheet.create({
   toggleTextActive: {
     color: "#fff",
   },
+
   section: {
     marginBottom: 32,
   },
@@ -138,6 +162,7 @@ const styles = StyleSheet.create({
     color: "#6c63ff",
     marginBottom: 12,
   },
+
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
@@ -147,17 +172,37 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
   },
+
   graphLabel: {
     fontSize: 17,
     fontWeight: "600",
     marginBottom: 12,
     color: "#333",
   },
+
+  legendRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#6c63ff",
+    marginRight: 6,
+  },
+  legendText: {
+    fontSize: 13,
+    color: "#666",
+  },
+
   graphArea: {
-    height: 120,
+    height: 140,
     marginBottom: 12,
     position: "relative",
   },
+
   grid: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "space-between",
@@ -166,6 +211,7 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#eee",
   },
+
   barRow: {
     flexDirection: "row",
     alignItems: "flex-end",
@@ -178,6 +224,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     opacity: 0.85,
   },
+
   graphHint: {
     fontSize: 13,
     color: "#999",
