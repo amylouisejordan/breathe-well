@@ -220,6 +220,64 @@ const CloseButton = styled.Text`
   font-size: 16px;
 `;
 
+const DailyCard = styled.View`
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #f1f1f5;
+  margin-bottom: 24px;
+  align-items: center;
+`;
+
+const Circle = styled.View<{ severity: number }>`
+  background: ${({ severity }: { severity: number }) =>
+    severity === 0
+      ? "#e5e5e5"
+      : severity <= 2
+      ? "#b2e8c8"
+      : severity <= 4
+      ? "#ffe6a7"
+      : "#ffb3b3"};
+  width: 90px;
+  height: 90px;
+  border-radius: 45px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const CircleText = styled.Text`
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+`;
+
+const Insight = styled.Text`
+  font-size: 14px;
+  color: #666;
+  margin-top: 16px;
+  text-align: center;
+`;
+
+const TodayItem = styled.TouchableOpacity`
+  background: #fff;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #f1f1f5;
+  margin-bottom: 12px;
+`;
+
+const TodayItemTitle = styled.Text`
+  font-size: 15px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 4px;
+`;
+
+const TodayItemText = styled.Text`
+  font-size: 14px;
+  color: #555;
+`;
+
 type SymptomEntry = {
   severity: number;
   tags: string[];
@@ -259,6 +317,14 @@ const History = () => {
       };
       fetchData();
     }, [])
+  );
+
+  const todaySymptoms = symptoms.filter(
+    (s) => new Date(s.date).toDateString() === new Date().toDateString()
+  );
+
+  const todayMedications = medications.filter(
+    (m) => new Date(m.date).toDateString() === new Date().toDateString()
   );
 
   const getSymptomGraphData = () => {
@@ -419,6 +485,13 @@ const History = () => {
         })
       : [];
 
+  const avgSeverity = todaySymptoms.length
+    ? Math.round(
+        todaySymptoms.reduce((sum, s) => sum + s.severity, 0) /
+          todaySymptoms.length
+      )
+    : 0;
+
   const getDayLabel = (index: number) => {
     if (range === "day") return "Today";
     if (range === "week")
@@ -450,23 +523,84 @@ const History = () => {
       </ToggleRow>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Section>
-          <SectionTitle>Symptoms</SectionTitle>
-          <Graph
-            label="Breathlessness & mood"
-            data={symptomGraph}
-            onSelectDay={setSelectedDay}
-          />
-        </Section>
+        {range === "day" ? (
+          <Section>
+            <SectionTitle>Today</SectionTitle>
 
-        <Section>
-          <SectionTitle>Medication</SectionTitle>
-          <Graph
-            label="Medication taken"
-            data={medicationGraph}
-            onSelectDay={setSelectedDay}
-          />
-        </Section>
+            <DailyCard>
+              <Circle severity={avgSeverity}>
+                <CircleText>{avgSeverity}</CircleText>
+              </Circle>
+
+              <Insight style={{ marginTop: 8, fontWeight: "600" }}>
+                Average severity today
+              </Insight>
+
+              <Insight style={{ marginTop: 6 }}>
+                {todaySymptoms.length} symptom
+                {todaySymptoms.length !== 1 ? "s" : ""} •{" "}
+                {todayMedications.length} medication
+                {todayMedications.length !== 1 ? "s" : ""}
+              </Insight>
+
+              <Insight style={{ marginTop: 14 }}>
+                {avgSeverity === 0
+                  ? "Nothing logged yet today."
+                  : avgSeverity <= 2
+                  ? "A gentle day so far."
+                  : avgSeverity <= 4
+                  ? "A mixed day - remember to rest."
+                  : "A tougher day - be kind to yourself."}
+              </Insight>
+            </DailyCard>
+
+            {(todaySymptoms.length > 0 || todayMedications.length > 0) && (
+              <Section>
+                <SectionTitle>Today’s items</SectionTitle>
+
+                {todaySymptoms.map((entry, i) => (
+                  <TodayItem key={`s-${i}`} onPress={() => setSelectedDay(0)}>
+                    <TodayItemTitle>Symptom</TodayItemTitle>
+                    <TodayItemText>Severity: {entry.severity}</TodayItemText>
+                    {entry.tags.length > 0 && (
+                      <TodayItemText>
+                        Tags: {entry.tags.join(", ")}
+                      </TodayItemText>
+                    )}
+                  </TodayItem>
+                ))}
+
+                {todayMedications.map((entry, i) => (
+                  <TodayItem key={`m-${i}`} onPress={() => setSelectedDay(0)}>
+                    <TodayItemTitle>Medication</TodayItemTitle>
+                    <TodayItemText>{entry.name}</TodayItemText>
+                    <TodayItemText>Dose: {entry.dose}</TodayItemText>
+                  </TodayItem>
+                ))}
+              </Section>
+            )}
+          </Section>
+        ) : (
+          <Section>
+            <SectionTitle>Symptoms</SectionTitle>
+            <Graph
+              label="Breathlessness & mood"
+              data={symptomGraph}
+              onSelectDay={setSelectedDay}
+            />
+          </Section>
+        )}
+
+        {range !== "day" && (
+          <Section>
+            <SectionTitle>Medication</SectionTitle>
+            <Graph
+              label="Medication taken"
+              data={medicationGraph}
+              onSelectDay={setSelectedDay}
+            />
+          </Section>
+        )}
       </ScrollView>
 
       {selectedDay !== null && (
@@ -483,10 +617,10 @@ const History = () => {
                 </EntryRow>
               ))}
 
-              {medicationEntriesForSelectedDay.length > 0 && (
+              {todayMedications.length > 0 && (
                 <>
                   <ModalTitle>Medication</ModalTitle>
-                  {medicationEntriesForSelectedDay.map((entry, i) => (
+                  {todayMedications.map((entry, i) => (
                     <EntryRow key={i}>
                       <EntrySeverity>{entry.name}</EntrySeverity>
                       <EntryTags>Dose: {entry.dose}</EntryTags>
@@ -522,7 +656,7 @@ const Graph = ({
     return (
       <Card>
         <GraphLabel>{label}</GraphLabel>
-        <GraphHint>No data yet — log something to begin</GraphHint>
+        <GraphHint>No data yet - log something to begin</GraphHint>
       </Card>
     );
   }
