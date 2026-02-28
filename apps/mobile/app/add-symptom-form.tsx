@@ -13,22 +13,31 @@ import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useState } from "react";
 
+import { load, save } from "./utils/storage";
+
+interface SymptomEntry {
+  severity: number;
+  tags: string[];
+  notes: string;
+  date: string;
+}
+
 const TAGS = ["Breathless", "Wheezy", "Tight chest", "Cough", "Fatigue"];
 
 const AddSymptomForm = () => {
   const [severity, setSeverity] = useState(5);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
 
   const toggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
+    setTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
 
   const resetForm = () => {
     setSeverity(5);
-    setSelectedTags([]);
+    setTags([]);
     setNotes("");
   };
 
@@ -80,8 +89,8 @@ const AddSymptomForm = () => {
 
           <Text style={[styles.label, { marginTop: 24 }]}>
             Symptoms{" "}
-            {selectedTags.length > 0 && (
-              <Text style={styles.tagCount}>({selectedTags.length} selected)</Text>
+            {tags.length > 0 && (
+              <Text style={styles.tagCount}>({tags.length} selected)</Text>
             )}
           </Text>
 
@@ -90,10 +99,7 @@ const AddSymptomForm = () => {
               <TouchableOpacity
                 key={tag}
                 onPress={() => toggleTag(tag)}
-                style={[
-                  styles.tag,
-                  selectedTags.includes(tag) && styles.tagActive,
-                ]}
+                style={[styles.tag, tags.includes(tag) && styles.tagActive]}
                 accessibilityRole="button"
                 accessibilityLabel={`Tag: ${tag}`}
                 accessibilityHint="Tap to select or deselect"
@@ -102,7 +108,7 @@ const AddSymptomForm = () => {
                 <Text
                   style={[
                     styles.tagText,
-                    selectedTags.includes(tag) && styles.tagTextActive,
+                    tags.includes(tag) && styles.tagTextActive,
                   ]}
                 >
                   {tag}
@@ -137,7 +143,20 @@ const AddSymptomForm = () => {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.back()}
+          onPress={async () => {
+            const existing = (await load("symptoms")) || [];
+
+            const newEntry: SymptomEntry = {
+              severity,
+              tags: tags,
+              notes,
+              date: new Date().toISOString(),
+            };
+
+            await save("symptoms", [...existing, newEntry]);
+
+            router.back();
+          }}
           accessibilityRole="button"
           accessibilityLabel="Save symptom entry"
           activeOpacity={0.7}

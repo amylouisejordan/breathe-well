@@ -11,6 +11,7 @@ import {
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
+import { load, save } from "./utils/storage";
 
 const AddMedicationForm = () => {
   const [name, setName] = useState("");
@@ -36,9 +37,7 @@ const AddMedicationForm = () => {
         <Text accessibilityRole="header" style={styles.title}>
           Log Medication
         </Text>
-        <Text style={styles.subtitle}>
-          What medication did you take today?
-        </Text>
+        <Text style={styles.subtitle}>What medication did you take today?</Text>
 
         <View style={styles.divider} />
 
@@ -97,7 +96,20 @@ const AddMedicationForm = () => {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.back()}
+          onPress={async () => {
+            const existing = (await load("medications")) || [];
+
+            const newEntry = {
+              name,
+              dose,
+              notes,
+              date: new Date().toISOString(),
+            };
+
+            await save("medications", [...existing, newEntry]);
+
+            router.back();
+          }}
           accessibilityRole="button"
           accessibilityLabel="Save medication entry"
           activeOpacity={0.7}
