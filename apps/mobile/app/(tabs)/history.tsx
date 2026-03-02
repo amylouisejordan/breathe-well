@@ -1,344 +1,46 @@
-import { ScrollView, Modal } from "react-native";
-import React, { useCallback, useState } from "react";
-import styled from "styled-components/native";
+import React, { useState, useCallback } from "react";
+import { ScrollView } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { load } from "../utils/storage";
 
-const Container = styled.View`
-  flex: 1;
-  background: #fafafb;
-  padding: 28px 20px 0;
-`;
+import {
+  Container,
+  Header,
+  Title,
+  Subtext,
+  UpdatedText,
+  ToggleRow,
+  Toggle,
+  ToggleText,
+  Section,
+  SectionTitle,
+  DailyCard,
+  Circle,
+  CircleText,
+  Insight,
+  TodayItem,
+  TodayItemTitle,
+  TodayItemText,
+} from "../history/styled";
 
-const Header = styled.View`
-  margin-bottom: 24px;
-`;
+import Graph from "../history/Graph";
+import DayModal from "../history/DayModal";
 
-const Title = styled.Text`
-  font-size: 28px;
-  font-weight: 800;
-  color: #6c63ff;
-`;
-
-const Subtext = styled.Text`
-  font-size: 15px;
-  color: #666;
-  margin-top: 6px;
-`;
-
-const UpdatedText = styled.Text`
-  font-size: 13px;
-  color: #999;
-  margin-top: 4px;
-`;
-
-const ToggleRow = styled.View`
-  flex-direction: row;
-  margin-bottom: 28px;
-  background: #f1f1f5;
-  border-radius: 30px;
-  padding: 4px;
-`;
-
-interface ToggleProps {
-  active: boolean;
-}
-
-const Toggle = styled.TouchableOpacity<ToggleProps>`
-  flex: 1;
-  padding: 10px 0;
-  border-radius: 26px;
-  align-items: center;
-  background: ${({ active }: { active: boolean }) =>
-    active ? "#6c63ff" : "transparent"};
-`;
-
-interface ToggleTextProps {
-  active: boolean;
-}
-
-const ToggleText = styled.Text<ToggleTextProps>`
-  font-size: 15px;
-  font-weight: 600;
-  color: ${({ active }: ToggleTextProps) => (active ? "#fff" : "#666")};
-`;
-
-const Section = styled.View`
-  margin-bottom: 36px;
-`;
-
-const SectionTitle = styled.Text`
-  font-size: 17px;
-  font-weight: 700;
-  color: #6c63ff;
-  margin-bottom: 14px;
-`;
-
-const Card = styled.View`
-  background: #fff;
-  border-radius: 20px;
-  padding: 20px;
-  border: 1px solid #f1f1f5;
-  margin-bottom: 20px;
-`;
-
-const GraphLabel = styled.Text`
-  font-size: 17px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #333;
-`;
-
-const LegendRow = styled.View`
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 8px;
-`;
-
-const LegendDot = styled.View`
-  width: 10px;
-  height: 10px;
-  border-radius: 5px;
-  background: #6c63ff;
-  margin-right: 6px;
-`;
-
-const LegendText = styled.Text`
-  font-size: 13px;
-  color: #666;
-`;
-
-const GraphArea = styled.View`
-  margin-bottom: 16px;
-  position: relative;
-`;
-
-const Grid = styled.View`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  justify-content: space-between;
-`;
-
-const GridLine = styled.View`
-  height: 1px;
-  background: #eee;
-`;
-
-const BarRow = styled.View`
-  flex-direction: row;
-  align-items: flex-end;
-  height: 160px;
-  gap: 8px;
-`;
-
-const BarContainer = styled.TouchableOpacity`
-  flex: 1;
-  align-items: center;
-`;
-
-const Bar = styled.View`
-  background: #6c63ff;
-  border-radius: 8px;
-  opacity: 0.9;
-  width: 22px;
-`;
-
-const ValueLabel = styled.Text`
-  font-size: 13px;
-  font-weight: 600;
-  color: #333;
-  margin-top: 6px;
-`;
-
-const BarLabel = styled.Text`
-  font-size: 12px;
-  color: #777;
-  margin-top: 4px;
-`;
-
-const GraphHint = styled.Text`
-  font-size: 13px;
-  color: #999;
-`;
-
-const ModalBackdrop = styled.View`
-  flex: 1;
-  background: rgba(0, 0, 0, 0.45);
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-`;
-
-const ModalCard = styled.View`
-  background: #fff;
-  padding: 24px;
-  border-radius: 20px;
-  width: 100%;
-  max-width: 420px;
-`;
-
-const ModalTitle = styled.Text`
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #333;
-`;
-
-const EntryRow = styled.View`
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom-width: 1px;
-  border-bottom-color: #eee;
-`;
-
-const EntrySeverity = styled.Text`
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 4px;
-`;
-
-const EntryTags = styled.Text`
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 4px;
-`;
-
-const EntryNotes = styled.Text`
-  font-size: 14px;
-  color: #777;
-`;
-
-const CloseButton = styled.Text`
-  margin-top: 20px;
-  text-align: center;
-  color: #6c63ff;
-  font-weight: 700;
-  font-size: 16px;
-`;
-
-const DailyCard = styled.View`
-  background: #fff;
-  border-radius: 20px;
-  padding: 24px;
-  border: 1px solid #f1f1f5;
-  margin-bottom: 24px;
-  align-items: center;
-`;
-
-const Circle = styled.View<{ severity: number }>`
-  background: ${({ severity }: { severity: number }) =>
-    severity === 0
-      ? "#e5e5e5"
-      : severity <= 2
-      ? "#b2e8c8"
-      : severity <= 4
-      ? "#ffe6a7"
-      : "#ffb3b3"};
-  width: 90px;
-  height: 90px;
-  border-radius: 45px;
-  justify-content: center;
-  align-items: center;
-`;
-
-const CircleText = styled.Text`
-  font-size: 28px;
-  font-weight: 700;
-  color: #333;
-`;
-
-const Insight = styled.Text`
-  font-size: 14px;
-  color: #666;
-  margin-top: 16px;
-  text-align: center;
-`;
-
-const TodayItem = styled.TouchableOpacity`
-  background: #fff;
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px solid #f1f1f5;
-  margin-bottom: 12px;
-`;
-
-const TodayItemTitle = styled.Text`
-  font-size: 15px;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 4px;
-`;
-
-const TodayItemText = styled.Text`
-  font-size: 14px;
-  color: #555;
-`;
-
-const CalendarGrid = styled.View`
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-bottom: 24px;
-`;
-
-const DayCell = styled.TouchableOpacity`
-  width: 13%;
-  aspect-ratio: 1;
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid #f1f1f5;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const DayNumber = styled.Text`
-  font-size: 12px;
-  color: #333;
-  margin-bottom: 4px;
-`;
-
-const SymptomDot = styled.View<{ severity: number }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  background: ${({ severity }: { severity: number }) =>
-    severity === 0
-      ? "transparent"
-      : severity <= 2
-      ? "#b2e8c8"
-      : severity <= 4
-      ? "#ffe6a7"
-      : "#ffb3b3"};
-`;
-
-const MedicationDot = styled.View<{ hasMed: boolean }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  background: ${({ hasMed }: { hasMed: boolean }) =>
-    hasMed ? "#6c63ff" : "transparent"};
-  margin-top: 2px;
-`;
-
-type SymptomEntry = {
+export type SymptomEntry = {
   severity: number;
   tags: string[];
   notes: string;
   date: string;
 };
 
-type MedicationEntry = {
+export type MedicationEntry = {
   name: string;
   dose: string;
   notes: string;
   date: string;
 };
 
-type MonthlyContext = {
+export type MonthlyContext = {
   monthlyAvgSeverity: number;
   daysLogged: number;
   totalSymptoms: number;
@@ -352,7 +54,7 @@ type MonthlyContext = {
   onSelectCalendarDay: (day: number) => void;
 };
 
-const History = () => {
+export default function HistoryScreen() {
   const [range, setRange] = useState<"day" | "week" | "month">("week");
   const [symptoms, setSymptoms] = useState<SymptomEntry[]>([]);
   const [medications, setMedications] = useState<MedicationEntry[]>([]);
@@ -391,11 +93,8 @@ const History = () => {
   );
 
   const today = new Date();
-
   const year = today.getFullYear();
   const month = today.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const firstOfMonth = new Date(year, month, 1);
   const lastOfMonth = new Date(year, month + 1, 0);
@@ -435,6 +134,9 @@ const History = () => {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 2)
     .map(([tag]) => tag);
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const calendarDays: (number | null)[] = [];
   for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
@@ -493,23 +195,23 @@ const History = () => {
     }
 
     if (range === "month") {
-      const buckets: number[][] = Array(30)
+      const buckets: number[][] = Array(daysInMonth)
         .fill(null)
         .map(() => []);
 
       symptoms.forEach((s) => {
-        const diff = Math.floor(
-          (nowLocal.getTime() - new Date(s.date).getTime()) /
-            (1000 * 60 * 60 * 24)
-        );
-        if (diff < 30) buckets[29 - diff].push(s.severity);
+        const d = new Date(s.date);
+        const day = d.getDate();
+        if (day >= 1 && day <= daysInMonth) {
+          buckets[day - 1].push(s.severity);
+        }
       });
 
       const values = buckets.map((day) =>
         day.length ? Math.round(day.reduce((a, b) => a + b) / day.length) : 0
       );
 
-      const labels = Array.from({ length: 30 }, (_, i) => `${30 - i}`);
+      const labels = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
 
       return { values, labels };
     }
@@ -556,17 +258,17 @@ const History = () => {
     }
 
     if (range === "month") {
-      const buckets = Array(30).fill(0);
+      const buckets = Array(daysInMonth).fill(0);
 
       medications.forEach((m) => {
-        const diff = Math.floor(
-          (nowLocal.getTime() - new Date(m.date).getTime()) /
-            (1000 * 60 * 60 * 24)
-        );
-        if (diff < 30) buckets[29 - diff] += 1;
+        const d = new Date(m.date);
+        const day = d.getDate();
+        if (day >= 1 && day <= daysInMonth) {
+          buckets[day - 1] += 1;
+        }
       });
 
-      const labels = Array.from({ length: 30 }, (_, i) => `${30 - i}`);
+      const labels = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
 
       return { values: buckets, labels };
     }
@@ -590,7 +292,6 @@ const History = () => {
               d.getTime() + d.getTimezoneOffset() * 60000
             ).getDay();
             const index = weekday === 0 ? 6 : weekday - 1;
-
             return index === selectedDay;
           }
           if (range === "month") return d.getDate() === selectedDay;
@@ -608,7 +309,6 @@ const History = () => {
               d.getTime() + d.getTimezoneOffset() * 60000
             ).getDay();
             const index = weekday === 0 ? 6 : weekday - 1;
-
             return index === selectedDay;
           }
           if (range === "month") return d.getDate() === selectedDay;
@@ -783,202 +483,17 @@ const History = () => {
         )}
       </ScrollView>
 
-      {selectedDay !== null && (
-        <Modal transparent animationType="fade">
-          <ModalBackdrop>
-            <ModalCard>
-              <ModalTitle>{getDayLabel(selectedDay)}’s entries</ModalTitle>
-
-              {(selectedType === "symptom" || selectedType === "both") &&
-                entriesForSelectedDay.map((entry, i) => (
-                  <EntryRow key={i}>
-                    <EntrySeverity>Severity: {entry.severity}</EntrySeverity>
-                    <EntryTags>
-                      Tags: {entry.tags.join(", ") || "None"}
-                    </EntryTags>
-                    <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                  </EntryRow>
-                ))}
-
-              {(selectedType === "medication" || selectedType === "both") &&
-                medicationEntriesForSelectedDay.map((entry, i) => (
-                  <EntryRow key={i}>
-                    <EntrySeverity>{entry.name}</EntrySeverity>
-                    <EntryTags>Dose: {entry.dose}</EntryTags>
-                    <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                  </EntryRow>
-                ))}
-
-              <CloseButton
-                onPress={() => {
-                  setSelectedDay(null);
-                  setSelectedType(null);
-                }}
-              >
-                Close
-              </CloseButton>
-            </ModalCard>
-          </ModalBackdrop>
-        </Modal>
-      )}
+      <DayModal
+        visible={selectedDay !== null}
+        dayLabel={selectedDay !== null ? getDayLabel(selectedDay) : ""}
+        symptoms={entriesForSelectedDay}
+        medications={medicationEntriesForSelectedDay}
+        type={selectedType}
+        onClose={() => {
+          setSelectedDay(null);
+          setSelectedType(null);
+        }}
+      />
     </Container>
   );
-};
-
-const Graph = ({
-  label,
-  data,
-  onSelectDay,
-  monthlyContext,
-}: {
-  label: string;
-  data: { values: number[]; labels: string[] };
-  onSelectDay?: (day: number) => void;
-  monthlyContext?: MonthlyContext;
-}) => {
-  const isMonth = data.labels.length === 30;
-
-  if (!data.values.length || data.values.every((v) => v === 0)) {
-    return (
-      <Card>
-        <GraphLabel>{label}</GraphLabel>
-        <GraphHint>No data yet - log something to begin</GraphHint>
-      </Card>
-    );
-  }
-
-  if (isMonth && monthlyContext) {
-    const {
-      monthlyAvgSeverity,
-      daysLogged,
-      totalSymptoms,
-      totalMedications,
-      topTags,
-      calendarDays,
-      year,
-      month,
-      symptoms,
-      medications,
-      onSelectCalendarDay,
-    } = monthlyContext;
-
-    return (
-      <Card>
-        <GraphLabel>{label}</GraphLabel>
-
-        <LegendRow>
-          <LegendDot />
-          <LegendText>Your logged data</LegendText>
-        </LegendRow>
-
-        <GraphArea>
-          <DailyCard style={{ marginBottom: 28 }}>
-            <Circle severity={monthlyAvgSeverity}>
-              <CircleText>{monthlyAvgSeverity}</CircleText>
-            </Circle>
-
-            <Insight style={{ marginTop: 8, fontWeight: "600" }}>
-              Average severity this month
-            </Insight>
-
-            <Insight style={{ marginTop: 6 }}>
-              {daysLogged} days logged • {totalSymptoms} symptoms •{" "}
-              {totalMedications} meds
-            </Insight>
-
-            <Insight style={{ marginTop: 14 }}>
-              {topTags.length > 0
-                ? `Most common: ${topTags.join(", ")}`
-                : "No tags logged this month."}
-            </Insight>
-          </DailyCard>
-
-          <SectionTitle style={{ marginBottom: 16 }}>Calendar</SectionTitle>
-
-          <CalendarGrid>
-            {calendarDays.map((day, index) => {
-              if (!day) return <DayCell key={index} />;
-
-              const dateString = new Date(year, month, day).toDateString();
-
-              const daySymptoms = symptoms.filter(
-                (s) => new Date(s.date).toDateString() === dateString
-              );
-
-              const dayMedications = medications.filter(
-                (m) => new Date(m.date).toDateString() === dateString
-              );
-
-              const avgSeverity = daySymptoms.length
-                ? Math.round(
-                    daySymptoms.reduce((sum, s) => sum + s.severity, 0) /
-                      daySymptoms.length
-                  )
-                : 0;
-
-              return (
-                <DayCell
-                  key={index}
-                  onPress={() => {
-                    onSelectCalendarDay(day);
-                    onSelectDay && onSelectDay(day);
-                  }}
-                >
-                  <DayNumber>{day}</DayNumber>
-                  <SymptomDot severity={avgSeverity} />
-                  <MedicationDot hasMed={dayMedications.length > 0} />
-                </DayCell>
-              );
-            })}
-          </CalendarGrid>
-
-          <Insight style={{ marginTop: 12, marginBottom: 12 }}>
-            {monthlyAvgSeverity <= 2
-              ? "A gentle month overall."
-              : monthlyAvgSeverity <= 4
-              ? "A mixed month — some ups and downs."
-              : "A tougher month — remember to rest and be kind to yourself."}
-          </Insight>
-        </GraphArea>
-
-        <GraphHint>Tap a day to see your notes and tags</GraphHint>
-      </Card>
-    );
-  }
-
-  return (
-    <Card>
-      <GraphLabel>{label}</GraphLabel>
-
-      <LegendRow>
-        <LegendDot />
-        <LegendText>Your logged data</LegendText>
-      </LegendRow>
-
-      <GraphArea>
-        <Grid>
-          {[...Array(4)].map((_, i) => (
-            <GridLine key={i} />
-          ))}
-        </Grid>
-
-        <BarRow>
-          {data.values.map((value, index) => (
-            <BarContainer
-              key={index}
-              onPress={() => onSelectDay && onSelectDay(index)}
-            >
-              <Bar style={{ height: value * 10 }} />
-              <ValueLabel>{value}</ValueLabel>
-              <BarLabel>{data.labels[index]}</BarLabel>
-            </BarContainer>
-          ))}
-        </BarRow>
-      </GraphArea>
-
-      <GraphHint>Tap a bar to see your notes and tags for that day</GraphHint>
-    </Card>
-  );
-};
-
-export default History;
+}
