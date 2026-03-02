@@ -1,4 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 
@@ -34,13 +40,13 @@ const ProfileScreen = () => {
           <SettingRow
             icon="leaf"
             label="Breathing preferences"
-            href="/breathing-preferences"
+            href="/profile/breathing-preferences"
             accessibilityHint="Adjust your breathing support settings"
           />
           <SettingRow
             icon="medkit"
             label="My medications"
-            href="/medications"
+            href="/profile/medications"
             accessibilityHint="View and manage your medication list"
           />
         </Section>
@@ -49,19 +55,19 @@ const ProfileScreen = () => {
           <SettingRow
             icon="notifications"
             label="Notifications"
-            href="/notifications"
+            href="/profile/notifications"
             accessibilityHint="Manage reminders and alerts"
           />
           <SettingRow
             icon="lock-closed"
             label="Privacy & data"
-            href="/privacy"
+            href="/profile/privacy"
             accessibilityHint="Review how your data is used"
           />
           <SettingRow
             icon="color-palette"
             label="Appearance"
-            href="/appearance"
+            href="/profile/appearance"
             accessibilityHint="Change theme and text size"
           />
         </Section>
@@ -70,13 +76,13 @@ const ProfileScreen = () => {
           <SettingRow
             icon="person-circle"
             label="Manage account"
-            href="/account"
+            href="/profile/account"
             accessibilityHint="View and edit your account details"
           />
           <SettingRow
             icon="help-circle"
             label="Help & support"
-            href="/help"
+            href="/profile/help"
             accessibilityHint="Get assistance with the app"
           />
           <SettingRow
