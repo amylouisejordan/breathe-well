@@ -49,7 +49,7 @@ const Toggle = styled.TouchableOpacity<ToggleProps>`
   padding: 10px 0;
   border-radius: 26px;
   align-items: center;
-  background: ${({ active }: ToggleProps) =>
+  background: ${({ active }: { active: boolean }) =>
     active ? "#6c63ff" : "transparent"};
 `;
 
@@ -109,7 +109,6 @@ const LegendText = styled.Text`
 `;
 
 const GraphArea = styled.View`
-  height: 160px;
   margin-bottom: 16px;
   position: relative;
 `;
@@ -131,7 +130,7 @@ const GridLine = styled.View`
 const BarRow = styled.View`
   flex-direction: row;
   align-items: flex-end;
-  height: 100%;
+  height: 160px;
   gap: 8px;
 `;
 
@@ -278,6 +277,53 @@ const TodayItemText = styled.Text`
   color: #555;
 `;
 
+const CalendarGrid = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 24px;
+`;
+
+const DayCell = styled.TouchableOpacity`
+  width: 13%;
+  aspect-ratio: 1;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #f1f1f5;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const DayNumber = styled.Text`
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 4px;
+`;
+
+const SymptomDot = styled.View<{ severity: number }>`
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: ${({ severity }: { severity: number }) =>
+    severity === 0
+      ? "transparent"
+      : severity <= 2
+      ? "#b2e8c8"
+      : severity <= 4
+      ? "#ffe6a7"
+      : "#ffb3b3"};
+`;
+
+const MedicationDot = styled.View<{ hasMed: boolean }>`
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: ${({ hasMed }: { hasMed: boolean }) =>
+    hasMed ? "#6c63ff" : "transparent"};
+  margin-top: 2px;
+`;
+
 type SymptomEntry = {
   severity: number;
   tags: string[];
@@ -292,11 +338,28 @@ type MedicationEntry = {
   date: string;
 };
 
+type MonthlyContext = {
+  monthlyAvgSeverity: number;
+  daysLogged: number;
+  totalSymptoms: number;
+  totalMedications: number;
+  topTags: string[];
+  calendarDays: (number | null)[];
+  year: number;
+  month: number;
+  symptoms: SymptomEntry[];
+  medications: MedicationEntry[];
+  onSelectCalendarDay: (day: number) => void;
+};
+
 const History = () => {
   const [range, setRange] = useState<"day" | "week" | "month">("week");
   const [symptoms, setSymptoms] = useState<SymptomEntry[]>([]);
   const [medications, setMedications] = useState<MedicationEntry[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [selectedType, setSelectedType] = useState<
+    "symptom" | "medication" | "both" | null
+  >(null);
 
   const getStartOfWeek = () => {
     const now = new Date();
@@ -327,25 +390,79 @@ const History = () => {
     (m) => new Date(m.date).toDateString() === new Date().toDateString()
   );
 
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const firstOfMonth = new Date(year, month, 1);
+  const lastOfMonth = new Date(year, month + 1, 0);
+
+  const monthSymptoms = symptoms.filter((s) => {
+    const d = new Date(s.date);
+    return d >= firstOfMonth && d <= lastOfMonth;
+  });
+
+  const monthMedications = medications.filter((m) => {
+    const d = new Date(m.date);
+    return d >= firstOfMonth && d <= lastOfMonth;
+  });
+
+  const monthlyAvgSeverity = monthSymptoms.length
+    ? Math.round(
+        monthSymptoms.reduce((sum, s) => sum + s.severity, 0) /
+          monthSymptoms.length
+      )
+    : 0;
+
+  const daysLogged = new Set(
+    monthSymptoms.map((s) => new Date(s.date).toDateString())
+  ).size;
+
+  const totalSymptoms = monthSymptoms.length;
+  const totalMedications = monthMedications.length;
+
+  const tagCounts: Record<string, number> = {};
+  monthSymptoms.forEach((s) =>
+    s.tags.forEach((tag) => {
+      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    })
+  );
+
+  const topTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([tag]) => tag);
+
+  const calendarDays: (number | null)[] = [];
+  for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+    calendarDays.push(null);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    calendarDays.push(d);
+  }
+
   const getSymptomGraphData = () => {
     if (symptoms.length === 0) return { values: [], labels: [] };
 
-    const now = new Date();
+    const nowLocal = new Date();
 
     if (range === "day") {
-      const today = symptoms.filter(
-        (s) => new Date(s.date).toDateString() === now.toDateString()
+      const todayList = symptoms.filter(
+        (s) => new Date(s.date).toDateString() === nowLocal.toDateString()
       );
 
       return {
-        values: today.length
+        values: todayList.length
           ? [
               Math.round(
-                today.reduce((a, b) => a + b.severity, 0) / today.length
+                todayList.reduce((a, b) => a + b.severity, 0) / todayList.length
               ),
             ]
           : [],
-        labels: today.length ? ["Today"] : [],
+        labels: todayList.length ? ["Today"] : [],
       };
     }
 
@@ -359,13 +476,11 @@ const History = () => {
 
       symptoms.forEach((s) => {
         const d = new Date(s.date);
-
         if (d < monday) return;
 
         const weekday = new Date(
           d.getTime() + d.getTimezoneOffset() * 60000
         ).getDay();
-
         const index = weekday === 0 ? 6 : weekday - 1;
         buckets[index].push(s.severity);
       });
@@ -384,7 +499,8 @@ const History = () => {
 
       symptoms.forEach((s) => {
         const diff = Math.floor(
-          (now.getTime() - new Date(s.date).getTime()) / (1000 * 60 * 60 * 24)
+          (nowLocal.getTime() - new Date(s.date).getTime()) /
+            (1000 * 60 * 60 * 24)
         );
         if (diff < 30) buckets[29 - diff].push(s.severity);
       });
@@ -406,15 +522,15 @@ const History = () => {
   const getMedicationGraphData = () => {
     if (medications.length === 0) return { values: [], labels: [] };
 
-    const now = new Date();
+    const nowLocal = new Date();
 
     if (range === "day") {
-      const today = medications.filter(
-        (m) => new Date(m.date).toDateString() === now.toDateString()
+      const todayList = medications.filter(
+        (m) => new Date(m.date).toDateString() === nowLocal.toDateString()
       );
 
       return {
-        values: [today.length],
+        values: [todayList.length],
         labels: ["Today"],
       };
     }
@@ -427,13 +543,11 @@ const History = () => {
 
       medications.forEach((m) => {
         const d = new Date(m.date);
-
         if (d < monday) return;
 
         const weekday = new Date(
           d.getTime() + d.getTimezoneOffset() * 60000
         ).getDay();
-
         const index = weekday === 0 ? 6 : weekday - 1;
         buckets[index] += 1;
       });
@@ -446,7 +560,8 @@ const History = () => {
 
       medications.forEach((m) => {
         const diff = Math.floor(
-          (now.getTime() - new Date(m.date).getTime()) / (1000 * 60 * 60 * 24)
+          (nowLocal.getTime() - new Date(m.date).getTime()) /
+            (1000 * 60 * 60 * 24)
         );
         if (diff < 30) buckets[29 - diff] += 1;
       });
@@ -461,27 +576,43 @@ const History = () => {
 
   const medicationGraph = getMedicationGraphData();
 
+  const startOfWeek = getStartOfWeek();
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(endOfWeek.getDate() + 7);
+
   const entriesForSelectedDay =
     selectedDay !== null
       ? symptoms.filter((s) => {
-          const weekday = new Date(
-            new Date(s.date).getTime() +
-              new Date(s.date).getTimezoneOffset() * 60000
-          ).getDay();
-          const index = weekday === 0 ? 6 : weekday - 1;
-          return index === selectedDay;
+          const d = new Date(s.date);
+          if (range === "week") {
+            if (d < startOfWeek || d >= endOfWeek) return false;
+            const weekday = new Date(
+              d.getTime() + d.getTimezoneOffset() * 60000
+            ).getDay();
+            const index = weekday === 0 ? 6 : weekday - 1;
+
+            return index === selectedDay;
+          }
+          if (range === "month") return d.getDate() === selectedDay;
+          return d.toDateString() === new Date().toDateString();
         })
       : [];
 
   const medicationEntriesForSelectedDay =
     selectedDay !== null
       ? medications.filter((m) => {
-          const weekday = new Date(
-            new Date(m.date).getTime() +
-              new Date(m.date).getTimezoneOffset() * 60000
-          ).getDay();
-          const index = weekday === 0 ? 6 : weekday - 1;
-          return index === selectedDay;
+          const d = new Date(m.date);
+          if (range === "week") {
+            if (d < startOfWeek || d >= endOfWeek) return false;
+            const weekday = new Date(
+              d.getTime() + d.getTimezoneOffset() * 60000
+            ).getDay();
+            const index = weekday === 0 ? 6 : weekday - 1;
+
+            return index === selectedDay;
+          }
+          if (range === "month") return d.getDate() === selectedDay;
+          return d.toDateString() === new Date().toDateString();
         })
       : [];
 
@@ -496,8 +627,22 @@ const History = () => {
     if (range === "day") return "Today";
     if (range === "week")
       return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][index];
-    if (range === "month") return `Day ${index + 1}`;
+    if (range === "month") return `Day ${index}`;
     return "";
+  };
+
+  const monthlyContext: MonthlyContext = {
+    monthlyAvgSeverity,
+    daysLogged,
+    totalSymptoms,
+    totalMedications,
+    topTags,
+    calendarDays,
+    year,
+    month,
+    symptoms,
+    medications,
+    onSelectCalendarDay: (day: number) => setSelectedDay(day),
   };
 
   return (
@@ -513,7 +658,11 @@ const History = () => {
           <Toggle
             key={item}
             active={range === item}
-            onPress={() => setRange(item as any)}
+            onPress={() => {
+              setRange(item as any);
+              setSelectedDay(null);
+              setSelectedType(null);
+            }}
           >
             <ToggleText active={range === item}>
               {item.charAt(0).toUpperCase() + item.slice(1)}
@@ -559,7 +708,13 @@ const History = () => {
                 <SectionTitle>Today’s items</SectionTitle>
 
                 {todaySymptoms.map((entry, i) => (
-                  <TodayItem key={`s-${i}`} onPress={() => setSelectedDay(0)}>
+                  <TodayItem
+                    key={`s-${i}`}
+                    onPress={() => {
+                      setSelectedType("symptom");
+                      setSelectedDay(0);
+                    }}
+                  >
                     <TodayItemTitle>Symptom</TodayItemTitle>
                     <TodayItemText>Severity: {entry.severity}</TodayItemText>
                     {entry.tags.length > 0 && (
@@ -571,7 +726,13 @@ const History = () => {
                 ))}
 
                 {todayMedications.map((entry, i) => (
-                  <TodayItem key={`m-${i}`} onPress={() => setSelectedDay(0)}>
+                  <TodayItem
+                    key={`m-${i}`}
+                    onPress={() => {
+                      setSelectedType("medication");
+                      setSelectedDay(0);
+                    }}
+                  >
                     <TodayItemTitle>Medication</TodayItemTitle>
                     <TodayItemText>{entry.name}</TodayItemText>
                     <TodayItemText>Dose: {entry.dose}</TodayItemText>
@@ -580,26 +741,45 @@ const History = () => {
               </Section>
             )}
           </Section>
-        ) : (
+        ) : range === "month" ? (
           <Section>
-            <SectionTitle>Symptoms</SectionTitle>
+            <SectionTitle>This month</SectionTitle>
             <Graph
-              label="Breathlessness & mood"
+              label="Symptoms & medication"
               data={symptomGraph}
-              onSelectDay={setSelectedDay}
+              onSelectDay={(day) => {
+                setSelectedType("both");
+                setSelectedDay(day);
+              }}
+              monthlyContext={monthlyContext}
             />
           </Section>
-        )}
+        ) : (
+          <>
+            <Section>
+              <SectionTitle>Symptoms</SectionTitle>
+              <Graph
+                label="Breathlessness & mood"
+                data={symptomGraph}
+                onSelectDay={(day) => {
+                  setSelectedType("symptom");
+                  setSelectedDay(day);
+                }}
+              />
+            </Section>
 
-        {range !== "day" && (
-          <Section>
-            <SectionTitle>Medication</SectionTitle>
-            <Graph
-              label="Medication taken"
-              data={medicationGraph}
-              onSelectDay={setSelectedDay}
-            />
-          </Section>
+            <Section>
+              <SectionTitle>Medication</SectionTitle>
+              <Graph
+                label="Medication taken"
+                data={medicationGraph}
+                onSelectDay={(day) => {
+                  setSelectedType("medication");
+                  setSelectedDay(day);
+                }}
+              />
+            </Section>
+          </>
         )}
       </ScrollView>
 
@@ -609,28 +789,32 @@ const History = () => {
             <ModalCard>
               <ModalTitle>{getDayLabel(selectedDay)}’s entries</ModalTitle>
 
-              {entriesForSelectedDay.map((entry, i) => (
-                <EntryRow key={i}>
-                  <EntrySeverity>Severity: {entry.severity}</EntrySeverity>
-                  <EntryTags>Tags: {entry.tags.join(", ") || "None"}</EntryTags>
-                  <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                </EntryRow>
-              ))}
+              {(selectedType === "symptom" || selectedType === "both") &&
+                entriesForSelectedDay.map((entry, i) => (
+                  <EntryRow key={i}>
+                    <EntrySeverity>Severity: {entry.severity}</EntrySeverity>
+                    <EntryTags>
+                      Tags: {entry.tags.join(", ") || "None"}
+                    </EntryTags>
+                    <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
+                  </EntryRow>
+                ))}
 
-              {todayMedications.length > 0 && (
-                <>
-                  <ModalTitle>Medication</ModalTitle>
-                  {todayMedications.map((entry, i) => (
-                    <EntryRow key={i}>
-                      <EntrySeverity>{entry.name}</EntrySeverity>
-                      <EntryTags>Dose: {entry.dose}</EntryTags>
-                      <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                    </EntryRow>
-                  ))}
-                </>
-              )}
+              {(selectedType === "medication" || selectedType === "both") &&
+                medicationEntriesForSelectedDay.map((entry, i) => (
+                  <EntryRow key={i}>
+                    <EntrySeverity>{entry.name}</EntrySeverity>
+                    <EntryTags>Dose: {entry.dose}</EntryTags>
+                    <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
+                  </EntryRow>
+                ))}
 
-              <CloseButton onPress={() => setSelectedDay(null)}>
+              <CloseButton
+                onPress={() => {
+                  setSelectedDay(null);
+                  setSelectedType(null);
+                }}
+              >
                 Close
               </CloseButton>
             </ModalCard>
@@ -645,10 +829,12 @@ const Graph = ({
   label,
   data,
   onSelectDay,
+  monthlyContext,
 }: {
   label: string;
   data: { values: number[]; labels: string[] };
   onSelectDay?: (day: number) => void;
+  monthlyContext?: MonthlyContext;
 }) => {
   const isMonth = data.labels.length === 30;
 
@@ -657,6 +843,105 @@ const Graph = ({
       <Card>
         <GraphLabel>{label}</GraphLabel>
         <GraphHint>No data yet - log something to begin</GraphHint>
+      </Card>
+    );
+  }
+
+  if (isMonth && monthlyContext) {
+    const {
+      monthlyAvgSeverity,
+      daysLogged,
+      totalSymptoms,
+      totalMedications,
+      topTags,
+      calendarDays,
+      year,
+      month,
+      symptoms,
+      medications,
+      onSelectCalendarDay,
+    } = monthlyContext;
+
+    return (
+      <Card>
+        <GraphLabel>{label}</GraphLabel>
+
+        <LegendRow>
+          <LegendDot />
+          <LegendText>Your logged data</LegendText>
+        </LegendRow>
+
+        <GraphArea>
+          <DailyCard style={{ marginBottom: 28 }}>
+            <Circle severity={monthlyAvgSeverity}>
+              <CircleText>{monthlyAvgSeverity}</CircleText>
+            </Circle>
+
+            <Insight style={{ marginTop: 8, fontWeight: "600" }}>
+              Average severity this month
+            </Insight>
+
+            <Insight style={{ marginTop: 6 }}>
+              {daysLogged} days logged • {totalSymptoms} symptoms •{" "}
+              {totalMedications} meds
+            </Insight>
+
+            <Insight style={{ marginTop: 14 }}>
+              {topTags.length > 0
+                ? `Most common: ${topTags.join(", ")}`
+                : "No tags logged this month."}
+            </Insight>
+          </DailyCard>
+
+          <SectionTitle style={{ marginBottom: 16 }}>Calendar</SectionTitle>
+
+          <CalendarGrid>
+            {calendarDays.map((day, index) => {
+              if (!day) return <DayCell key={index} />;
+
+              const dateString = new Date(year, month, day).toDateString();
+
+              const daySymptoms = symptoms.filter(
+                (s) => new Date(s.date).toDateString() === dateString
+              );
+
+              const dayMedications = medications.filter(
+                (m) => new Date(m.date).toDateString() === dateString
+              );
+
+              const avgSeverity = daySymptoms.length
+                ? Math.round(
+                    daySymptoms.reduce((sum, s) => sum + s.severity, 0) /
+                      daySymptoms.length
+                  )
+                : 0;
+
+              return (
+                <DayCell
+                  key={index}
+                  onPress={() => {
+                    onSelectCalendarDay(day);
+                    onSelectDay && onSelectDay(day);
+                  }}
+                >
+                  <DayNumber>{day}</DayNumber>
+                  <SymptomDot severity={avgSeverity} />
+                  <MedicationDot hasMed={dayMedications.length > 0} />
+                </DayCell>
+              );
+            })}
+          </CalendarGrid>
+
+          <Insight style={{ marginTop: 12, marginBottom: 12 }}>
+            {monthlyAvgSeverity <= 2
+              ? "A gentle month overall."
+              : monthlyAvgSeverity <= 4
+              ? "A mixed month — some ups and downs."
+              : "A tougher month — remember to rest and be kind to yourself."}
+          </Insight>
+        </GraphArea>
+
+        <GraphHint>Tap a day to see your notes and tags</GraphHint>
       </Card>
     );
   }
@@ -677,35 +962,18 @@ const Graph = ({
           ))}
         </Grid>
 
-        {isMonth ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <BarRow style={{ width: data.values.length * 20 }}>
-              {data.values.map((value, index) => (
-                <BarContainer
-                  key={index}
-                  onPress={() => onSelectDay && onSelectDay(index)}
-                >
-                  <Bar style={{ width: 10, height: value * 8 }} />
-                  <ValueLabel>{value}</ValueLabel>
-                  <BarLabel>{index + 1}</BarLabel>
-                </BarContainer>
-              ))}
-            </BarRow>
-          </ScrollView>
-        ) : (
-          <BarRow>
-            {data.values.map((value, index) => (
-              <BarContainer
-                key={index}
-                onPress={() => onSelectDay && onSelectDay(index)}
-              >
-                <Bar style={{ height: value * 10 }} />
-                <ValueLabel>{value}</ValueLabel>
-                <BarLabel>{data.labels[index]}</BarLabel>
-              </BarContainer>
-            ))}
-          </BarRow>
-        )}
+        <BarRow>
+          {data.values.map((value, index) => (
+            <BarContainer
+              key={index}
+              onPress={() => onSelectDay && onSelectDay(index)}
+            >
+              <Bar style={{ height: value * 10 }} />
+              <ValueLabel>{value}</ValueLabel>
+              <BarLabel>{data.labels[index]}</BarLabel>
+            </BarContainer>
+          ))}
+        </BarRow>
       </GraphArea>
 
       <GraphHint>Tap a bar to see your notes and tags for that day</GraphHint>
