@@ -231,18 +231,12 @@ export const DayNumber = styled.Text`
   margin-bottom: 4px;
 `;
 
-export const SymptomDot = styled.View<{ severity: number }>`
+export const SymptomDot = styled.View<{ hasSymptom: boolean }>`
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background: ${({ severity }: { severity: number }) =>
-    severity === 0
-      ? "transparent"
-      : severity <= 2
-      ? "#b2e8c8"
-      : severity <= 4
-      ? "#ffe6a7"
-      : "#ffb3b3"};
+  background: ${({ hasSymptom }: { hasSymptom: boolean }) =>
+    hasSymptom ? "#2F3A4A" : "transparent"};
 `;
 
 export const MedicationDot = styled.View<{ hasMed: boolean }>`
@@ -250,7 +244,7 @@ export const MedicationDot = styled.View<{ hasMed: boolean }>`
   height: 8px;
   border-radius: 4px;
   background: ${({ hasMed }: { hasMed: boolean }) =>
-    hasMed ? "#6c63ff" : "transparent"};
+    hasMed ? "#F2B544" : "transparent"};
   margin-top: 2px;
 `;
 

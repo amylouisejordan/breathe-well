@@ -1,11 +1,11 @@
 import { Text, StyleSheet } from "react-native";
 import HelpArticle from "./_article";
 
-export default function EditingEntries() {
+const EditingEntries = () => {
   return (
     <HelpArticle title="Editing or deleting entries">
       <Text style={styles.paragraph}>
-        Mistakes happen — and that’s okay. You can edit or delete any symptom or
+        Mistakes happen - and that’s okay. You can edit or delete any symptom or
         medication entry you’ve logged.
       </Text>
 
@@ -18,7 +18,7 @@ export default function EditingEntries() {
       </Text>
     </HelpArticle>
   );
-}
+};
 
 const styles = StyleSheet.create({
   paragraph: {
@@ -33,3 +33,5 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 });
+
+export default EditingEntries;

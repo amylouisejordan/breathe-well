@@ -122,13 +122,6 @@ const Graph = (props: GraphProps) => {
                 (m) => new Date(m.date).toDateString() === dateString
               );
 
-              const avgSeverity = daySymptoms.length
-                ? Math.round(
-                    daySymptoms.reduce((sum, s) => sum + s.severity, 0) /
-                      daySymptoms.length
-                  )
-                : 0;
-
               return (
                 <DayCell
                   key={index}
@@ -138,7 +131,7 @@ const Graph = (props: GraphProps) => {
                   }}
                 >
                   <DayNumber>{day}</DayNumber>
-                  <SymptomDot severity={avgSeverity} />
+                  <SymptomDot hasSymptom={daySymptoms.length > 0} />
                   <MedicationDot hasMed={dayMedications.length > 0} />
                 </DayCell>
               );
