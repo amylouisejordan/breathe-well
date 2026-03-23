@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
-import { Link } from "expo-router";
-import { View, RefreshControl } from "react-native";
+import { router } from "expo-router";
+import { View, RefreshControl, Pressable } from "react-native";
 import { load } from "../utils/storage";
+
+import Animated, {
+  FadeInUp,
+  FadeIn,
+  FadeOut,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+
 import {
   Screen,
   Card,
@@ -36,6 +46,55 @@ type ForumPost = {
   author: string;
   createdAt: number;
   replies: { text: string; date: number }[];
+};
+
+const AnimatedPostCard = ({
+  post,
+  index,
+}: {
+  post: ForumPost;
+  index: number;
+}) => {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <Pressable
+      onPressIn={() => (scale.value = withTiming(0.97))}
+      onPressOut={() => (scale.value = withTiming(1))}
+      onPress={() => router.push(`/forum/${post.id}`)}
+      style={{ width: "100%" }}
+    >
+      <Animated.View
+        entering={FadeInUp.delay(index * 80)
+          .duration(350)
+          .springify()}
+        style={[{ width: "100%" }, animatedStyle]}
+      >
+        <Card>
+          <Row style={{ alignItems: "center" }}>
+            <Avatar>
+              <AvatarText>{post.author.charAt(0)}</AvatarText>
+            </Avatar>
+
+            <GraphLabel style={{ flex: 1, alignSelf: "center" }}>
+              {post.title}
+            </GraphLabel>
+          </Row>
+
+          <Subtitle style={{ marginTop: 6 }}>by {post.author}</Subtitle>
+          <Timestamp>{new Date(post.createdAt).toLocaleString()}</Timestamp>
+
+          <BodyText numberOfLines={2} style={{ marginTop: 12 }}>
+            {post.body}
+          </BodyText>
+        </Card>
+      </Animated.View>
+    </Pressable>
+  );
 };
 
 const ForumScreen = () => {
@@ -86,71 +145,73 @@ const ForumScreen = () => {
       </Header>
 
       <ActionRow>
-        <Link href="/forum/new" asChild>
-          <ActionButton>
-            <ActionButtonText>+ New Post</ActionButtonText>
-          </ActionButton>
-        </Link>
-
+        <ActionButton onPress={() => router.push("/forum/new")}>
+          <ActionButtonText>+ New Post</ActionButtonText>
+        </ActionButton>
         <View style={{ width: "48%" }}>
           <ActionButtonSecondary onPress={() => setSortOpen(!sortOpen)}>
             <ActionButtonTextSecondary>Sort</ActionButtonTextSecondary>
           </ActionButtonSecondary>
 
           {sortOpen && (
-            <SortDropdown>
-              <SortOption
-                onPress={() => {
-                  setSortMode("newest");
-                  setSortOpen(false);
-                }}
-              >
-                {sortMode === "newest" ? (
-                  <SortOptionTextActive>Newest → Oldest</SortOptionTextActive>
-                ) : (
-                  <SortOptionText>Newest → Oldest</SortOptionText>
-                )}
-              </SortOption>
+            <Animated.View
+              entering={FadeIn.duration(150)}
+              exiting={FadeOut.duration(150)}
+            >
+              <SortDropdown>
+                <SortOption
+                  onPress={() => {
+                    setSortMode("newest");
+                    setSortOpen(false);
+                  }}
+                >
+                  {sortMode === "newest" ? (
+                    <SortOptionTextActive>Newest → Oldest</SortOptionTextActive>
+                  ) : (
+                    <SortOptionText>Newest → Oldest</SortOptionText>
+                  )}
+                </SortOption>
 
-              <SortOption
-                onPress={() => {
-                  setSortMode("oldest");
-                  setSortOpen(false);
-                }}
-              >
-                {sortMode === "oldest" ? (
-                  <SortOptionTextActive>Oldest → Newest</SortOptionTextActive>
-                ) : (
-                  <SortOptionText>Oldest → Newest</SortOptionText>
-                )}
-              </SortOption>
+                <SortOption
+                  onPress={() => {
+                    setSortMode("oldest");
+                    setSortOpen(false);
+                  }}
+                >
+                  {sortMode === "oldest" ? (
+                    <SortOptionTextActive>Oldest → Newest</SortOptionTextActive>
+                  ) : (
+                    <SortOptionText>Oldest → Newest</SortOptionText>
+                  )}
+                </SortOption>
 
-              <SortOption
-                onPress={() => {
-                  setSortMode("az");
-                  setSortOpen(false);
-                }}
-              >
-                {sortMode === "az" ? (
-                  <SortOptionTextActive>Title A → Z</SortOptionTextActive>
-                ) : (
-                  <SortOptionText>Title A → Z</SortOptionText>
-                )}
-              </SortOption>
+                <SortOption
+                  onPress={() => {
+                    setSortMode("az");
+                    setSortOpen(false);
+                  }}
+                >
+                  {sortMode === "az" ? (
+                    <SortOptionTextActive>Title A → Z</SortOptionTextActive>
+                  ) : (
+                    <SortOptionText>Title A → Z</SortOptionText>
+                  )}
+                </SortOption>
 
-              <SortOption
-                onPress={() => {
-                  setSortMode("za");
-                  setSortOpen(false);
-                }}
-              >
-                {sortMode === "za" ? (
-                  <SortOptionTextActive>Title Z → A</SortOptionTextActive>
-                ) : (
-                  <SortOptionText>Title Z → A</SortOptionText>
-                )}
-              </SortOption>
-            </SortDropdown>
+                <SortOption
+                  onPress={() => {
+                    setSortMode("za");
+                    setSortOpen(false);
+                  }}
+                >
+                  {sortMode === "za" ? (
+                    <SortOptionTextActive>Title Z → A</SortOptionTextActive>
+                  ) : (
+                    <SortOptionText>Title Z → A</SortOptionText>
+                  )}
+                </SortOption>
+              </SortDropdown>
+            </Animated.View>
           )}
         </View>
       </ActionRow>
@@ -160,27 +221,8 @@ const ForumScreen = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {posts.map((post) => (
-          <Link key={post.id} href={`/forum/${post.id}`} asChild>
-            <Card>
-              <Row style={{ alignItems: "center" }}>
-                <Avatar>
-                  <AvatarText>{post.author.charAt(0)}</AvatarText>
-                </Avatar>
-
-                <GraphLabel style={{ flex: 1, alignSelf: "center" }}>
-                  {post.title}
-                </GraphLabel>
-              </Row>
-
-              <Subtitle style={{ marginTop: 6 }}>by {post.author}</Subtitle>
-              <Timestamp>{new Date(post.createdAt).toLocaleString()}</Timestamp>
-
-              <BodyText numberOfLines={2} style={{ marginTop: 12 }}>
-                {post.body}
-              </BodyText>
-            </Card>
-          </Link>
+        {posts.map((post, index) => (
+          <AnimatedPostCard key={post.id} post={post} index={index} />
         ))}
       </Screen>
     </Container>

@@ -1,27 +1,20 @@
 import { useLocalSearchParams, router } from "expo-router";
 import { useEffect, useState } from "react";
-import { load, save } from "../utils/storage";
 import {
-  Screen,
-  Card,
-  SmallCard,
-  Title,
-  Subtitle,
-  Timestamp,
-  BodyText,
-  RepliesHeader,
-  Avatar,
-  AvatarText,
-  Row,
-  InputCard,
-  Input,
-  Button,
-  ButtonText,
-  EditButton,
-  EditButtonText,
-  DeleteButton,
-  DeleteButtonText,
-} from "./styled";
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import { save, load } from "../utils/storage";
+
+import Animated, {
+  FadeInUp,
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 
 type ForumReply = { text: string; date: number };
 
@@ -40,58 +33,32 @@ const PostDetail = () => {
 
   const [post, setPost] = useState<ForumPost | null>(null);
   const [reply, setReply] = useState("");
-  const [editing, setEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState("");
-  const [editBody, setEditBody] = useState("");
+
+  const scale = useSharedValue(1);
+  const replyButtonStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   useEffect(() => {
     const fetch = async () => {
       const posts: ForumPost[] = (await load("forum_posts")) || [];
       const found = posts.find((p) => p.id === numericId) || null;
       setPost(found);
-
-      if (found) {
-        setEditTitle(found.title);
-        setEditBody(found.body);
-      }
     };
     fetch();
   }, [numericId]);
 
-  const saveEdit = async () => {
-    if (!editTitle.trim() || !editBody.trim()) {
-      alert("Title and description cannot be empty.");
-      return;
-    }
-
-    const posts: ForumPost[] = (await load("forum_posts")) || [];
-    const updated = posts.map((p) =>
-      p.id === numericId ? { ...p, title: editTitle, body: editBody } : p
-    );
-
-    await save("forum_posts", updated);
-    setPost(updated.find((p) => p.id === numericId) || null);
-    setEditing(false);
-  };
-
-  const deletePost = async () => {
-    const posts: ForumPost[] = (await load("forum_posts")) || [];
-    const filtered = posts.filter((p) => p.id !== numericId);
-
-    await save("forum_posts", filtered);
-    router.back();
-  };
-
   const addReply = async () => {
-    if (!reply.trim()) {
-      alert("Reply cannot be empty.");
-      return;
-    }
+    if (!reply.trim()) return;
 
     const posts: ForumPost[] = (await load("forum_posts")) || [];
+
     const updated = posts.map((p) =>
       p.id === numericId
-        ? { ...p, replies: [...p.replies, { text: reply, date: Date.now() }] }
+        ? {
+            ...p,
+            replies: [...p.replies, { text: reply, date: Date.now() }],
+          }
         : p
     );
 
@@ -103,79 +70,133 @@ const PostDetail = () => {
   if (!post) return null;
 
   return (
-    <Screen>
-      <Card>
-        <Row>
-          <Avatar>
-            <AvatarText>{post.author.charAt(0)}</AvatarText>
-          </Avatar>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#fafafb" }}
+      contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
+    >
+      <Animated.View
+        entering={FadeInUp.duration(350).springify()}
+        style={{
+          backgroundColor: "#fff",
+          padding: 20,
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: "#f1f1f5",
+          marginBottom: 20,
+        }}
+      >
+        <Text style={{ fontSize: 22, fontWeight: "700", color: "#333" }}>
+          {post.title}
+        </Text>
 
-          <Title style={{ flex: 1 }}>{post.title}</Title>
-        </Row>
+        <Text style={{ color: "#666", marginTop: 6, fontSize: 15 }}>
+          by {post.author}
+        </Text>
 
-        <Subtitle style={{ marginTop: 6 }}>by {post.author}</Subtitle>
-        <Timestamp>{new Date(post.createdAt).toLocaleString()}</Timestamp>
+        <Text style={{ color: "#aaa", marginTop: 4, fontSize: 13 }}>
+          {new Date(post.createdAt).toLocaleString()}
+        </Text>
+      </Animated.View>
 
-        <Row style={{ marginTop: 16, gap: 12 }}>
-          <EditButton onPress={() => setEditing(true)}>
-            <EditButtonText>Edit</EditButtonText>
-          </EditButton>
+      <Animated.View
+        entering={FadeInUp.delay(80).duration(350).springify()}
+        style={{
+          backgroundColor: "#fff",
+          padding: 20,
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: "#f1f1f5",
+          marginBottom: 28,
+        }}
+      >
+        <Text style={{ fontSize: 16, lineHeight: 22, color: "#444" }}>
+          {post.body}
+        </Text>
+      </Animated.View>
 
-          <DeleteButton onPress={deletePost}>
-            <DeleteButtonText>Delete</DeleteButtonText>
-          </DeleteButton>
-        </Row>
-      </Card>
-
-      {editing && (
-        <Card>
-          <Input
-            value={editTitle}
-            onChangeText={setEditTitle}
-            style={{ minHeight: 50 }}
-          />
-
-          <Input value={editBody} onChangeText={setEditBody} multiline />
-
-          <Button onPress={saveEdit}>
-            <ButtonText>Save Changes</ButtonText>
-          </Button>
-        </Card>
-      )}
-
-      <Card>
-        <BodyText>{post.body}</BodyText>
-      </Card>
-
-      <RepliesHeader>Replies ({post.replies.length})</RepliesHeader>
+      <Animated.Text
+        entering={FadeIn.delay(150)}
+        style={{
+          fontSize: 17,
+          fontWeight: "700",
+          color: "#6c63ff",
+          marginBottom: 12,
+        }}
+      >
+        Replies ({post.replies.length})
+      </Animated.Text>
 
       {post.replies.map((r, i) => (
-        <SmallCard key={i}>
-          <Row>
-            <Avatar>
-              <AvatarText>{post.author.charAt(0)}</AvatarText>
-            </Avatar>
-
-            <BodyText style={{ flex: 1 }}>{r.text}</BodyText>
-          </Row>
-
-          <Timestamp>{new Date(r.date).toLocaleString()}</Timestamp>
-        </SmallCard>
+        <Animated.View
+          key={i}
+          entering={FadeInUp.delay(200 + i * 80)
+            .duration(350)
+            .springify()}
+          style={{
+            backgroundColor: "#fff",
+            padding: 16,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: "#f1f1f5",
+            marginBottom: 12,
+          }}
+        >
+          <Text style={{ fontSize: 15, color: "#333", marginBottom: 6 }}>
+            {r.text}
+          </Text>
+          <Text style={{ fontSize: 12, color: "#999" }}>
+            {new Date(r.date).toLocaleString()}
+          </Text>
+        </Animated.View>
       ))}
 
-      <InputCard>
-        <Input
+      <Animated.View
+        entering={FadeInUp.delay(200 + post.replies.length * 80)}
+        style={{
+          backgroundColor: "#fff",
+          padding: 16,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: "#f1f1f5",
+          marginTop: 20,
+        }}
+      >
+        <TextInput
           placeholder="Write a reply..."
           value={reply}
           onChangeText={setReply}
           multiline
+          style={{
+            backgroundColor: "#fafafa",
+            padding: 14,
+            borderRadius: 12,
+            minHeight: 80,
+            textAlignVertical: "top",
+            fontSize: 15,
+            color: "#333",
+          }}
         />
 
-        <Button onPress={addReply}>
-          <ButtonText>Reply</ButtonText>
-        </Button>
-      </InputCard>
-    </Screen>
+        <Animated.View style={replyButtonStyle}>
+          <TouchableOpacity
+            onPressIn={() => (scale.value = withTiming(0.97))}
+            onPressOut={() => (scale.value = withTiming(1))}
+            onPress={addReply}
+            style={{
+              backgroundColor: "#6c63ff",
+              padding: 14,
+              borderRadius: 12,
+              marginTop: 12,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>
+              Reply
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </Animated.View>
+    </ScrollView>
   );
 };
 

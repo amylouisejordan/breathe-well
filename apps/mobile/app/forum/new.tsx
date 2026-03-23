@@ -1,11 +1,24 @@
 import { useState } from "react";
 import { router } from "expo-router";
 import { save, load } from "../utils/storage";
+
+import Animated, {
+  FadeInUp,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+
 import { Screen, Card, Title, Input, Button, ButtonText } from "./styled";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+
+  const scale = useSharedValue(1);
+  const animatedButtonStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   const createPost = async () => {
     if (!title.trim() || !body.trim()) {
@@ -30,27 +43,38 @@ const NewPost = () => {
 
   return (
     <Screen>
-      <Card>
-        <Title>Create a New Post</Title>
+      <Animated.View
+        entering={FadeInUp.duration(350).springify()}
+        style={{ width: "100%" }}
+      >
+        <Card>
+          <Title>Create a New Post</Title>
 
-        <Input
-          placeholder="Post title"
-          value={title}
-          onChangeText={setTitle}
-          style={{ minHeight: 50 }}
-        />
+          <Input
+            placeholder="Post title"
+            value={title}
+            onChangeText={setTitle}
+            style={{ minHeight: 50 }}
+          />
 
-        <Input
-          placeholder="Write your post..."
-          value={body}
-          onChangeText={setBody}
-          multiline
-        />
+          <Input
+            placeholder="Write your post..."
+            value={body}
+            onChangeText={setBody}
+            multiline
+          />
 
-        <Button onPress={createPost}>
-          <ButtonText>Publish</ButtonText>
-        </Button>
-      </Card>
+          <Animated.View style={animatedButtonStyle}>
+            <Button
+              onPressIn={() => (scale.value = withTiming(0.97))}
+              onPressOut={() => (scale.value = withTiming(1))}
+              onPress={createPost}
+            >
+              <ButtonText>Publish</ButtonText>
+            </Button>
+          </Animated.View>
+        </Card>
+      </Animated.View>
     </Screen>
   );
 };

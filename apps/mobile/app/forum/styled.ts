@@ -11,7 +11,7 @@ export const Screen = styled.ScrollView.attrs({
   background: #fafafb;
 `;
 
-export const Card = styled.TouchableOpacity`
+export const Card = styled.View`
   background: #fff;
   padding: 18px;
   border-radius: 22px;
