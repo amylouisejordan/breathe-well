@@ -54,7 +54,7 @@ export type MonthlyContext = {
   onSelectCalendarDay: (day: number) => void;
 };
 
-export default function HistoryScreen() {
+const HistoryScreen = () => {
   const [range, setRange] = useState<"day" | "week" | "month">("week");
   const [symptoms, setSymptoms] = useState<SymptomEntry[]>([]);
   const [medications, setMedications] = useState<MedicationEntry[]>([]);
@@ -62,6 +62,7 @@ export default function HistoryScreen() {
   const [selectedType, setSelectedType] = useState<
     "symptom" | "medication" | "both" | null
   >(null);
+  const [updatedText, setUpdatedText] = useState("");
 
   const getStartOfWeek = () => {
     const now = new Date();
@@ -79,8 +80,18 @@ export default function HistoryScreen() {
 
         setSymptoms(symptomData || []);
         setMedications(medicationData || []);
+
+        const latestDate = new Date(
+          Math.max(
+            ...symptoms.map((s) => new Date(s.date).getTime()),
+            ...medications.map((m) => new Date(m.date).getTime())
+          )
+        );
+
+        setUpdatedText(`Last updated: ${latestDate.toLocaleDateString()}`);
       };
       fetchData();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
 
@@ -350,7 +361,7 @@ export default function HistoryScreen() {
       <Header>
         <Title accessibilityRole="header">Your Progress</Title>
         <Subtext>A gentle look at how you’ve been feeling over time</Subtext>
-        <UpdatedText>Last updated: today</UpdatedText>
+        <UpdatedText>{updatedText}</UpdatedText>
       </Header>
 
       <ToggleRow>
@@ -496,4 +507,6 @@ export default function HistoryScreen() {
       />
     </Container>
   );
-}
+};
+
+export default HistoryScreen;

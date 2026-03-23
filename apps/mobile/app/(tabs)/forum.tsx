@@ -5,7 +5,6 @@ import { load } from "../utils/storage";
 import {
   Screen,
   Card,
-  Title,
   Subtitle,
   Timestamp,
   BodyText,
@@ -22,7 +21,13 @@ import {
   SortOptionText,
   SortOptionTextActive,
 } from "../forum/styled";
-import { Container, Header, Subtext } from "../history/styled";
+import {
+  Container,
+  Header,
+  Subtext,
+  Title,
+  GraphLabel,
+} from "../history/styled";
 
 type ForumPost = {
   id: number;
@@ -76,7 +81,7 @@ const ForumScreen = () => {
   return (
     <Container>
       <Header>
-        <Title>Community Forum</Title>
+        <Title accessibilityRole="header">Community Forum</Title>
         <Subtext>You’re among friends here - share, ask, or read along</Subtext>
       </Header>
 
@@ -158,12 +163,14 @@ const ForumScreen = () => {
         {posts.map((post) => (
           <Link key={post.id} href={`/forum/${post.id}`} asChild>
             <Card>
-              <Row>
+              <Row style={{ alignItems: "center" }}>
                 <Avatar>
                   <AvatarText>{post.author.charAt(0)}</AvatarText>
                 </Avatar>
 
-                <Title style={{ flex: 1 }}>{post.title}</Title>
+                <GraphLabel style={{ flex: 1, alignSelf: "center" }}>
+                  {post.title}
+                </GraphLabel>
               </Row>
 
               <Subtitle style={{ marginTop: 6 }}>by {post.author}</Subtitle>
