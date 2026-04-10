@@ -153,7 +153,7 @@ const TabsLayout = () => {
         />
 
         <Tabs.Screen
-          name="forum"
+          name="community"
           options={{
             tabBarIcon: ({ color, size }) => (
               <Ionicons
@@ -171,9 +171,9 @@ const TabsLayout = () => {
           options={{
             tabBarButton: () => (
               <TouchableOpacity
-                onPress={() => router.push("/add-symptom")}
+                onPress={() => router.push("/(modals)/add-entry")}
                 style={styles.addButton}
-                accessibilityLabel="Add symptom"
+                accessibilityLabel="Add entry"
               >
                 <Ionicons name="add" size={32} color="#fff" />
               </TouchableOpacity>

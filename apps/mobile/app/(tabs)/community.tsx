@@ -30,7 +30,7 @@ import {
   SortOption,
   SortOptionText,
   SortOptionTextActive,
-} from "../forum/styled";
+} from "../(forum)/styled";
 import {
   Container,
   Header,
@@ -65,7 +65,7 @@ const AnimatedPostCard = ({
     <Pressable
       onPressIn={() => (scale.value = withTiming(0.97))}
       onPressOut={() => (scale.value = withTiming(1))}
-      onPress={() => router.push(`/forum/${post.id}`)}
+      onPress={() => router.navigate(`/(forum)/${post.id}`)}
       style={{ width: "100%" }}
     >
       <Animated.View

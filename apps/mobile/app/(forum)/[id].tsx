@@ -1,11 +1,6 @@
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import { save, load } from "../utils/storage";
 
 import Animated, {

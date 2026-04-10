@@ -25,7 +25,7 @@ const EditMedication = () => {
     );
 
     router.push({
-      pathname: "/medications",
+      pathname: "/profile/medications",
       params: { updatedList: JSON.stringify(updatedList) },
     });
   };
@@ -34,7 +34,7 @@ const EditMedication = () => {
     const updatedList = list.filter((m: { id: number }) => m.id !== id);
 
     router.push({
-      pathname: "/medications",
+      pathname: "/profile/medications",
       params: { updatedList: JSON.stringify(updatedList) },
     });
   };
