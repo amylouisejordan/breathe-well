@@ -183,8 +183,12 @@ export const Tag = styled(TouchableOpacity)<TagProps>`
   padding-vertical: 10px;
   padding-horizontal: 16px;
   border-radius: 20px;
-  background-color: ${({ active }: TagProps) =>
-    active ? "#6c63ff" : "#f1f0ff"};
+  background-color: ${(props: { active: any }) =>
+    props.active ? "#6c63ff" : "#f0f0f0"};
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
 `;
 
 export const TagText = styled.Text<TagProps>`
@@ -235,6 +239,7 @@ export const SaveButton = styled(TouchableOpacity)`
   justify-content: center;
   align-items: center;
   gap: 8px;
+  opacity: ${(props: { disabled: any }) => (props.disabled ? 0.5 : 1)};
 `;
 
 export const SaveButtonText = styled.Text`
@@ -273,4 +278,12 @@ export const AnimatedPressWrapper = styled(Animated.View).attrs(() => {
 
 export const Field = styled.View`
   margin-bottom: 20px;
+`;
+
+export const EmotionLabel = styled.Text<{ active?: boolean }>`
+  font-size: 14px;
+  line-height: 16px;
+  color: ${(props: { active: any }) => (props.active ? "#333" : "#555")};
+  font-weight: 500;
+  text-align: center;
 `;

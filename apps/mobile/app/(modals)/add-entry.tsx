@@ -64,6 +64,25 @@ const AddEntry = () => {
           </OptionCard>
         </AnimatedCardWrapper>
 
+        <AnimatedCardWrapper delay={360}>
+          <OptionCard
+            onPress={() => router.push("/(modals)/add-wellbeing-form")}
+          >
+            <IconWrap>
+              <Ionicons name="happy" size={28} color="#6c63ff" />
+            </IconWrap>
+
+            <TextWrap>
+              <OptionTitle>Wellbeing Check‑in</OptionTitle>
+              <OptionText>
+                Reflect on mood, connection, and how supported you feel today
+              </OptionText>
+            </TextWrap>
+
+            <Ionicons name="chevron-forward" size={22} color="#ccc" />
+          </OptionCard>
+        </AnimatedCardWrapper>
+
         <FooterNote>
           Logging regularly helps you notice patterns over time
         </FooterNote>
