@@ -231,21 +231,25 @@ export const DayNumber = styled.Text`
   margin-bottom: 4px;
 `;
 
-export const SymptomDot = styled.View<{ hasSymptom: boolean }>`
+export const SymptomDot = styled.View`
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background: ${({ hasSymptom }: { hasSymptom: boolean }) =>
-    hasSymptom ? "#2F3A4A" : "transparent"};
+  background-color: #2f3a4a;
 `;
 
-export const MedicationDot = styled.View<{ hasMed: boolean }>`
+export const MedicationDot = styled.View`
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background: ${({ hasMed }: { hasMed: boolean }) =>
-    hasMed ? "#F2B544" : "transparent"};
-  margin-top: 2px;
+  background-color: #0ea5e9;
+`;
+
+export const MoodDot = styled.View`
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: ${({ color }: { color?: string }) => color || "#999"};
 `;
 
 export const DailyCard = styled.View`

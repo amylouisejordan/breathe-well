@@ -46,7 +46,7 @@ interface WellbeingEntry {
 }
 
 
-const REFLECT_EMOTIONS: ReflectEmotion[] = [
+export const REFLECT_EMOTIONS: ReflectEmotion[] = [
   {
     key: "great",
     label: "Great",

@@ -24,7 +24,10 @@ import {
   Circle,
   CircleText,
   Insight,
+  MoodDot,
 } from "./styled";
+import { View } from "react-native";
+import { REFLECT_EMOTIONS } from "../(modals)/add-wellbeing-form";
 
 interface GraphProps {
   label: string;
@@ -41,6 +44,7 @@ interface GraphProps {
     month: number;
     symptoms: { date: string; severity: number }[];
     medications: { date: string }[];
+    wellbeing: { date: string; emotion: string }[];
     onSelectCalendarDay: (day: number) => void;
   };
 }
@@ -50,7 +54,7 @@ const Graph = (props: GraphProps) => {
 
   const isMonth = monthlyContext != null;
 
-  if (!data.values.length || data.values.every((v) => v === 0)) {
+  if (!isMonth && (!data.values.length || data.values.every((v) => v === 0))) {
     return (
       <Card>
         <GraphLabel>{label}</GraphLabel>
@@ -62,47 +66,83 @@ const Graph = (props: GraphProps) => {
   if (isMonth) {
     const {
       monthlyAvgSeverity,
-      daysLogged,
-      totalSymptoms,
-      totalMedications,
-      topTags,
       calendarDays,
-      year,
-      month,
       symptoms,
       medications,
+      wellbeing,
       onSelectCalendarDay,
     } = monthlyContext;
+
+    const utcDay = (iso: string) => new Date(iso).getUTCDate();
+
+    const emotionCounts: Record<string, number> = {};
+    wellbeing.forEach((w) => {
+      emotionCounts[w.emotion] = (emotionCounts[w.emotion] || 0) + 1;
+    });
+
+    const mostCommonKey = Object.entries(emotionCounts).sort(
+      (a, b) => b[1] - a[1]
+    )[0]?.[0];
+
+    const moodMetaAvg = mostCommonKey
+      ? REFLECT_EMOTIONS.find((e) => e.key === mostCommonKey)
+      : null;
+
+    const streak = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setUTCDate(d.getUTCDate() - i);
+      return symptoms?.some((s) => utcDay(s.date) === d.getUTCDate()) || false;
+    }).filter(Boolean).length;
 
     return (
       <Card>
         <GraphLabel>{label}</GraphLabel>
 
-        <LegendRow>
-          <LegendDot />
-          <LegendText>Your logged data</LegendText>
+        <LegendRow style={{ marginTop: 10, gap: 6 }}>
+          <SymptomDot />
+          <LegendText>Symptom</LegendText>
+          <MedicationDot />
+          <LegendText>Medication</LegendText>
+          <MoodDot color="#aaa" />
+          <LegendText>Mood</LegendText>
         </LegendRow>
+
+        <Insight style={{ marginTop: 8, fontSize: 13, marginBottom: 5 }}>
+          {streak === 7
+            ? "🔥 Great job - a full week of logging!"
+            : `💪 ${7 - streak} day${
+                7 - streak === 1 ? "" : "s"
+              } of logging left to complete this week.`}
+        </Insight>
 
         <GraphArea>
           <DailyCard style={{ marginBottom: 28 }}>
-            <Circle severity={monthlyAvgSeverity}>
-              <CircleText>{monthlyAvgSeverity}</CircleText>
-            </Circle>
-
+            <View style={{ position: "relative" }}>
+              <Circle severity={monthlyAvgSeverity}>
+                <CircleText>{monthlyAvgSeverity}</CircleText>
+              </Circle>
+              {moodMetaAvg && (
+                <View
+                  style={{
+                    position: "absolute",
+                    width: 104,
+                    height: 104,
+                    borderRadius: 52,
+                    borderWidth: 4,
+                    borderColor: moodMetaAvg.color,
+                    top: -7,
+                    left: -7,
+                  }}
+                />
+              )}
+            </View>
             <Insight style={{ marginTop: 8, fontWeight: "600" }}>
               Average severity this month
             </Insight>
-
-            <Insight style={{ marginTop: 6 }}>
-              {daysLogged} days logged • {totalSymptoms}{" "}
-              {totalSymptoms > 1 ? "symptoms" : "symptom"} • {totalMedications}{" "}
-              {totalMedications > 1 ? "medications" : "medication"}
-            </Insight>
-
-            <Insight style={{ marginTop: 14 }}>
-              {topTags.length > 0
-                ? `Most common: ${topTags.join(", ")}`
-                : "No tags logged this month."}
+            <Insight style={{ marginTop: 4 }}>
+              {moodMetaAvg
+                ? `Mostly felt ${moodMetaAvg.label}`
+                : "No mood logged this month"}
             </Insight>
           </DailyCard>
 
@@ -110,29 +150,32 @@ const Graph = (props: GraphProps) => {
 
           <CalendarGrid>
             {calendarDays.map((day, index) => {
-              if (!day) return <DayCell key={index} />;
+              if (day === null) return <DayCell key={index} />;
 
-              const dateString = new Date(year, month, day).toDateString();
-
-              const daySymptoms = symptoms.filter(
-                (s) => new Date(s.date).toDateString() === dateString
+              const hasSymptom = symptoms.some((s) => utcDay(s.date) === day);
+              const hasMedication = medications.some(
+                (m) => utcDay(m.date) === day
               );
-
-              const dayMedications = medications.filter(
-                (m) => new Date(m.date).toDateString() === dateString
-              );
+              const moodEntry = wellbeing.find((w) => utcDay(w.date) === day);
+              const moodMeta = moodEntry
+                ? REFLECT_EMOTIONS.find((e) => e.key === moodEntry.emotion)
+                : null;
 
               return (
-                <DayCell
-                  key={index}
-                  onPress={() => {
-                    onSelectCalendarDay(day);
-                    onSelectDay && onSelectDay(day);
-                  }}
-                >
+                <DayCell key={index} onPress={() => onSelectCalendarDay(day)}>
                   <DayNumber>{day}</DayNumber>
-                  <SymptomDot hasSymptom={daySymptoms.length > 0} />
-                  <MedicationDot hasMed={dayMedications.length > 0} />
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      marginTop: 4,
+                      gap: 2,
+                    }}
+                  >
+                    {hasSymptom && <SymptomDot />}
+                    {hasMedication && <MedicationDot />}
+                    {moodMeta && <MoodDot color={moodMeta.color} />}
+                  </View>
                 </DayCell>
               );
             })}
