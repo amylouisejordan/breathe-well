@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { router } from "expo-router";
+import React, { useState } from "react";
+import { router, Stack } from "expo-router";
 import { save, load } from "../utils/storage";
 
 import Animated, {
@@ -10,6 +10,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { Screen, Card, Title, Input, Button, ButtonText } from "./styled";
+import { TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");
@@ -42,40 +44,53 @@ const NewPost = () => {
   };
 
   return (
-    <Screen>
-      <Animated.View
-        entering={FadeInUp.duration(350).springify()}
-        style={{ width: "100%" }}
-      >
-        <Card>
-          <Title>Create a New Post</Title>
+    <>
+      <Stack.Screen
+        options={{
+          title: "Create Post",
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()} hitSlop={10}>
+              <Ionicons name="arrow-back" size={24} color="#000" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
 
-          <Input
-            placeholder="Post title"
-            value={title}
-            onChangeText={setTitle}
-            style={{ minHeight: 50 }}
-          />
+      <Screen>
+        <Animated.View
+          entering={FadeInUp.duration(350).springify()}
+          style={{ width: "100%" }}
+        >
+          <Card>
+            <Title>Create a New Post</Title>
 
-          <Input
-            placeholder="Write your post..."
-            value={body}
-            onChangeText={setBody}
-            multiline
-          />
+            <Input
+              placeholder="Post title"
+              value={title}
+              onChangeText={setTitle}
+              style={{ minHeight: 50 }}
+            />
 
-          <Animated.View style={animatedButtonStyle}>
-            <Button
-              onPressIn={() => (scale.value = withTiming(0.97))}
-              onPressOut={() => (scale.value = withTiming(1))}
-              onPress={createPost}
-            >
-              <ButtonText>Publish</ButtonText>
-            </Button>
-          </Animated.View>
-        </Card>
-      </Animated.View>
-    </Screen>
+            <Input
+              placeholder="Write your post..."
+              value={body}
+              onChangeText={setBody}
+              multiline
+            />
+
+            <Animated.View style={animatedButtonStyle}>
+              <Button
+                onPressIn={() => (scale.value = withTiming(0.97))}
+                onPressOut={() => (scale.value = withTiming(1))}
+                onPress={createPost}
+              >
+                <ButtonText>Publish</ButtonText>
+              </Button>
+            </Animated.View>
+          </Card>
+        </Animated.View>
+      </Screen>
+    </>
   );
 };
 

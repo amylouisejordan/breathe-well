@@ -14,6 +14,7 @@ import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const CustomHeader = () => {
   const screenWidth = Dimensions.get("window").width;
@@ -111,104 +112,105 @@ const TabsLayout = () => {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["left", "right", "bottom"]}>
       <CustomHeader />
-
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          sceneStyle: { backgroundColor: "#6c63ff" },
-          tabBarShowLabel: false,
-          tabBarActiveTintColor: "#6c63ff",
-          tabBarInactiveTintColor: "#999",
-          tabBarStyle: {
-            backgroundColor: "#fff",
-            borderTopColor: "#ddd",
-            height: 70,
-            justifyContent: "center",
-            alignItems: "center",
-            paddingTop: 0,
-            paddingBottom: 0,
-          },
-          tabBarItemStyle: {
-            justifyContent: "center",
-            alignItems: "center",
-          },
-          tabBarIconStyle: {
-            marginTop: 15,
-            marginBottom: 0,
-          },
-        }}
-      >
-        <Tabs.Screen
-          name="ai"
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons
-                name="sparkles"
-                size={size}
-                color={color}
-                accessibilityLabel="AI companion"
-              />
-            ),
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Tabs
+          screenOptions={{
+            headerShown: false,
+            sceneStyle: { backgroundColor: "#6c63ff" },
+            tabBarShowLabel: false,
+            tabBarActiveTintColor: "#6c63ff",
+            tabBarInactiveTintColor: "#999",
+            tabBarStyle: {
+              backgroundColor: "#fff",
+              borderTopColor: "#ddd",
+              height: 70,
+              justifyContent: "center",
+              alignItems: "center",
+              paddingTop: 0,
+              paddingBottom: 0,
+            },
+            tabBarItemStyle: {
+              justifyContent: "center",
+              alignItems: "center",
+            },
+            tabBarIconStyle: {
+              marginTop: 15,
+              marginBottom: 0,
+            },
           }}
-        />
+        >
+          <Tabs.Screen
+            name="ai"
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons
+                  name="sparkles"
+                  size={size}
+                  color={color}
+                  accessibilityLabel="AI companion"
+                />
+              ),
+            }}
+          />
 
-        <Tabs.Screen
-          name="community"
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons
-                name="chatbubbles"
-                size={size}
-                color={color}
-                accessibilityLabel="Community forum"
-              />
-            ),
-          }}
-        />
+          <Tabs.Screen
+            name="community"
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons
+                  name="chatbubbles"
+                  size={size}
+                  color={color}
+                  accessibilityLabel="Community forum"
+                />
+              ),
+            }}
+          />
 
-        <Tabs.Screen
-          name="add-placeholder"
-          options={{
-            tabBarButton: () => (
-              <TouchableOpacity
-                onPress={() => router.push("/(modals)/add-entry")}
-                style={styles.addButton}
-                accessibilityLabel="Add entry"
-              >
-                <Ionicons name="add" size={32} color="#fff" />
-              </TouchableOpacity>
-            ),
-          }}
-        />
+          <Tabs.Screen
+            name="add-placeholder"
+            options={{
+              tabBarButton: () => (
+                <TouchableOpacity
+                  onPress={() => router.push("/(modals)/add-entry")}
+                  style={styles.addButton}
+                  accessibilityLabel="Add entry"
+                >
+                  <Ionicons name="add" size={32} color="#fff" />
+                </TouchableOpacity>
+              ),
+            }}
+          />
 
-        <Tabs.Screen
-          name="history"
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons
-                name="stats-chart"
-                size={size}
-                color={color}
-                accessibilityLabel="Symptom and Medication history"
-              />
-            ),
-          }}
-        />
+          <Tabs.Screen
+            name="history"
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons
+                  name="stats-chart"
+                  size={size}
+                  color={color}
+                  accessibilityLabel="Symptom and Medication history"
+                />
+              ),
+            }}
+          />
 
-        <Tabs.Screen
-          name="profile"
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons
-                name="person"
-                size={size}
-                color={color}
-                accessibilityLabel="Profile"
-              />
-            ),
-          }}
-        />
-      </Tabs>
+          <Tabs.Screen
+            name="profile"
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons
+                  name="person"
+                  size={size}
+                  color={color}
+                  accessibilityLabel="Profile"
+                />
+              ),
+            }}
+          />
+        </Tabs>
+      </GestureHandlerRootView>
     </SafeAreaView>
   );
 };
