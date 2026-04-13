@@ -7,52 +7,53 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import { save, load } from "../../utils/storage";
+import { getPostById, addCommentToPost } from "../../utils/forumFirestore";
+import { Avatar, AvatarText } from "./styled";
 
-type ForumReply = { text: string; date: number };
+type Comment = {
+  id: string;
+  text: string;
+  author: string;
+  createdAt: string;
+};
 
 type ForumPost = {
-  id: number;
+  id: string;
   title: string;
   body: string;
   author: string;
-  createdAt: number;
-  replies: ForumReply[];
+  createdAt: string;
+  comments: Comment[];
 };
 
 const PostDetail = () => {
   const { id } = useLocalSearchParams();
-  const numericId = Number(id);
-
   const [post, setPost] = useState<ForumPost | null>(null);
   const [reply, setReply] = useState("");
 
+  const fetchPost = async () => {
+    const data = await getPostById(id as string);
+    setPost(data);
+  };
+
   useEffect(() => {
-    const fetch = async () => {
-      const posts: ForumPost[] = (await load("forum_posts")) || [];
-      const found = posts.find((p) => p.id === numericId) || null;
-      setPost(found);
-    };
-    fetch();
-  }, [numericId]);
+    fetchPost();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const addReply = async () => {
     if (!reply.trim()) return;
 
-    const posts: ForumPost[] = (await load("forum_posts")) || [];
+    const newComment: Comment = {
+      id: Date.now().toString(),
+      text: reply,
+      author: "You",
+      createdAt: new Date().toISOString(),
+    };
 
-    const updated = posts.map((p) =>
-      p.id === numericId
-        ? {
-            ...p,
-            replies: [...p.replies, { text: reply, date: Date.now() }],
-          }
-        : p
-    );
-
-    await save("forum_posts", updated);
-    setPost(updated.find((p) => p.id === numericId) || null);
+    await addCommentToPost(id as string, newComment);
     setReply("");
+    fetchPost();
   };
 
   if (!post) return null;
@@ -76,25 +77,29 @@ const PostDetail = () => {
           {post.title}
         </Text>
 
-        <Text style={{ color: "#666", marginTop: 6, fontSize: 15 }}>
-          by {post.author}
-        </Text>
+        <View style={{ flexDirection: "row", marginTop: 6 }}>
+          <Text style={{ color: "#666", fontSize: 14, marginRight: 8 }}>
+            by {post.author}
+          </Text>
 
-        <Text style={{ color: "#aaa", marginTop: 4, fontSize: 13 }}>
-          {new Date(post.createdAt).toLocaleString()}
-        </Text>
-      </View>
+          <Text style={{ color: "#aaa", fontSize: 14 }}>
+            •{" "}
+            {new Date(post.createdAt).toLocaleDateString(undefined, {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </Text>
+        </View>
 
-      <View
-        style={{
-          backgroundColor: "#fff",
-          padding: 20,
-          borderRadius: 20,
-          borderWidth: 1,
-          borderColor: "#f1f1f5",
-          marginBottom: 28,
-        }}
-      >
+        <View
+          style={{
+            height: 1,
+            backgroundColor: "#f1f1f5",
+            marginVertical: 14,
+          }}
+        />
+
         <Text style={{ fontSize: 16, lineHeight: 22, color: "#444" }}>
           {post.body}
         </Text>
@@ -108,26 +113,45 @@ const PostDetail = () => {
           marginBottom: 12,
         }}
       >
-        Replies ({post.replies.length})
+        Comments ({post.comments?.length || 0})
       </Text>
 
-      {post.replies.map((r, i) => (
+      {post.comments?.map((c) => (
         <View
-          key={i}
+          key={c.id}
           style={{
             backgroundColor: "#fff",
-            padding: 16,
-            borderRadius: 16,
+            padding: 14,
+            borderRadius: 14,
             borderWidth: 1,
-            borderColor: "#f1f1f5",
+            borderColor: "#eee",
             marginBottom: 12,
           }}
         >
-          <Text style={{ fontSize: 15, color: "#333", marginBottom: 6 }}>
-            {r.text}
-          </Text>
-          <Text style={{ fontSize: 12, color: "#999" }}>
-            {new Date(r.date).toLocaleString()}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Avatar style={{ backgroundColor: "#f3f0ff", marginRight: 10 }}>
+              <AvatarText style={{ color: "#6c63ff" }}>
+                {c.author.charAt(0)}
+              </AvatarText>
+            </Avatar>
+
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontWeight: "600", color: "#333" }}>
+                {c.author}
+              </Text>
+
+              <Text style={{ color: "#aaa", fontSize: 13 }}>
+                {new Date(c.createdAt).toLocaleDateString(undefined, {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </Text>
+            </View>
+          </View>
+
+          <Text style={{ marginTop: 10, color: "#444", lineHeight: 20 }}>
+            {c.text}
           </Text>
         </View>
       ))}
@@ -143,7 +167,7 @@ const PostDetail = () => {
         }}
       >
         <TextInput
-          placeholder="Write a reply..."
+          placeholder="Write a comment..."
           value={reply}
           onChangeText={setReply}
           multiline
@@ -169,7 +193,7 @@ const PostDetail = () => {
           }}
         >
           <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>
-            Reply
+            Comment
           </Text>
         </TouchableOpacity>
       </View>

@@ -5,7 +5,6 @@ import {
   RefreshControl,
   Pressable,
   Text,
-  TouchableOpacity,
   ActionSheetIOS,
 } from "react-native";
 import { getForumPosts } from "../../utils/forumFirestore";
@@ -13,8 +12,6 @@ import { getForumPosts } from "../../utils/forumFirestore";
 import {
   Screen,
   Card,
-  Subtitle,
-  Timestamp,
   BodyText,
   Avatar,
   AvatarText,
@@ -22,6 +19,7 @@ import {
   ActionRow,
   ActionButton,
   ActionButtonText,
+  ActionButtonSecondary,
 } from "../(forum)/styled";
 
 import {
@@ -34,34 +32,48 @@ import {
 
 import * as Haptics from "expo-haptics";
 
-type ForumReply = { text: string; date: number };
-
 export type ForumPost = {
   id: string;
   title: string;
   body: string;
   author: string;
-  createdAt: number;
-  replies: ForumReply[];
+  createdAt: string;
+  comments: {
+    id: string;
+    text: string;
+    author: string;
+    createdAt: string;
+  }[];
 };
 
 const PostCard = React.memo(({ post }: { post: ForumPost }) => {
   return (
     <Pressable
       onPress={() => router.navigate(`/(forum)/${post.id}`)}
-      style={{ width: "100%" }}
+      style={({ pressed }) => ({
+        width: "100%",
+        transform: [{ scale: pressed ? 0.98 : 1 }],
+        opacity: pressed ? 0.9 : 1,
+      })}
     >
-      <Card>
-        {post.replies.length > 0 && (
+      <Card
+        style={{
+          borderWidth: 1,
+          borderColor: "#eee",
+          borderRadius: 14,
+        }}
+      >
+        {post.comments.length > 0 && (
           <View
             style={{
               position: "absolute",
               top: 12,
               right: 12,
               backgroundColor: "#6c63ff",
-              borderRadius: 10,
-              paddingHorizontal: 8,
-              paddingVertical: 2,
+              borderRadius: 999,
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              marginTop: 3,
             }}
           >
             <Text
@@ -71,25 +83,60 @@ const PostCard = React.memo(({ post }: { post: ForumPost }) => {
                 fontWeight: "600",
               }}
             >
-              {post.replies.length}
+              {post.comments.length}
             </Text>
           </View>
         )}
 
-        <Row style={{ alignItems: "center" }}>
-          <Avatar>
-            <AvatarText>{post.author.charAt(0)}</AvatarText>
+        <Row style={{ alignItems: "center", marginBottom: 4 }}>
+          <Avatar style={{ backgroundColor: "#f3f0ff", marginTop: -10 }}>
+            <AvatarText style={{ color: "#6c63ff" }}>
+              {post.author.charAt(0)}
+            </AvatarText>
           </Avatar>
 
-          <GraphLabel style={{ flex: 1, alignSelf: "center" }}>
+          <GraphLabel
+            style={{
+              flex: 1,
+              fontSize: 17,
+              fontWeight: "700",
+              color: "#333",
+              marginTop: 5,
+            }}
+          >
             {post.title}
           </GraphLabel>
         </Row>
 
-        <Subtitle style={{ marginTop: 6 }}>by {post.author}</Subtitle>
-        <Timestamp>{new Date(post.createdAt).toLocaleString()}</Timestamp>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={{ color: "#666", fontSize: 14, marginRight: 8 }}>
+            by {post.author}
+          </Text>
 
-        <BodyText numberOfLines={2} style={{ marginTop: 12 }}>
+          <Text style={{ color: "#aaa", fontSize: 14 }}>
+            •{" "}
+            {new Date(post.createdAt).toLocaleDateString(undefined, {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            height: 1,
+            backgroundColor: "#f1f1f5",
+            marginVertical: 10,
+          }}
+        />
+
+        <BodyText
+          numberOfLines={2}
+          style={{
+            color: "#444",
+          }}
+        >
           {post.body}
         </BodyText>
       </Card>
@@ -112,7 +159,13 @@ const Empty = () => (
 
 const SkeletonCard = ({ index }: { index: number }) => (
   <View style={{ width: "100%", marginBottom: 12 }}>
-    <Card style={{ backgroundColor: "#eee" }}>
+    <Card
+      style={{
+        borderWidth: 1,
+        borderColor: "#eee",
+        borderRadius: 14,
+      }}
+    >
       <Row>
         <View
           style={{
@@ -165,9 +218,14 @@ export default function ForumScreen() {
     return [...list].sort((a, b) => {
       switch (mode) {
         case "newest":
-          return b.createdAt - a.createdAt;
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
         case "oldest":
-          return a.createdAt - b.createdAt;
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+
         case "az":
           return a.title.localeCompare(b.title);
         case "za":
@@ -230,23 +288,11 @@ export default function ForumScreen() {
           <ActionButtonText>+ New Post</ActionButtonText>
         </ActionButton>
 
-        <TouchableOpacity
-          style={{
-            width: "48%",
-            height: 48,
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 8,
-            backgroundColor: "#fff",
-            justifyContent: "center",
-            paddingHorizontal: 12,
-          }}
-          onPress={showSortSheet}
-        >
-          <Text style={{ color: "#333", fontWeight: "600" }}>
+        <ActionButtonSecondary onPress={showSortSheet}>
+          <Text style={{ color: "#6c63ff", fontWeight: "600" }}>
             Sort: {sortMap[sortMode]}
           </Text>
-        </TouchableOpacity>
+        </ActionButtonSecondary>
       </ActionRow>
 
       <Screen

@@ -23,7 +23,7 @@ const NewPost = () => {
       body,
       author: "You",
       createdAt: Date.now(),
-      replies: [],
+      comments: [],
     });
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

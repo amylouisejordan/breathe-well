@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 
 export const Screen = styled.ScrollView.attrs({
   contentContainerStyle: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 0,
     paddingBottom: 120,
     paddingTop: 8,
   },
@@ -13,7 +13,7 @@ export const Screen = styled.ScrollView.attrs({
 
 export const Card = styled.View`
   background: #fff;
-  padding: 18px;
+  padding: 14px 18px;
   border-radius: 22px;
   border: 1px solid #f3f3f7;
   margin-bottom: 16px;
@@ -188,6 +188,10 @@ export const ActionButtonSecondary = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  shadow-color: #000;
+  shadow-opacity: 0.08;
+  shadow-radius: 6px;
+  shadow-offset: 0px 3px;
 `;
 
 export const ActionButtonText = styled.Text`
