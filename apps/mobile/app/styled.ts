@@ -26,8 +26,8 @@ export const Subtitle = styled.Text`
 
 export const Divider = styled.View`
   height: 1px;
-  background-color: #e5e5e5;
-  margin-bottom: 24px;
+  background: #f1f1f5;
+  margin: 16px 0;
 `;
 
 export const AnimatedCardWrapper = styled.View`

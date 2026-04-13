@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { getPostById, addCommentToPost } from "../../utils/forumFirestore";
 import { Avatar, AvatarText } from "./styled";
+import { Divider } from "../history/styled";
 
 type Comment = {
   id: string;
@@ -92,13 +93,7 @@ const PostDetail = () => {
           </Text>
         </View>
 
-        <View
-          style={{
-            height: 1,
-            backgroundColor: "#f1f1f5",
-            marginVertical: 14,
-          }}
-        />
+        <Divider />
 
         <Text style={{ fontSize: 16, lineHeight: 22, color: "#444" }}>
           {post.body}

@@ -4,8 +4,6 @@ import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { router, Stack } from "expo-router";
 
-import { load, save } from "../../utils/storage";
-
 import {
   Container,
   ScrollArea,
@@ -30,6 +28,7 @@ import {
   SaveButtonText,
   FooterNote,
 } from "../styled";
+import { saveSymptomEntry } from "@/utils/loggingFirestore";
 
 const TAGS = ["Breathless", "Wheezy", "Tight chest", "Cough", "Fatigue"];
 
@@ -51,8 +50,6 @@ const AddSymptomForm = () => {
   };
 
   const saveEntry = async () => {
-    const existing = (await load("symptoms")) || [];
-
     const newEntry = {
       severity,
       tags,
@@ -60,7 +57,7 @@ const AddSymptomForm = () => {
       date: new Date().toISOString(),
     };
 
-    await save("symptoms", [...existing, newEntry]);
+    await saveSymptomEntry(newEntry);
     router.back();
   };
 
@@ -78,7 +75,7 @@ const AddSymptomForm = () => {
           <Title>Log Symptom</Title>
           <Subtitle>Take a moment to record how you’re feeling</Subtitle>
 
-          <Divider />
+          <Divider style={{ marginTop: 0 }} />
 
           <AnimatedCardWrapper delay={150}>
             <Card>

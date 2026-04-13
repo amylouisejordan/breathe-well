@@ -26,7 +26,7 @@ const AddEntry = () => {
         <Title>Add Entry</Title>
         <Subtitle>Take a moment to record how you’re doing today</Subtitle>
 
-        <Divider />
+        <Divider style={{ marginTop: 0 }} />
 
         <AnimatedCardWrapper delay={200}>
           <OptionCard onPress={() => router.push("/(modals)/add-symptom-form")}>

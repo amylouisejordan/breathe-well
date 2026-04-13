@@ -25,8 +25,9 @@ import {
   CircleText,
   Insight,
   MoodDot,
+  Divider,
 } from "./styled";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { REFLECT_EMOTIONS } from "../(modals)/add-wellbeing-form";
 
 interface GraphProps {
@@ -57,8 +58,12 @@ const Graph = (props: GraphProps) => {
   if (!isMonth && (!data.values.length || data.values.every((v) => v === 0))) {
     return (
       <Card>
-        <GraphLabel>{label}</GraphLabel>
-        <GraphHint>No data yet - log something to begin</GraphHint>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={{ fontSize: 32, marginRight: 8 }}>🌤️</Text>
+          <Insight style={{ fontSize: 16, opacity: 0.8, marginTop: 3 }}>
+            No data yet - log something to begin
+          </Insight>
+        </View>
       </Card>
     );
   }
@@ -74,6 +79,11 @@ const Graph = (props: GraphProps) => {
     } = monthlyContext;
 
     const utcDay = (iso: string) => new Date(iso).getUTCDate();
+
+    const monthName = new Date(
+      monthlyContext.year,
+      monthlyContext.month
+    ).toLocaleString("default", { month: "long" });
 
     const emotionCounts: Record<string, number> = {};
     wellbeing.forEach((w) => {
@@ -116,41 +126,94 @@ const Graph = (props: GraphProps) => {
         </Insight>
 
         <GraphArea>
-          <DailyCard style={{ marginBottom: 28 }}>
-            <View style={{ position: "relative" }}>
-              <Circle severity={monthlyAvgSeverity}>
-                <CircleText>{monthlyAvgSeverity}</CircleText>
-              </Circle>
-              {moodMetaAvg && (
-                <View
-                  style={{
-                    position: "absolute",
-                    width: 104,
-                    height: 104,
-                    borderRadius: 52,
-                    borderWidth: 4,
-                    borderColor: moodMetaAvg.color,
-                    top: -7,
-                    left: -7,
-                  }}
-                />
-              )}
+          <DailyCard
+            style={{
+              marginTop: 12,
+              marginBottom: 28,
+              alignItems: "flex-start",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ position: "relative", marginRight: 16 }}>
+                <Circle severity={monthlyAvgSeverity}>
+                  <CircleText>{monthlyAvgSeverity}</CircleText>
+                </Circle>
+
+                {moodMetaAvg && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      width: 104,
+                      height: 104,
+                      borderRadius: 52,
+                      borderWidth: 4,
+                      borderColor: moodMetaAvg.color,
+                      top: -7,
+                      left: -7,
+                    }}
+                  />
+                )}
+              </View>
+
+              <View style={{ flexShrink: 1 }}>
+                <Insight
+                  style={{ marginTop: 0, fontWeight: "600", textAlign: "left" }}
+                >
+                  Average severity this month
+                </Insight>
+
+                <Insight style={{ marginTop: 4, textAlign: "left" }}>
+                  {moodMetaAvg
+                    ? `Mostly felt ${moodMetaAvg.label}`
+                    : "No mood logged this month"}
+                </Insight>
+              </View>
             </View>
-            <Insight style={{ marginTop: 8, fontWeight: "600" }}>
-              Average severity this month
-            </Insight>
-            <Insight style={{ marginTop: 4 }}>
-              {moodMetaAvg
-                ? `Mostly felt ${moodMetaAvg.label}`
-                : "No mood logged this month"}
-            </Insight>
           </DailyCard>
 
-          <SectionTitle style={{ marginBottom: 16 }}>Calendar</SectionTitle>
+          <Divider style={{ marginTop: -7 }} />
+
+          <SectionTitle style={{ marginBottom: 16 }}>
+            Calendar • {monthName} {monthlyContext.year}
+          </SectionTitle>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 8,
+            }}
+          >
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+              <Text
+                key={d}
+                style={{
+                  flexBasis: "14.285%",
+                  textAlign: "center",
+                  color: "#999",
+                  fontSize: 12,
+                }}
+              >
+                {d}
+              </Text>
+            ))}
+          </View>
 
           <CalendarGrid>
             {calendarDays.map((day, index) => {
-              if (day === null) return <DayCell key={index} />;
+              if (day === null) {
+                return (
+                  <DayCell
+                    key={index}
+                    style={{
+                      backgroundColor: "#fff",
+                      borderColor: "transparent",
+                    }}
+                  />
+                );
+              }
+
+              const isToday = day === new Date().getDate();
 
               const hasSymptom = symptoms.some((s) => utcDay(s.date) === day);
               const hasMedication = medications.some(
@@ -162,14 +225,25 @@ const Graph = (props: GraphProps) => {
                 : null;
 
               return (
-                <DayCell key={index} onPress={() => onSelectCalendarDay(day)}>
+                <DayCell
+                  key={index}
+                  onPress={() => onSelectCalendarDay(day)}
+                  style={
+                    isToday
+                      ? {
+                          borderColor: "#6c63ff",
+                          backgroundColor: "#f3f0ff",
+                        }
+                      : undefined
+                  }
+                >
                   <DayNumber>{day}</DayNumber>
 
                   <View
                     style={{
                       flexDirection: "row",
                       marginTop: 4,
-                      gap: 2,
+                      gap: 4,
                     }}
                   >
                     {hasSymptom && <SymptomDot />}
@@ -180,17 +254,11 @@ const Graph = (props: GraphProps) => {
               );
             })}
           </CalendarGrid>
-
-          <Insight style={{ marginTop: 12, marginBottom: 12 }}>
-            {monthlyAvgSeverity <= 2
-              ? "A gentle month overall."
-              : monthlyAvgSeverity <= 4
-              ? "A mixed month - some ups and downs."
-              : "A tougher month - remember to rest and be kind to yourself."}
-          </Insight>
         </GraphArea>
 
-        <GraphHint>Tap a day to see your notes and tags</GraphHint>
+        <GraphHint style={{ marginTop: -100 }}>
+          Tap a day to see your notes and tags
+        </GraphHint>
       </Card>
     );
   }

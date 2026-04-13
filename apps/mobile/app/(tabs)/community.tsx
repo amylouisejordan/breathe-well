@@ -28,6 +28,7 @@ import {
   Subtext,
   Title,
   GraphLabel,
+  Divider,
 } from "../history/styled";
 
 import * as Haptics from "expo-haptics";
@@ -123,13 +124,7 @@ const PostCard = React.memo(({ post }: { post: ForumPost }) => {
           </Text>
         </View>
 
-        <View
-          style={{
-            height: 1,
-            backgroundColor: "#f1f1f5",
-            marginVertical: 10,
-          }}
-        />
+        <Divider />
 
         <BodyText
           numberOfLines={2}

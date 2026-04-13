@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
-
-import { load, save } from "../../utils/storage";
 
 import {
   Container,
@@ -26,13 +24,14 @@ import {
   FooterNote,
 } from "../styled";
 
-import { MaterialIcons } from "@expo/vector-icons";
+import { saveWellbeingEntry } from "@/utils/loggingFirestore";
 
 interface ReflectEmotion {
   key: string;
   label: string;
   icon: keyof typeof MaterialIcons.glyphMap;
   color: string;
+  score: number;
   tags: string[];
 }
 
@@ -49,6 +48,7 @@ export const REFLECT_EMOTIONS: ReflectEmotion[] = [
     label: "Great",
     icon: "sentiment-very-satisfied",
     color: "#4CAF50",
+    score: 1,
     tags: [
       "Ambitious",
       "Awed",
@@ -77,6 +77,7 @@ export const REFLECT_EMOTIONS: ReflectEmotion[] = [
     label: "Good",
     icon: "sentiment-satisfied",
     color: "#8BC34A",
+    score: 2,
     tags: [
       "Awed",
       "Calm",
@@ -107,6 +108,7 @@ export const REFLECT_EMOTIONS: ReflectEmotion[] = [
     label: "Okay",
     icon: "sentiment-neutral",
     color: "#FFEB3B",
+    score: 3,
     tags: [
       "Annoyed",
       "Bored",
@@ -130,6 +132,7 @@ export const REFLECT_EMOTIONS: ReflectEmotion[] = [
     label: "Sad",
     icon: "sentiment-dissatisfied",
     color: "#FF9800",
+    score: 4,
     tags: [
       "Anxious",
       "Apathetic",
@@ -154,6 +157,7 @@ export const REFLECT_EMOTIONS: ReflectEmotion[] = [
     label: "Upset",
     icon: "sentiment-very-dissatisfied",
     color: "#F44336",
+    score: 5,
     tags: [
       "Angry",
       "Anxious",
@@ -191,8 +195,6 @@ const AddWellbeingCheckin = () => {
   };
 
   const saveEntry = async () => {
-    const existing = (await load("wellbeing")) || [];
-
     const newEntry: WellbeingEntry = {
       emotion: emotion!,
       tags,
@@ -200,7 +202,7 @@ const AddWellbeingCheckin = () => {
       date: new Date().toISOString(),
     };
 
-    await save("wellbeing", [...existing, newEntry]);
+    await saveWellbeingEntry(newEntry);
     router.back();
   };
 
@@ -217,7 +219,7 @@ const AddWellbeingCheckin = () => {
           <Title>Wellbeing Check‑in</Title>
           <Subtitle>Choose the face that best matches how you feel</Subtitle>
 
-          <Divider />
+          <Divider style={{ marginTop: 0 }} />
 
           <AnimatedCardWrapper style={{ marginTop: 12 }} delay={150}>
             <Card>

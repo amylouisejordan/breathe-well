@@ -3,8 +3,6 @@ import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
 
-import { load, save } from "../../utils/storage";
-
 import {
   Container,
   ScrollArea,
@@ -22,6 +20,7 @@ import {
   SaveButtonText,
   FooterNote,
 } from "../styled";
+import { saveMedicationEntry } from "@/utils/loggingFirestore";
 
 const AddMedicationForm = () => {
   const [name, setName] = useState("");
@@ -35,8 +34,6 @@ const AddMedicationForm = () => {
   };
 
   const saveEntry = async () => {
-    const existing = (await load("medications")) || [];
-
     const newEntry = {
       name,
       dose,
@@ -44,7 +41,7 @@ const AddMedicationForm = () => {
       date: new Date().toISOString(),
     };
 
-    await save("medications", [...existing, newEntry]);
+    await saveMedicationEntry(newEntry);
     router.back();
   };
 
@@ -59,7 +56,7 @@ const AddMedicationForm = () => {
           <Title>Log Medication</Title>
           <Subtitle>What medication did you take today?</Subtitle>
 
-          <Divider />
+          <Divider style={{ marginTop: 0 }} />
 
           <AnimatedCardWrapper delay={150}>
             <Card>

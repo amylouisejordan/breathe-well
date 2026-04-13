@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 import { useFocusEffect } from "expo-router";
-import { load } from "../../utils/storage";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import {
@@ -9,7 +8,6 @@ import {
   Header,
   Title,
   Subtext,
-  UpdatedText,
   ToggleRow,
   Toggle,
   ToggleText,
@@ -17,17 +15,21 @@ import {
   SectionTitle,
   DailyCard,
   Insight,
-  TodayItem,
   TodayItemTitle,
   TodayItemText,
+  TodayCard,
+  Card,
+  Divider,
 } from "../history/styled";
 
 import Graph from "../history/Graph";
 import DayModal from "../history/DayModal";
 import { REFLECT_EMOTIONS } from "../(modals)/add-wellbeing-form";
 import MoodDotChart from "../history/MoodDotChart";
+import { loadAllData } from "@/utils/loggingFirestore";
 
 export type SymptomEntry = {
+  id: string;
   severity: number;
   tags: string[];
   notes: string;
@@ -35,9 +37,17 @@ export type SymptomEntry = {
 };
 
 export type MedicationEntry = {
+  id: string;
   name: string;
   dose: string;
   notes: string;
+  date: string;
+};
+
+export type WellbeingEntry = {
+  id: string;
+  emotion: string;
+  notes?: string;
   date: string;
 };
 
@@ -73,7 +83,6 @@ const HistoryScreen = () => {
   const [selectedType, setSelectedType] = useState<
     "symptom" | "medication" | "wellbeing" | "both" | null
   >(null);
-  const [updatedText, setUpdatedText] = useState("");
   const [selectedWeekIndex, setSelectedWeekIndex] = useState<number | null>(
     null
   );
@@ -106,7 +115,16 @@ const HistoryScreen = () => {
       dates.push(d);
 
       const dayValues = wellbeing
-        .filter((w) => new Date(w.date).toDateString() === d.toDateString())
+        .filter((w) => {
+          const wd = new Date(w.date);
+          wd.setHours(0, 0, 0, 0);
+
+          const dd = new Date(d);
+          dd.setHours(0, 0, 0, 0);
+
+          return wd.getTime() === dd.getTime();
+        })
+
         .map((w) => EMOTION_SEVERITY[w.emotion]);
 
       return dayValues.length
@@ -120,29 +138,11 @@ const HistoryScreen = () => {
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
-        const [symptomData, medicationData, wellbeingData] = await Promise.all([
-          load("symptoms"),
-          load("medications"),
-          load("wellbeing"),
-        ]);
+        const { symptoms, medications, wellbeing } = await loadAllData();
 
-        setSymptoms(symptomData ?? []);
-        setMedications(medicationData ?? []);
-        setWellbeing(wellbeingData ?? []);
-
-        const latestDate = new Date(
-          Math.max(
-            ...(symptomData ?? []).map((s: any) => new Date(s.date).getTime()),
-            ...(medicationData ?? []).map((m: any) =>
-              new Date(m.date).getTime()
-            )
-          )
-        );
-        setUpdatedText(
-          Number.isFinite(latestDate.getTime())
-            ? `Last updated: ${latestDate.toLocaleDateString()}`
-            : ""
-        );
+        setSymptoms(symptoms);
+        setMedications(medications);
+        setWellbeing(wellbeing);
       };
       fetchData();
     }, [])
@@ -201,12 +201,15 @@ const HistoryScreen = () => {
     .slice(0, 2)
     .map(([tag]) => tag);
 
-  const firstDay = new Date(year, month, 1).getDay();
+  let firstDay = new Date(year, month, 1).getDay();
+  firstDay = (firstDay + 6) % 7;
+
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const calendarDays: (number | null)[] = [];
-  for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++)
-    calendarDays.push(null);
-  for (let d = 1; d <= daysInMonth; d++) calendarDays.push(d);
+
+  const calendarDays = [
+    ...Array(firstDay).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
 
   const getSymptomGraphData = () => {
     if (symptoms.length === 0) return { values: [], labels: [] };
@@ -354,7 +357,7 @@ const HistoryScreen = () => {
     medications: monthMedications,
     wellbeing: monthWellbeing,
     onSelectCalendarDay: (day) => {
-      setSelectedDay(day);
+      setSelectedCalendarDay(day);
       setSelectedType("both");
     },
   };
@@ -367,7 +370,7 @@ const HistoryScreen = () => {
     return mon;
   };
 
-  const selectedDayEntries = useMemo(() => {
+  const selectedDaySymptoms = useMemo(() => {
     if (selectedWeekIndex !== null && range === "week") {
       const d = getDateForWeekIndex(selectedWeekIndex);
       return symptoms.filter(
@@ -384,7 +387,7 @@ const HistoryScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symptoms, range, selectedWeekIndex, selectedCalendarDay]);
 
-  const selectedDayMeds = useMemo(() => {
+  const selectedDayMedications = useMemo(() => {
     if (selectedWeekIndex !== null && range === "week") {
       const d = getDateForWeekIndex(selectedWeekIndex);
       return medications.filter(
@@ -415,24 +418,46 @@ const HistoryScreen = () => {
   }, [wellbeing, range, selectedWeekIndex, selectedCalendarDay]);
 
   const hasAnyEntry =
-    selectedDayEntries.length +
-      selectedDayMeds.length +
+    selectedDaySymptoms.length +
+      selectedDayMedications.length +
       selectedDayWellbeing.length >
     0;
 
   return (
     <Container>
       <Header>
-        <Title accessibilityRole="header">Your Progress</Title>
-        <Subtext>A gentle look at how you’ve been feeling over time</Subtext>
-        <UpdatedText>{updatedText}</UpdatedText>
+        <Title>Your Progress</Title>
+        <Subtext style={{ marginTop: 4 }}>
+          A gentle look at how you’ve been feeling over time
+        </Subtext>
       </Header>
 
-      <ToggleRow>
+      <ToggleRow
+        style={{
+          backgroundColor: "#f3f0ff",
+          padding: 6,
+          borderRadius: 14,
+          marginHorizontal: 16,
+          marginBottom: 20,
+          flexDirection: "row",
+          gap: 6,
+          shadowColor: "#000",
+          shadowOpacity: 0.03,
+          shadowRadius: 4,
+          shadowOffset: { width: 0, height: 1 },
+        }}
+      >
         {["day", "week", "month"].map((item) => (
           <Toggle
-            key={item}
             active={range === item}
+            style={{
+              flex: 1,
+              paddingVertical: 10,
+              borderRadius: 10,
+              backgroundColor: range === item ? "#6c63ff" : "transparent",
+              alignItems: "center",
+            }}
+            key={item}
             onPress={() => {
               setRange(item as any);
               setSelectedDay(null);
@@ -451,60 +476,101 @@ const HistoryScreen = () => {
           <Section>
             <SectionTitle>Today</SectionTitle>
 
-            {todayWellbeing ? (
-              <DailyCard style={{ paddingVertical: 22, alignItems: "center" }}>
+            {todayWellbeing && (
+              <DailyCard
+                style={{
+                  borderLeftWidth: 4,
+                  borderLeftColor:
+                    getEmotionMeta(todayWellbeing.emotion)?.color || "#ccc",
+                  alignItems: "center",
+                  padding: 20,
+                }}
+              >
                 {(() => {
                   const meta = getEmotionMeta(todayWellbeing.emotion);
+                  const severity =
+                    EMOTION_SEVERITY[todayWellbeing.emotion] ?? 3;
 
                   return (
                     <>
                       <View
                         style={{
-                          width: 64,
-                          height: 64,
-                          borderRadius: 32,
+                          width: 72,
+                          height: 72,
+                          borderRadius: 36,
                           backgroundColor: meta?.color || "#ccc",
                           justifyContent: "center",
                           alignItems: "center",
-                          marginBottom: 8,
+                          marginBottom: 12,
+                          shadowColor: "#000",
+                          shadowOpacity: 0.06,
+                          shadowRadius: 6,
+                          shadowOffset: { width: 0, height: 2 },
                         }}
                       >
                         <MaterialIcons
                           name={meta?.icon || "sentiment-neutral"}
-                          size={36}
+                          size={40}
                           color="#fff"
+                          style={{ marginTop: 2 }}
                         />
                       </View>
 
                       <Insight
                         style={{
-                          marginTop: 4,
-                          fontWeight: "600",
-                          fontSize: 16,
+                          marginTop: 2,
+                          fontWeight: "700",
+                          fontSize: 17,
+                          color: "#333",
                         }}
                       >
                         You’re feeling {meta?.label || "Okay"}
                       </Insight>
 
-                      <Insight style={{ marginTop: 6, opacity: 0.8 }}>
-                        {todayWellbeing.severity <= 1
+                      <Insight
+                        style={{
+                          marginTop: 8,
+                          opacity: 0.85,
+                          fontSize: 15,
+                          lineHeight: 22,
+                        }}
+                      >
+                        {severity <= 1
                           ? "A gentle day so far."
-                          : todayWellbeing.severity <= 3
+                          : severity <= 3
                           ? "A mixed day — remember to rest."
                           : "A tougher day — be kind to yourself."}
                       </Insight>
 
                       {todayWellbeing.tags?.length > 0 && (
-                        <Insight style={{ marginTop: 14 }}>
+                        <Insight
+                          style={{
+                            marginTop: 16,
+                            fontSize: 14,
+                            opacity: 0.9,
+                          }}
+                        >
                           Tags: {todayWellbeing.tags.join(", ")}
                         </Insight>
                       )}
 
-                      <Insight style={{ marginTop: 6 }}>
+                      <Insight
+                        style={{
+                          marginTop: 10,
+                          fontSize: 14,
+                          opacity: 0.9,
+                        }}
+                      >
                         {todayWellbeing.notes || "No wellbeing notes logged"}
                       </Insight>
 
-                      <Insight style={{ marginTop: 16, fontSize: 14 }}>
+                      <Insight
+                        style={{
+                          marginTop: 20,
+                          fontSize: 14,
+                          opacity: 0.75,
+                        }}
+                      >
                         {todaySymptoms.length} symptom
                         {todaySymptoms.length !== 1 ? "s" : ""} •{" "}
                         {todayMedications.length} medication
@@ -514,52 +580,96 @@ const HistoryScreen = () => {
                   );
                 })()}
               </DailyCard>
-            ) : (
-              <DailyCard style={{ paddingVertical: 22, alignItems: "center" }}>
-                <Insight>No wellbeing logged yet today.</Insight>
-              </DailyCard>
             )}
 
+            {!todayWellbeing &&
+              (todaySymptoms.length > 0 || todayMedications.length > 0) && (
+                <Card>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ fontSize: 32, marginRight: 8 }}>🌤️</Text>
+                    <Insight
+                      style={{ fontSize: 16, opacity: 0.8, marginTop: 3 }}
+                    >
+                      No data yet - log something to begin
+                    </Insight>
+                  </View>
+                </Card>
+              )}
+
+            {!todayWellbeing &&
+              todaySymptoms.length === 0 &&
+              todayMedications.length === 0 && (
+                <DailyCard
+                  style={{
+                    padding: 28,
+                    alignItems: "center",
+                    backgroundColor: "#faf8ff",
+                    borderColor: "#e8e4ff",
+                    borderRadius: 18,
+                  }}
+                >
+                  <Text style={{ fontSize: 48, marginBottom: 8 }}>🌤️</Text>
+                  <Insight style={{ fontSize: 16, opacity: 0.8 }}>
+                    No entries logged yet today.
+                  </Insight>
+                </DailyCard>
+              )}
+
             {(todaySymptoms.length > 0 || todayMedications.length > 0) && (
-              <Section style={{ marginTop: 24 }}>
-                <SectionTitle>Today’s items</SectionTitle>
+              <>
+                <SectionTitle style={{ marginTop: 20 }}>
+                  Today’s items
+                </SectionTitle>
 
                 {todaySymptoms.length > 0 && (
                   <View style={{ marginTop: 12 }}>
                     {todaySymptoms.map((entry, i) => (
-                      <TodayItem
+                      <TodayCard
                         key={`s-${i}`}
-                        onPress={() => {
-                          setSelectedType("symptom");
-                          setSelectedDay(0);
-                        }}
                         style={{
-                          paddingVertical: 14,
-                          paddingHorizontal: 16,
-                          borderRadius: 12,
-                          marginBottom: 12,
+                          borderLeftWidth: 4,
+                          borderLeftColor:
+                            entry.severity >= 7
+                              ? "#ff6b6b"
+                              : entry.severity >= 4
+                              ? "#f7b731"
+                              : "#6c63ff",
                         }}
                       >
-                        <TodayItemTitle>Symptom</TodayItemTitle>
-
                         <View
                           style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            marginTop: 4,
+                            marginBottom: 6,
                           }}
                         >
-                          <TodayItemText>
-                            Severity: {entry.severity}
-                          </TodayItemText>
+                          <MaterialIcons
+                            name="healing"
+                            size={18}
+                            color="#6c63ff"
+                          />
+                          <TodayItemTitle style={{ marginLeft: 6 }}>
+                            Symptom
+                          </TodayItemTitle>
                         </View>
 
+                        <TodayItemText style={{ fontSize: 14, opacity: 0.9 }}>
+                          Severity: {entry.severity}
+                        </TodayItemText>
+
                         {entry.tags.length > 0 && (
-                          <TodayItemText style={{ marginTop: 4 }}>
+                          <TodayItemText
+                            style={{ marginTop: 4, fontSize: 14, opacity: 0.8 }}
+                          >
                             Tags: {entry.tags.join(", ")}
                           </TodayItemText>
                         )}
-                      </TodayItem>
+                      </TodayCard>
                     ))}
                   </View>
                 )}
@@ -567,29 +677,46 @@ const HistoryScreen = () => {
                 {todayMedications.length > 0 && (
                   <View style={{ marginTop: 12 }}>
                     {todayMedications.map((entry, i) => (
-                      <TodayItem
+                      <TodayCard
                         key={`m-${i}`}
-                        onPress={() => {
-                          setSelectedType("medication");
-                          setSelectedDay(0);
-                        }}
                         style={{
-                          paddingVertical: 14,
-                          paddingHorizontal: 16,
-                          borderRadius: 12,
-                          marginBottom: 12,
+                          borderLeftWidth: 4,
+                          borderLeftColor: "#6c63ff",
                         }}
                       >
-                        <TodayItemTitle>Medication</TodayItemTitle>
-                        <TodayItemText style={{ marginTop: 4 }}>
-                          {entry.name}
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            marginBottom: 6,
+                          }}
+                        >
+                          <MaterialIcons
+                            name="medication"
+                            size={18}
+                            color="#6c63ff"
+                          />
+                          <TodayItemTitle style={{ marginLeft: 6 }}>
+                            Medication
+                          </TodayItemTitle>
+                        </View>
+
+                        <TodayItemText style={{ fontSize: 14, opacity: 0.9 }}>
+                          {entry.name} • {entry.dose}
                         </TodayItemText>
-                        <TodayItemText>Dose: {entry.dose}</TodayItemText>
-                      </TodayItem>
+
+                        {entry.notes?.length > 0 && (
+                          <TodayItemText
+                            style={{ marginTop: 4, fontSize: 14, opacity: 0.8 }}
+                          >
+                            Notes: {entry.notes}
+                          </TodayItemText>
+                        )}
+                      </TodayCard>
                     ))}
                   </View>
                 )}
-              </Section>
+              </>
             )}
           </Section>
         ) : range === "month" ? (
@@ -603,7 +730,7 @@ const HistoryScreen = () => {
           </Section>
         ) : (
           <>
-            <Section>
+            <Section style={{ marginBottom: -10 }}>
               <SectionTitle>Mood</SectionTitle>
               <MoodDotChart
                 data={getWeeklyMoodData()}
@@ -616,7 +743,9 @@ const HistoryScreen = () => {
               />
             </Section>
 
-            <Section>
+            <Divider style={{ marginTop: 30 }} />
+
+            <Section style={{ marginBottom: 10 }}>
               <SectionTitle>Symptoms</SectionTitle>
               <Graph
                 label="Breathlessness"
@@ -637,7 +766,9 @@ const HistoryScreen = () => {
               />
             </Section>
 
-            <Section>
+            <Divider style={{ marginTop: 15 }} />
+
+            <Section style={{ marginBottom: 10 }}>
               <SectionTitle>Medication</SectionTitle>
               <Graph
                 label="Medication taken"
@@ -665,8 +796,8 @@ const HistoryScreen = () => {
         <DayModal
           visible={selectedWeekIndex !== null || selectedCalendarDay !== null}
           dayLabel={getDayLabel()}
-          symptoms={selectedDayEntries}
-          medications={selectedDayMeds}
+          symptoms={selectedDaySymptoms}
+          medications={selectedDayMedications}
           wellbeing={selectedDayWellbeing}
           type={selectedType}
           onClose={() => {
@@ -677,7 +808,7 @@ const HistoryScreen = () => {
         />
       ) : (
         (selectedWeekIndex !== null || selectedCalendarDay !== null) && (
-          <DailyCard style={{ marginTop: 12 }}>
+          <DailyCard>
             <Insight>
               Nothing logged for this day - tap another or add an entry.
             </Insight>

@@ -9,6 +9,7 @@ import {
   EntryTags,
   EntryNotes,
   CloseButton,
+  CloseButtonText,
 } from "./styled";
 import { MaterialIcons } from "@expo/vector-icons";
 import { REFLECT_EMOTIONS } from "../(modals)/add-wellbeing-form";
@@ -143,7 +144,9 @@ const DayModal = (props: DayModalProps) => {
             </>
           )}
 
-          <CloseButton onPress={onClose}>Close</CloseButton>
+          <CloseButton onPress={onClose}>
+            <CloseButtonText>Close</CloseButtonText>
+          </CloseButton>
         </ModalCard>
       </ModalBackdrop>
     </Modal>

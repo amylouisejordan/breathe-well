@@ -3,7 +3,7 @@ import styled from "styled-components/native";
 export const Container = styled.View`
   flex: 1;
   background: #fafafb;
-  padding: 28px 20px 0;
+  padding: 24px 16px 0;
 `;
 
 export const Header = styled.View`
@@ -30,10 +30,15 @@ export const UpdatedText = styled.Text`
 
 export const ToggleRow = styled.View`
   flex-direction: row;
-  margin-bottom: 28px;
-  background: #f1f1f5;
-  border-radius: 30px;
+  margin-bottom: 24px;
+  background: #f3f0ff;
+  border-radius: 20px;
   padding: 4px;
+  gap: 4px;
+  shadow-color: #000;
+  shadow-opacity: 0.03;
+  shadow-radius: 4;
+  shadow-offset: 0px 1px;
 `;
 
 export const Toggle = styled.TouchableOpacity<{ active: boolean }>`
@@ -60,14 +65,6 @@ export const SectionTitle = styled.Text`
   font-weight: 700;
   color: #6c63ff;
   margin-bottom: 14px;
-`;
-
-export const Card = styled.View`
-  background: #fff;
-  border-radius: 20px;
-  padding: 20px;
-  border: 1px solid #f1f1f5;
-  margin-bottom: 20px;
 `;
 
 export const GraphLabel = styled.Text`
@@ -163,9 +160,13 @@ export const ModalBackdrop = styled.View`
 export const ModalCard = styled.View`
   background: #fff;
   padding: 24px;
-  border-radius: 20px;
+  border-radius: 24px;
   width: 100%;
   max-width: 420px;
+  shadow-color: #000;
+  shadow-opacity: 0.1;
+  shadow-radius: 20;
+  shadow-offset: 0px 10px;
 `;
 
 export const ModalTitle = styled.Text`
@@ -199,23 +200,32 @@ export const EntryNotes = styled.Text`
   color: #777;
 `;
 
-export const CloseButton = styled.Text`
+export const CloseButton = styled.TouchableOpacity`
   margin-top: 20px;
-  text-align: center;
+  padding: 12px;
+  align-items: center;
+`;
+
+export const CloseButtonText = styled.Text`
   color: #6c63ff;
   font-weight: 700;
   font-size: 16px;
 `;
 
+export const Divider = styled.View`
+  height: 1px;
+  background: #f1f1f5;
+  margin: 16px 0;
+`;
+
 export const CalendarGrid = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
   margin-bottom: 24px;
 `;
 
 export const DayCell = styled.TouchableOpacity`
-  width: 13%;
+  flex-basis: 14.285%;
   aspect-ratio: 1;
   background: #fff;
   border-radius: 10px;
@@ -252,15 +262,6 @@ export const MoodDot = styled.View`
   background-color: ${({ color }: { color?: string }) => color || "#999"};
 `;
 
-export const DailyCard = styled.View`
-  background: #fff;
-  border-radius: 20px;
-  padding: 24px;
-  border: 1px solid #f1f1f5;
-  margin-bottom: 24px;
-  align-items: center;
-`;
-
 export const Circle = styled.View<{ severity: number }>`
   background: ${({ severity }: { severity: number }) =>
     severity === 0
@@ -286,16 +287,10 @@ export const CircleText = styled.Text`
 export const Insight = styled.Text`
   font-size: 14px;
   color: #666;
-  margin-top: 16px;
+  margin-top: 8px;
+  line-height: 20px;
+  opacity: 0.85;
   text-align: center;
-`;
-
-export const TodayItem = styled.TouchableOpacity`
-  background: #fff;
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px solid #f1f1f5;
-  margin-bottom: 12px;
 `;
 
 export const TodayItemTitle = styled.Text`
@@ -308,4 +303,41 @@ export const TodayItemTitle = styled.Text`
 export const TodayItemText = styled.Text`
   font-size: 14px;
   color: #555;
+`;
+
+const baseCard = `
+  background: #fff;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid #f1f1f5;
+  shadow-color: #000;
+  shadow-opacity: 0.04;
+  shadow-radius: 6;
+  shadow-offset: 0px 2px;
+  elevation: 2;
+`;
+
+export const Card = styled.View`
+  ${baseCard}
+`;
+export const DailyCard = styled.View`
+  ${baseCard}
+`;
+export const TodayItem = styled.TouchableOpacity`
+  ${baseCard}
+`;
+
+export const TodayCard = styled(TodayItem)`
+  padding: 20px;
+  border-radius: 18px;
+  border-width: 1px;
+  border-color: #eee;
+  background-color: #fff;
+
+  shadow-color: #000;
+  shadow-opacity: 0.04;
+  shadow-radius: 6;
+  shadow-offset: 0px 2px;
+
+  margin-bottom: 12px;
 `;

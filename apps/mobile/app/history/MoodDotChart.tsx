@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import {
   Card,
@@ -12,6 +12,7 @@ import {
   GridLine,
   GraphHint,
   BarLabel,
+  Insight,
 } from "./styled";
 
 interface MoodDotChartProps {
@@ -37,13 +38,12 @@ const MoodDotChart = (props: MoodDotChartProps) => {
   if (chartWidth === 0) {
     return (
       <Card>
-        <GraphLabel>Mood</GraphLabel>
-        <GraphArea
-          style={{ height: 100 }}
-          onLayout={(e: {
-            nativeEvent: { layout: { width: React.SetStateAction<number> } };
-          }) => setChartWidth(e.nativeEvent.layout.width)}
-        />
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={{ fontSize: 32, marginRight: 8 }}>🌤️</Text>
+          <Insight style={{ fontSize: 16, opacity: 0.8, marginTop: 3 }}>
+            No data yet - log something to begin
+          </Insight>
+        </View>
       </Card>
     );
   }
@@ -68,7 +68,12 @@ const MoodDotChart = (props: MoodDotChartProps) => {
         <LegendDot />
         <LegendText>Your logged mood</LegendText>
       </LegendRow>
-      <GraphArea style={{ height: 60, paddingTop: 32, paddingBottom: 36 }}>
+      <GraphArea
+        style={{ height: 60, paddingTop: 32, paddingBottom: 36 }}
+        onLayout={(e: {
+          nativeEvent: { layout: { width: React.SetStateAction<number> } };
+        }) => setChartWidth(e.nativeEvent.layout.width)}
+      >
         <Grid>
           {[...Array(2)].map((_, i) => (
             <GridLine key={i} />
