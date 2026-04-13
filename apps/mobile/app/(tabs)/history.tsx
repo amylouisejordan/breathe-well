@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { ScrollView, View } from "react-native";
 import { useFocusEffect } from "expo-router";
-import { load } from "../utils/storage";
+import { load } from "../../utils/storage";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import {

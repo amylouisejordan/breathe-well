@@ -1,10 +1,4 @@
 import styled from "styled-components/native";
-import Animated, {
-  FadeInUp,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
 import { TouchableOpacity, TextInput } from "react-native";
 
 export const Container = styled.View`
@@ -17,38 +11,26 @@ export const ScrollArea = styled.ScrollView.attrs({
   contentContainerStyle: { paddingBottom: 40 },
 })``;
 
-export const Title = styled(Animated.Text).attrs({
-  entering: FadeInUp.duration(350).springify(),
-})`
+export const Title = styled.Text`
   font-size: 26px;
   font-weight: 700;
   color: #6c63ff;
   margin-bottom: 4px;
 `;
 
-export const Subtitle = styled(Animated.Text).attrs({
-  entering: FadeInUp.delay(80).duration(350).springify(),
-})`
+export const Subtitle = styled.Text`
   font-size: 15px;
   color: #666;
   margin-bottom: 20px;
 `;
 
-export const Divider = styled(Animated.View).attrs({
-  entering: FadeInUp.delay(120).duration(350).springify(),
-})`
+export const Divider = styled.View`
   height: 1px;
   background-color: #e5e5e5;
   margin-bottom: 24px;
 `;
 
-export const AnimatedCardWrapper = styled(Animated.View).attrs(
-  (props: { delay?: number }) => ({
-    entering: FadeInUp.delay(props.delay || 0)
-      .duration(350)
-      .springify(),
-  })
-)<{ delay?: number }>`
+export const AnimatedCardWrapper = styled.View`
   width: 100%;
 `;
 
@@ -92,28 +74,12 @@ export const OptionText = styled.Text`
   margin-top: 4px;
 `;
 
-export const FooterNote = styled(Animated.Text).attrs({
-  entering: FadeInUp.delay(360).duration(350).springify(),
-})`
+export const FooterNote = styled.Text`
   text-align: center;
   font-size: 13px;
   color: #999;
   margin-top: 8px;
 `;
-
-export const AnimatedCancelWrapper = styled(Animated.View).attrs(() => {
-  const scale = useSharedValue(1);
-
-  const style = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return {
-    style,
-    onPressIn: () => (scale.value = withTiming(0.97)),
-    onPressOut: () => (scale.value = withTiming(1)),
-  };
-})``;
 
 export const CancelButton = styled(TouchableOpacity)`
   margin-top: auto;
@@ -239,7 +205,7 @@ export const SaveButton = styled(TouchableOpacity)`
   justify-content: center;
   align-items: center;
   gap: 8px;
-  opacity: ${(props: { disabled: any }) => (props.disabled ? 0.5 : 1)};
+  opacity: ${(props: { disabled: boolean }) => (props.disabled ? 0.5 : 1)};
 `;
 
 export const SaveButtonText = styled.Text`
@@ -247,34 +213,6 @@ export const SaveButtonText = styled.Text`
   font-size: 17px;
   font-weight: 600;
 `;
-
-export const AnimatedTagWrapper = styled(Animated.View).attrs(() => {
-  const scale = useSharedValue(1);
-
-  const style = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return {
-    style,
-    onTouchStart: () => (scale.value = withTiming(0.95, { duration: 80 })),
-    onTouchEnd: () => (scale.value = withTiming(1, { duration: 120 })),
-  };
-})``;
-
-export const AnimatedPressWrapper = styled(Animated.View).attrs(() => {
-  const scale = useSharedValue(1);
-
-  const style = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return {
-    style,
-    onTouchStart: () => (scale.value = withTiming(0.97)),
-    onTouchEnd: () => (scale.value = withTiming(1)),
-  };
-})``;
 
 export const Field = styled.View`
   margin-bottom: 20px;

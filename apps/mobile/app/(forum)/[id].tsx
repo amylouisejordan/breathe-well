@@ -1,15 +1,13 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
-import { save, load } from "../utils/storage";
-
-import Animated, {
-  FadeInUp,
-  FadeIn,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
+import {
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  View,
+} from "react-native";
+import { save, load } from "../../utils/storage";
 
 type ForumReply = { text: string; date: number };
 
@@ -28,11 +26,6 @@ const PostDetail = () => {
 
   const [post, setPost] = useState<ForumPost | null>(null);
   const [reply, setReply] = useState("");
-
-  const scale = useSharedValue(1);
-  const replyButtonStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
 
   useEffect(() => {
     const fetch = async () => {
@@ -69,8 +62,7 @@ const PostDetail = () => {
       style={{ flex: 1, backgroundColor: "#fafafb" }}
       contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
     >
-      <Animated.View
-        entering={FadeInUp.duration(350).springify()}
+      <View
         style={{
           backgroundColor: "#fff",
           padding: 20,
@@ -91,10 +83,9 @@ const PostDetail = () => {
         <Text style={{ color: "#aaa", marginTop: 4, fontSize: 13 }}>
           {new Date(post.createdAt).toLocaleString()}
         </Text>
-      </Animated.View>
+      </View>
 
-      <Animated.View
-        entering={FadeInUp.delay(80).duration(350).springify()}
+      <View
         style={{
           backgroundColor: "#fff",
           padding: 20,
@@ -107,10 +98,9 @@ const PostDetail = () => {
         <Text style={{ fontSize: 16, lineHeight: 22, color: "#444" }}>
           {post.body}
         </Text>
-      </Animated.View>
+      </View>
 
-      <Animated.Text
-        entering={FadeIn.delay(150)}
+      <Text
         style={{
           fontSize: 17,
           fontWeight: "700",
@@ -119,14 +109,11 @@ const PostDetail = () => {
         }}
       >
         Replies ({post.replies.length})
-      </Animated.Text>
+      </Text>
 
       {post.replies.map((r, i) => (
-        <Animated.View
+        <View
           key={i}
-          entering={FadeInUp.delay(200 + i * 80)
-            .duration(350)
-            .springify()}
           style={{
             backgroundColor: "#fff",
             padding: 16,
@@ -142,11 +129,10 @@ const PostDetail = () => {
           <Text style={{ fontSize: 12, color: "#999" }}>
             {new Date(r.date).toLocaleString()}
           </Text>
-        </Animated.View>
+        </View>
       ))}
 
-      <Animated.View
-        entering={FadeInUp.delay(200 + post.replies.length * 80)}
+      <View
         style={{
           backgroundColor: "#fff",
           padding: 16,
@@ -172,25 +158,21 @@ const PostDetail = () => {
           }}
         />
 
-        <Animated.View style={replyButtonStyle}>
-          <TouchableOpacity
-            onPressIn={() => (scale.value = withTiming(0.97))}
-            onPressOut={() => (scale.value = withTiming(1))}
-            onPress={addReply}
-            style={{
-              backgroundColor: "#6c63ff",
-              padding: 14,
-              borderRadius: 12,
-              marginTop: 12,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>
-              Reply
-            </Text>
-          </TouchableOpacity>
-        </Animated.View>
-      </Animated.View>
+        <TouchableOpacity
+          onPress={addReply}
+          style={{
+            backgroundColor: "#6c63ff",
+            padding: 14,
+            borderRadius: 12,
+            marginTop: 12,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>
+            Reply
+          </Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };

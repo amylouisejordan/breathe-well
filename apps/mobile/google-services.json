@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "989117214497",
+    "project_id": "breathe-well-7ec4d",
+    "storage_bucket": "breathe-well-7ec4d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:989117214497:android:4baeafb58577df3e751860",
+        "android_client_info": {
+          "package_name": "com.anonymous.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDRNz_b_a5J8lJXyybVW-EcPN2NkfA2iQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

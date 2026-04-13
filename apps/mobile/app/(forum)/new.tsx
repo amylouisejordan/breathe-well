@@ -1,26 +1,16 @@
 import React, { useState } from "react";
 import { router, Stack } from "expo-router";
-import { save, load } from "../utils/storage";
-
-import Animated, {
-  FadeInUp,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
+import { TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import { Screen, Card, Title, Input, Button, ButtonText } from "./styled";
-import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { addForumPost } from "../../utils/forumFirestore";
+import * as Haptics from "expo-haptics";
+import { Alert } from "react-native";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-
-  const scale = useSharedValue(1);
-  const animatedButtonStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
 
   const createPost = async () => {
     if (!title.trim() || !body.trim()) {
@@ -28,18 +18,19 @@ const NewPost = () => {
       return;
     }
 
-    const existing = (await load("forum_posts")) || [];
-
-    const newPost = {
-      id: Date.now(),
+    await addForumPost({
       title,
       body,
       author: "You",
       createdAt: Date.now(),
       replies: [],
-    };
+    });
 
-    await save("forum_posts", [newPost, ...existing]);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    Alert.alert("Success", "Your post has been published!");
+    router.back();
+
     router.back();
   };
 
@@ -57,10 +48,7 @@ const NewPost = () => {
       />
 
       <Screen>
-        <Animated.View
-          entering={FadeInUp.duration(350).springify()}
-          style={{ width: "100%" }}
-        >
+        <View style={{ width: "100%" }}>
           <Card>
             <Title>Create a New Post</Title>
 
@@ -78,17 +66,11 @@ const NewPost = () => {
               multiline
             />
 
-            <Animated.View style={animatedButtonStyle}>
-              <Button
-                onPressIn={() => (scale.value = withTiming(0.97))}
-                onPressOut={() => (scale.value = withTiming(1))}
-                onPress={createPost}
-              >
-                <ButtonText>Publish</ButtonText>
-              </Button>
-            </Animated.View>
+            <Button onPress={createPost}>
+              <ButtonText>Publish</ButtonText>
+            </Button>
           </Card>
-        </Animated.View>
+        </View>
       </Screen>
     </>
   );

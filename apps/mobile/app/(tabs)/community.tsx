@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { router } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
 import {
   View,
   RefreshControl,
@@ -8,14 +8,7 @@ import {
   TouchableOpacity,
   ActionSheetIOS,
 } from "react-native";
-import { load, save } from "../utils/storage";
-
-import Animated, {
-  FadeInUp,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
+import { getForumPosts } from "../../utils/forumFirestore";
 
 import {
   Screen,
@@ -30,6 +23,7 @@ import {
   ActionButton,
   ActionButtonText,
 } from "../(forum)/styled";
+
 import {
   Container,
   Header,
@@ -38,13 +32,12 @@ import {
   GraphLabel,
 } from "../history/styled";
 
-import Swipeable from "react-native-gesture-handler/Swipeable";
 import * as Haptics from "expo-haptics";
 
 type ForumReply = { text: string; date: number };
 
-type ForumPost = {
-  id: number;
+export type ForumPost = {
+  id: string;
   title: string;
   body: string;
   author: string;
@@ -52,97 +45,58 @@ type ForumPost = {
   replies: ForumReply[];
 };
 
-const AnimatedPostCard = React.memo(
-  ({ post, index }: { post: ForumPost; index: number }) => {
-    const scale = useSharedValue(1);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ scale: scale.value }],
-    }));
-
-    const renderRightActions = useCallback(
-      () => (
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#ef4444",
-            justifyContent: "center",
-            paddingHorizontal: 20,
-            marginLeft: 8,
-            borderRadius: 20,
-          }}
-          onPress={() => {
-            console.log("archived", post.id);
-          }}
-        >
-          <Text style={{ color: "#fff", fontWeight: "700" }}>Archive</Text>
-        </TouchableOpacity>
-      ),
-      [post.id]
-    );
-
-    return (
-      <Swipeable renderRightActions={renderRightActions}>
-        <Pressable
-          onPressIn={() => (scale.value = withTiming(0.97))}
-          onPressOut={() => (scale.value = withTiming(1))}
-          onPress={() => router.navigate(`/(forum)/${post.id}`)}
-          style={{ width: "100%" }}
-        >
-          <Animated.View
-            entering={FadeInUp.delay(index * 80)
-              .duration(350)
-              .springify()}
-            style={[{ width: "100%" }, animatedStyle]}
+const PostCard = React.memo(({ post }: { post: ForumPost }) => {
+  return (
+    <Pressable
+      onPress={() => router.navigate(`/(forum)/${post.id}`)}
+      style={{ width: "100%" }}
+    >
+      <Card>
+        {post.replies.length > 0 && (
+          <View
+            style={{
+              position: "absolute",
+              top: 12,
+              right: 12,
+              backgroundColor: "#6c63ff",
+              borderRadius: 10,
+              paddingHorizontal: 8,
+              paddingVertical: 2,
+            }}
           >
-            <Card>
-              {post.replies.length > 0 && (
-                <View
-                  style={{
-                    position: "absolute",
-                    top: 12,
-                    right: 12,
-                    backgroundColor: "#6c63ff",
-                    borderRadius: 10,
-                    paddingHorizontal: 8,
-                    paddingVertical: 2,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#fff",
-                      fontSize: 12,
-                      fontWeight: "600",
-                    }}
-                  >
-                    {post.replies.length}
-                  </Text>
-                </View>
-              )}
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 12,
+                fontWeight: "600",
+              }}
+            >
+              {post.replies.length}
+            </Text>
+          </View>
+        )}
 
-              <Row style={{ alignItems: "center" }}>
-                <Avatar>
-                  <AvatarText>{post.author.charAt(0)}</AvatarText>
-                </Avatar>
+        <Row style={{ alignItems: "center" }}>
+          <Avatar>
+            <AvatarText>{post.author.charAt(0)}</AvatarText>
+          </Avatar>
 
-                <GraphLabel style={{ flex: 1, alignSelf: "center" }}>
-                  {post.title}
-                </GraphLabel>
-              </Row>
+          <GraphLabel style={{ flex: 1, alignSelf: "center" }}>
+            {post.title}
+          </GraphLabel>
+        </Row>
 
-              <Subtitle style={{ marginTop: 6 }}>by {post.author}</Subtitle>
-              <Timestamp>{new Date(post.createdAt).toLocaleString()}</Timestamp>
+        <Subtitle style={{ marginTop: 6 }}>by {post.author}</Subtitle>
+        <Timestamp>{new Date(post.createdAt).toLocaleString()}</Timestamp>
 
-              <BodyText numberOfLines={2} style={{ marginTop: 12 }}>
-                {post.body}
-              </BodyText>
-            </Card>
-          </Animated.View>
-        </Pressable>
-      </Swipeable>
-    );
-  }
-);
-AnimatedPostCard.displayName = "AnimatedPostCard";
+        <BodyText numberOfLines={2} style={{ marginTop: 12 }}>
+          {post.body}
+        </BodyText>
+      </Card>
+    </Pressable>
+  );
+});
+PostCard.displayName = "PostCard";
 
 const Empty = () => (
   <View style={{ alignItems: "center", marginTop: 60 }}>
@@ -157,12 +111,7 @@ const Empty = () => (
 );
 
 const SkeletonCard = ({ index }: { index: number }) => (
-  <Animated.View
-    entering={FadeInUp.delay(index * 80)
-      .duration(350)
-      .springify()}
-    style={{ width: "100%", marginBottom: 12 }}
-  >
+  <View style={{ width: "100%", marginBottom: 12 }}>
     <Card style={{ backgroundColor: "#eee" }}>
       <Row>
         <View
@@ -194,7 +143,7 @@ const SkeletonCard = ({ index }: { index: number }) => (
         </View>
       </Row>
     </Card>
-  </Animated.View>
+  </View>
 );
 
 export default function ForumScreen() {
@@ -204,6 +153,13 @@ export default function ForumScreen() {
     "newest"
   );
   const [loading, setLoading] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPosts();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sortMode])
+  );
 
   const sortPosts = (list: ForumPost[], mode: typeof sortMode) => {
     return [...list].sort((a, b) => {
@@ -223,13 +179,13 @@ export default function ForumScreen() {
   };
 
   const fetchPosts = async () => {
-    const stored = (await load("forum_posts")) || [];
-    const sorted = sortPosts(stored, sortMode);
+    setLoading(true);
+
+    const data = await getForumPosts();
+    const sorted = sortPosts(data, sortMode);
+
     setPosts(sorted);
     setLoading(false);
-    try {
-      await save("forum_posts", sorted);
-    } catch {}
   };
 
   useEffect(() => {
@@ -309,9 +265,7 @@ export default function ForumScreen() {
         ) : posts.length === 0 ? (
           <Empty />
         ) : (
-          posts.map((post, index) => (
-            <AnimatedPostCard key={post.id} post={post} index={index} />
-          ))
+          posts.map((post) => <PostCard key={post.id} post={post} />)
         )}
       </Screen>
     </Container>

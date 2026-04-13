@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
 
-import { load, save } from "../utils/storage";
+import { load, save } from "../../utils/storage";
 
 import {
   Container,
@@ -16,7 +16,6 @@ import {
   Label,
   Input,
   TextArea,
-  AnimatedPressWrapper,
   ResetButton,
   ResetText,
   SaveButton,
@@ -99,19 +98,19 @@ const AddMedicationForm = () => {
             </Card>
           </AnimatedCardWrapper>
 
-          <AnimatedPressWrapper>
+          <View>
             <ResetButton onPress={resetForm}>
               <Ionicons name="refresh" size={18} color="#6c63ff" />
               <ResetText>Reset</ResetText>
             </ResetButton>
-          </AnimatedPressWrapper>
+          </View>
 
-          <AnimatedPressWrapper>
+          <View>
             <SaveButton onPress={saveEntry}>
               <Ionicons name="checkmark" size={22} color="#fff" />
               <SaveButtonText>Save Medication</SaveButtonText>
             </SaveButton>
-          </AnimatedPressWrapper>
+          </View>
 
           <FooterNote>
             Keeping track of your medication helps you stay on top of your

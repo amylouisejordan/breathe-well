@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { KeyboardAvoidingView, Platform, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { router, Stack } from "expo-router";
 
-import { load, save } from "../utils/storage";
+import { load, save } from "../../utils/storage";
 
 import {
   Container,
@@ -24,8 +24,6 @@ import {
   TagText,
   TagCount,
   TextArea,
-  AnimatedTagWrapper,
-  AnimatedPressWrapper,
   ResetButton,
   ResetText,
   SaveButton,
@@ -118,14 +116,14 @@ const AddSymptomForm = () => {
 
               <TagWrap>
                 {TAGS.map((tag) => (
-                  <AnimatedTagWrapper key={tag}>
+                  <View key={tag}>
                     <Tag
                       active={tags.includes(tag)}
                       onPress={() => toggleTag(tag)}
                     >
                       <TagText active={tags.includes(tag)}>{tag}</TagText>
                     </Tag>
-                  </AnimatedTagWrapper>
+                  </View>
                 ))}
               </TagWrap>
             </Card>
@@ -144,19 +142,19 @@ const AddSymptomForm = () => {
             </Card>
           </AnimatedCardWrapper>
 
-          <AnimatedPressWrapper>
+          <View>
             <ResetButton onPress={resetForm}>
               <Ionicons name="refresh" size={18} color="#6c63ff" />
               <ResetText>Reset</ResetText>
             </ResetButton>
-          </AnimatedPressWrapper>
+          </View>
 
-          <AnimatedPressWrapper>
+          <View>
             <SaveButton onPress={saveEntry}>
               <Ionicons name="checkmark" size={22} color="#fff" />
               <SaveButtonText>Save Symptom</SaveButtonText>
             </SaveButton>
-          </AnimatedPressWrapper>
+          </View>
 
           <FooterNote>
             Logging regularly helps you notice patterns over time

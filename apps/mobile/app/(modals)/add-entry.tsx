@@ -15,8 +15,8 @@ import {
   CancelButton,
   CancelText,
   AnimatedCardWrapper,
-  AnimatedCancelWrapper,
 } from "../styled";
+import { View } from "react-native";
 
 const AddEntry = () => {
   return (
@@ -88,11 +88,11 @@ const AddEntry = () => {
         </FooterNote>
       </ScrollArea>
 
-      <AnimatedCancelWrapper>
+      <View>
         <CancelButton onPress={() => router.back()}>
           <CancelText>Cancel</CancelText>
         </CancelButton>
-      </AnimatedCancelWrapper>
+      </View>
     </Container>
   );
 };
