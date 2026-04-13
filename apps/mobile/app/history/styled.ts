@@ -176,42 +176,6 @@ export const ModalTitle = styled.Text`
   color: #333;
 `;
 
-export const EntryRow = styled.View`
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom-width: 1px;
-  border-bottom-color: #eee;
-`;
-
-export const EntrySeverity = styled.Text`
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 4px;
-`;
-
-export const EntryTags = styled.Text`
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 4px;
-`;
-
-export const EntryNotes = styled.Text`
-  font-size: 14px;
-  color: #777;
-`;
-
-export const CloseButton = styled.TouchableOpacity`
-  margin-top: 20px;
-  padding: 12px;
-  align-items: center;
-`;
-
-export const CloseButtonText = styled.Text`
-  color: #6c63ff;
-  font-weight: 700;
-  font-size: 16px;
-`;
-
 export const Divider = styled.View`
   height: 1px;
   background: #f1f1f5;
@@ -340,4 +304,53 @@ export const TodayCard = styled(TodayItem)`
   shadow-offset: 0px 2px;
 
   margin-bottom: 12px;
+`;
+
+export const SectionHeader = styled.Text`
+  font-size: 15px;
+  font-weight: 700;
+  color: #444;
+  margin-top: 20px;
+  margin-bottom: 8px;
+`;
+
+export const EntryBlock = styled.View`
+  background-color: #faf8ff;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid #eee8ff;
+`;
+
+export const EntryTitle = styled.Text`
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+`;
+
+export const EntryTags = styled.Text`
+  margin-top: 6px;
+  font-size: 14px;
+  color: #666;
+`;
+
+export const EntryNotes = styled.Text`
+  margin-top: 6px;
+  font-size: 14px;
+  color: #555;
+  line-height: 20px;
+`;
+
+export const CloseButton = styled.TouchableOpacity`
+  margin-top: 24px;
+  background-color: #6c63ff;
+  padding: 14px;
+  border-radius: 12px;
+  align-items: center;
+`;
+
+export const CloseButtonText = styled.Text`
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
 `;

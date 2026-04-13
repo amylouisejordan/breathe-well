@@ -439,6 +439,10 @@ const HistoryScreen = () => {
       selectedDayWellbeing.length >
     0;
 
+  const monthName = new Date(year, month).toLocaleString("default", {
+    month: "long",
+  });
+
   return (
     <Container>
       <Header>
@@ -811,6 +815,7 @@ const HistoryScreen = () => {
         <DayModal
           visible={selectedWeekIndex !== null || selectedCalendarDay !== null}
           dayLabel={getDayLabel()}
+          monthName={monthName}
           symptoms={selectedDaySymptoms}
           medications={selectedDayMedications}
           wellbeing={selectedDayWellbeing}

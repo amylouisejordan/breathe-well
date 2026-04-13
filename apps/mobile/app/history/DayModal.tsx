@@ -4,12 +4,13 @@ import {
   ModalBackdrop,
   ModalCard,
   ModalTitle,
-  EntryRow,
-  EntrySeverity,
   EntryTags,
   EntryNotes,
   CloseButton,
   CloseButtonText,
+  EntryBlock,
+  EntryTitle,
+  SectionHeader,
 } from "./styled";
 import { MaterialIcons } from "@expo/vector-icons";
 import { REFLECT_EMOTIONS } from "../(modals)/add-wellbeing-form";
@@ -18,6 +19,7 @@ import { MedicationEntry, SymptomEntry } from "../(tabs)/history";
 interface DayModalProps {
   visible: boolean;
   dayLabel: string;
+  monthName?: string;
   symptoms: SymptomEntry[];
   medications: MedicationEntry[];
   wellbeing: { emotion: string; tags: string[]; notes?: string }[];
@@ -26,124 +28,124 @@ interface DayModalProps {
 }
 
 const DayModal = (props: DayModalProps) => {
-  const { visible, dayLabel, symptoms, medications, wellbeing, type, onClose } =
-    props;
+  const {
+    visible,
+    dayLabel,
+    monthName,
+    symptoms,
+    medications,
+    wellbeing,
+    type,
+    onClose,
+  } = props;
   if (!visible) return null;
 
   const getEmotionMeta = (key: string) =>
     REFLECT_EMOTIONS.find((e) => e.key === key) || null;
 
+  const extractDayNumber = (label: string) => {
+    const match = label.match(/\d+/);
+    return match ? parseInt(match[0], 10) : null;
+  };
+
+  const formatDayWithSuffix = (day: number) => {
+    const suffix =
+      day % 10 === 1 && day !== 11
+        ? "st"
+        : day % 10 === 2 && day !== 12
+        ? "nd"
+        : day % 10 === 3 && day !== 13
+        ? "rd"
+        : "th";
+
+    return `${day}${suffix}`;
+  };
+
+  const day = extractDayNumber(dayLabel);
+  const formatted = day
+    ? monthName
+      ? `${formatDayWithSuffix(day)} ${monthName}`
+      : formatDayWithSuffix(day)
+    : dayLabel;
+
   return (
     <Modal transparent animationType="fade">
       <ModalBackdrop>
         <ModalCard>
-          <ModalTitle>{dayLabel}’s entries</ModalTitle>
+          <ModalTitle>{formatted}</ModalTitle>
 
           {(type === "wellbeing" || type === "both") &&
-            wellbeing.map((entry, i) => {
-              const meta = getEmotionMeta(entry.emotion);
+            wellbeing.length > 0 && (
+              <>
+                <SectionHeader>Wellbeing</SectionHeader>
+                {wellbeing.map((entry, i) => {
+                  const meta = getEmotionMeta(entry.emotion);
 
-              return (
-                <EntryRow key={`w-${i}`}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginBottom: 6,
-                    }}
-                  >
-                    <MaterialIcons
-                      name={meta?.icon || "sentiment-neutral"}
-                      size={22}
-                      color={meta?.color || "#999"}
-                      style={{ marginRight: 8 }}
-                    />
-                    <EntrySeverity>
-                      Feeling: {meta?.label || entry.emotion}
-                    </EntrySeverity>
-                  </View>
+                  return (
+                    <EntryBlock key={`w-${i}`}>
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <View
+                          style={{
+                            width: 36,
+                            height: 36,
+                            borderRadius: 18,
+                            backgroundColor: meta?.color || "#ccc",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginRight: 12,
+                          }}
+                        >
+                          <MaterialIcons
+                            name={meta?.icon || "sentiment-neutral"}
+                            size={22}
+                            color="#fff"
+                          />
+                        </View>
 
-                  <EntryTags>
-                    Tags: {entry.tags?.length ? entry.tags.join(", ") : "None"}
-                  </EntryTags>
+                        <EntryTitle>{meta?.label || entry.emotion}</EntryTitle>
+                      </View>
 
-                  <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                </EntryRow>
-              );
-            })}
+                      {entry.tags?.length > 0 && (
+                        <EntryTags>Tags: {entry.tags.join(", ")}</EntryTags>
+                      )}
 
-          {(type === "symptom" || type === "both") &&
-            symptoms?.map((entry, i) => (
-              <EntryRow key={`s-${i}`}>
-                <EntrySeverity>Severity: {entry.severity}</EntrySeverity>
-                <EntryTags>Tags: {entry.tags?.join(", ") || "None"}</EntryTags>
-                <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-              </EntryRow>
-            ))}
+                      <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
+                    </EntryBlock>
+                  );
+                })}
+              </>
+            )}
 
-          {(type === "medication" || type === "both") &&
-            medications?.map((entry, i) => (
-              <EntryRow key={`m-${i}`}>
-                <EntrySeverity>{entry.name}</EntrySeverity>
-                <EntryTags>Dose: {entry.dose}</EntryTags>
-                <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-              </EntryRow>
-            ))}
-
-          {!type && (
+          {(type === "symptom" || type === "both") && symptoms.length > 0 && (
             <>
-              {wellbeing.map((entry, i) => {
-                const meta = getEmotionMeta(entry.emotion);
-                return (
-                  <EntryRow key={`w-${i}`}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginBottom: 6,
-                      }}
-                    >
-                      <MaterialIcons
-                        name={meta?.icon || "sentiment-neutral"}
-                        size={22}
-                        color={meta?.color || "#999"}
-                        style={{ marginRight: 8 }}
-                      />
-                      <EntrySeverity>
-                        Feeling: {meta?.label || entry.emotion}
-                      </EntrySeverity>
-                    </View>
-                    <EntryTags>
-                      Tags:{" "}
-                      {entry.tags?.length ? entry.tags.join(", ") : "None"}
-                    </EntryTags>
-                    <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                  </EntryRow>
-                );
-              })}
-
+              <SectionHeader>Symptoms</SectionHeader>
               {symptoms.map((entry, i) => (
-                <EntryRow key={`s-${i}`}>
-                  <EntrySeverity>
-                    Symptom severity: {entry.severity}
-                  </EntrySeverity>
+                <EntryBlock key={`s-${i}`}>
+                  <EntryTitle>Severity: {entry.severity}</EntryTitle>
                   <EntryTags>
                     Tags: {entry.tags?.length ? entry.tags.join(", ") : "None"}
                   </EntryTags>
                   <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                </EntryRow>
-              ))}
-
-              {medications.map((entry, i) => (
-                <EntryRow key={`m-${i}`}>
-                  <EntrySeverity>Medication: {entry.name}</EntrySeverity>
-                  <EntryTags>Dose: {entry.dose}</EntryTags>
-                  <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                </EntryRow>
+                </EntryBlock>
               ))}
             </>
           )}
 
+          {(type === "medication" || type === "both") &&
+            medications.length > 0 && (
+              <>
+                <SectionHeader>Medication</SectionHeader>
+                {medications.map((entry, i) => (
+                  <EntryBlock key={`m-${i}`}>
+                    <EntryTitle>{entry.name}</EntryTitle>
+                    <EntryTags>Dose: {entry.dose}</EntryTags>
+                    <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
+                  </EntryBlock>
+                ))}
+              </>
+            )}
           <CloseButton onPress={onClose}>
             <CloseButtonText>Close</CloseButtonText>
           </CloseButton>

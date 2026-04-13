@@ -34,6 +34,7 @@ interface GraphProps {
   label: string;
   data: { values: number[]; labels: string[] };
   onSelectDay?: (day: number) => void;
+  setSelectedMonthName?: (name: string) => void;
   monthlyContext?: {
     monthlyAvgSeverity: number;
     daysLogged: number;
@@ -51,7 +52,8 @@ interface GraphProps {
 }
 
 const Graph = (props: GraphProps) => {
-  const { label, data, onSelectDay, monthlyContext } = props;
+  const { label, data, onSelectDay, setSelectedMonthName, monthlyContext } =
+    props;
 
   const isMonth = monthlyContext != null;
 
@@ -227,7 +229,10 @@ const Graph = (props: GraphProps) => {
               return (
                 <DayCell
                   key={index}
-                  onPress={() => onSelectCalendarDay(day)}
+                  onPress={() => {
+                    onSelectCalendarDay(day);
+                    setSelectedMonthName?.(monthName);
+                  }}
                   style={
                     isToday
                       ? {
