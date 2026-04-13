@@ -88,10 +88,12 @@ export const saveWellbeingEntry = async (entry: Omit<WellbeingEntry, "id">) => {
 
 export const getAllWellbeing = async (): Promise<WellbeingEntry[]> => {
   const snap = await getDocs(wellbeingRef);
-  return snap.docs.map((d) => ({
-    id: d.id,
-    ...(d.data() as Omit<WellbeingEntry, "id">),
-  }));
+  return snap.docs.map((d) => {
+    return {
+      id: d.id,
+      ...(d.data() as Omit<WellbeingEntry, "id">),
+    };
+  });
 };
 
 export const getWellbeingForMonth = async (

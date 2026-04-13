@@ -26,7 +26,11 @@ import Graph from "../history/Graph";
 import DayModal from "../history/DayModal";
 import { REFLECT_EMOTIONS } from "../(modals)/add-wellbeing-form";
 import MoodDotChart from "../history/MoodDotChart";
-import { loadAllData } from "@/utils/loggingFirestore";
+import {
+  getAllMedications,
+  getAllSymptoms,
+  getAllWellbeing,
+} from "@/utils/loggingFirestore";
 
 export type SymptomEntry = {
   id: string;
@@ -48,6 +52,7 @@ export type WellbeingEntry = {
   id: string;
   emotion: string;
   notes?: string;
+  tags: string[];
   date: string;
 };
 
@@ -79,7 +84,6 @@ const HistoryScreen = () => {
   const [symptoms, setSymptoms] = useState<SymptomEntry[]>([]);
   const [medications, setMedications] = useState<MedicationEntry[]>([]);
   const [wellbeing, setWellbeing] = useState<any[]>([]);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState<
     "symptom" | "medication" | "wellbeing" | "both" | null
   >(null);
@@ -98,10 +102,13 @@ const HistoryScreen = () => {
 
   const getStartOfWeek = () => {
     const now = new Date();
-    const monday = new Date(now);
-    monday.setHours(0, 0, 0, 0);
-    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-    return monday;
+    const utc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    const day = new Date(utc).getUTCDay();
+    const diff = day === 0 ? -6 : 1 - day;
+
+    return new Date(
+      Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + diff)
+    );
   };
 
   const getWeeklyMoodData = () => {
@@ -110,8 +117,12 @@ const HistoryScreen = () => {
     const dates: Date[] = [];
 
     const values = dayNames.map((_, i) => {
-      const d = new Date(monday);
-      d.setDate(monday.getDate() + i);
+      const d = new Date(
+        monday.getFullYear(),
+        monday.getMonth(),
+        monday.getDate() + i
+      );
+
       dates.push(d);
 
       const dayValues = wellbeing
@@ -121,11 +132,11 @@ const HistoryScreen = () => {
 
           const dd = new Date(d);
           dd.setHours(0, 0, 0, 0);
+          console.log("COMPARE:", w.date, "vs", d.toISOString());
 
           return wd.getTime() === dd.getTime();
         })
-
-        .map((w) => EMOTION_SEVERITY[w.emotion]);
+        .map((w) => EMOTION_SEVERITY[w.emotion] ?? null);
 
       return dayValues.length
         ? Math.round(dayValues.reduce((a, b) => a + b) / dayValues.length)
@@ -138,7 +149,9 @@ const HistoryScreen = () => {
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
-        const { symptoms, medications, wellbeing } = await loadAllData();
+        const symptoms = await getAllSymptoms();
+        const medications = await getAllMedications();
+        const wellbeing = await getAllWellbeing();
 
         setSymptoms(symptoms);
         setMedications(medications);
@@ -147,6 +160,9 @@ const HistoryScreen = () => {
       fetchData();
     }, [])
   );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const weeklyMood = useMemo(() => getWeeklyMoodData(), [wellbeing]);
 
   const todaySymptoms = symptoms.filter(
     (s) => new Date(s.date).toDateString() === new Date().toDateString()
@@ -460,7 +476,6 @@ const HistoryScreen = () => {
             key={item}
             onPress={() => {
               setRange(item as any);
-              setSelectedDay(null);
               setSelectedType(null);
             }}
           >
@@ -538,8 +553,8 @@ const HistoryScreen = () => {
                         {severity <= 1
                           ? "A gentle day so far."
                           : severity <= 3
-                          ? "A mixed day — remember to rest."
-                          : "A tougher day — be kind to yourself."}
+                          ? "A mixed day - remember to rest."
+                          : "A tougher day - be kind to yourself."}
                       </Insight>
 
                       {todayWellbeing.tags?.length > 0 && (
@@ -733,8 +748,8 @@ const HistoryScreen = () => {
             <Section style={{ marginBottom: -10 }}>
               <SectionTitle>Mood</SectionTitle>
               <MoodDotChart
-                data={getWeeklyMoodData()}
-                dates={getWeeklyMoodData().dates}
+                data={weeklyMood}
+                dates={weeklyMood.dates}
                 onSelectDay={(date) => {
                   setSelectedType("wellbeing");
                   setSelectedWeekIndex(getWeekIndex(date));

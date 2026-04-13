@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity, Text, Dimensions } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import {
   Card,
@@ -33,9 +33,7 @@ const MoodDotChart = (props: MoodDotChartProps) => {
   const { data, dates, onSelectDay } = props;
   const { values, labels } = data;
 
-  const [chartWidth, setChartWidth] = React.useState(0);
-
-  if (chartWidth === 0) {
+  if (!values.some((v) => v !== null)) {
     return (
       <Card>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -48,7 +46,8 @@ const MoodDotChart = (props: MoodDotChartProps) => {
     );
   }
 
-  const width = chartWidth;
+  const width = Dimensions.get("window").width - 75;
+
   const height = 100;
   const padding = 20;
 
@@ -68,12 +67,7 @@ const MoodDotChart = (props: MoodDotChartProps) => {
         <LegendDot />
         <LegendText>Your logged mood</LegendText>
       </LegendRow>
-      <GraphArea
-        style={{ height: 60, paddingTop: 32, paddingBottom: 36 }}
-        onLayout={(e: {
-          nativeEvent: { layout: { width: React.SetStateAction<number> } };
-        }) => setChartWidth(e.nativeEvent.layout.width)}
-      >
+      <GraphArea style={{ height: 60, paddingTop: 32, paddingBottom: 36 }}>
         <Grid>
           {[...Array(2)].map((_, i) => (
             <GridLine key={i} />
@@ -120,7 +114,6 @@ const MoodDotChart = (props: MoodDotChartProps) => {
             left: 0,
             width,
             height: 20,
-            flexDirection: "row",
           }}
         >
           {labels.map((label, i) => (
@@ -128,7 +121,7 @@ const MoodDotChart = (props: MoodDotChartProps) => {
               key={i}
               style={{
                 position: "absolute",
-                left: points[i].x - pointSpacing / 2,
+                left: padding + i * pointSpacing - pointSpacing / 2 + 0.5,
                 width: pointSpacing,
                 alignItems: "center",
               }}
