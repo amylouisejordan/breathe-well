@@ -132,7 +132,6 @@ const HistoryScreen = () => {
 
           const dd = new Date(d);
           dd.setHours(0, 0, 0, 0);
-          console.log("COMPARE:", w.date, "vs", d.toISOString());
 
           return wd.getTime() === dd.getTime();
         })

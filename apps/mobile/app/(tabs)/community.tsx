@@ -32,6 +32,8 @@ import {
 } from "../history/styled";
 
 import * as Haptics from "expo-haptics";
+import { signOut } from "firebase/auth";
+import { auth } from "../../utils/firebase";
 
 export type ForumPost = {
   id: string;
@@ -288,6 +290,13 @@ export default function ForumScreen() {
             Sort: {sortMap[sortMode]}
           </Text>
         </ActionButtonSecondary>
+
+        {/* TODO - REMOVE LATER ONLY FOR DEV */}
+        <Pressable onPress={async () => await signOut(auth)} hitSlop={8}>
+          <Text style={{ color: "#6c63ff", fontSize: 12, marginLeft: 8 }}>
+            🚪
+          </Text>
+        </Pressable>
       </ActionRow>
 
       <Screen
