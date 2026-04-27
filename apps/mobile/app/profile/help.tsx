@@ -116,17 +116,6 @@ const HelpScreen = () => {
           </Text>
         </View>
       </ScrollView>
-
-      {/* Back button */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.back()}
-        accessibilityRole="button"
-        accessibilityLabel="Go back"
-      >
-        <Ionicons name="arrow-back" size={22} color="#fff" />
-        <Text style={styles.buttonText}>Back</Text>
-      </TouchableOpacity>
     </View>
   );
 };

@@ -7,8 +7,12 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import { useAuth } from "../utils/useAuth";
 
 const ProfileScreen = () => {
+  const { user } = useAuth();
+  const firstName = user?.displayName?.split(" ")[0] ?? user?.email ?? "friend";
+
   return (
     <View style={styles.container}>
       <View style={styles.headerCard}>
@@ -19,7 +23,7 @@ const ProfileScreen = () => {
 
           <View>
             <Text accessibilityRole="header" style={styles.name}>
-              Welcome back
+              Welcome back{firstName ? `, ${firstName}` : ""}
             </Text>
             <Text style={styles.subtext}>Your wellbeing and app settings</Text>
           </View>
@@ -81,7 +85,7 @@ const ProfileScreen = () => {
           />
           <SettingRow
             icon="help-circle"
-            label="Help & support"
+            label="Help & Support"
             href="/profile/help"
             accessibilityHint="Get assistance with the app"
           />
