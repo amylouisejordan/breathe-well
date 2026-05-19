@@ -5,34 +5,85 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  Image,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useRef, useEffect } from "react";
+import * as Haptics from "expo-haptics";
+import { useNavigation } from "expo-router/build/useNavigation";
+import { useAuth } from "../utils/useAuth";
 
 const AiScreen = () => {
-  const messages = [
-    { id: 1, type: "user", text: "I’m feeling short of breath today." },
-    {
-      id: 2,
-      type: "ai",
-      text: "I’m here with you. Try slowing your breathing and resting your shoulders.",
-    },
-    { id: 3, type: "user", text: "Thanks! Any tips for relaxation?" },
-    {
-      id: 4,
-      type: "ai",
-      text: "A gentle walk or a few minutes of calm breathing can help ease tension.",
-    },
-  ];
+  const { user } = useAuth();
+  const firstName = user?.displayName?.split(" ")[0] ?? user?.email ?? "friend";
 
-  const [input, setInput] = useState("");
   const scrollRef = useRef<ScrollView>(null);
+  const navigation = useNavigation();
+  const CHAT_URL =
+    "https://rcn1qaqns3.execute-api.eu-west-2.amazonaws.com/prod";
+  const [messages, setMessages] = useState<
+    { id: number; type: string; text: string }[]
+  >([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     scrollRef.current?.scrollToEnd({ animated: true });
-  }, []);
+  }, [messages]);
+
+  const inputRef = useRef<TextInput>(null);
+  useEffect(() => {
+    const unsub = navigation.addListener("focus", () =>
+      inputRef.current?.focus()
+    );
+    return unsub;
+  }, [navigation]);
+
+  const sendMessage = async () => {
+    if (!input.trim()) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const userMsg = { id: Date.now(), type: "user", text: input.trim() };
+    setMessages((m) => [...m, userMsg]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [...messages, userMsg].map((x) => ({
+            role: x.type === "user" ? "user" : "assistant",
+            content: x.text,
+          })),
+          patient: { name: firstName, copdStage: "GOLD II" },
+        }),
+      });
+      const data = await res.json();
+      setMessages((m) => [
+        ...m,
+        {
+          id: Date.now() + 1,
+          type: "ai",
+          text: (data.reply ?? "Sorry, something went wrong.").replace(
+            /^\s+/,
+            ""
+          ),
+        },
+      ]);
+    } catch {
+      setMessages((m) => [
+        ...m,
+        {
+          id: Date.now() + 1,
+          type: "ai",
+          text: "Network error – please try again.".replace(/^\s+/, ""),
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -87,6 +138,17 @@ const AiScreen = () => {
           </View>
         ))}
 
+        {loading && (
+          <View style={[styles.messageRow, styles.rowLeft]}>
+            <View style={styles.avatar}>
+              <Ionicons name="sparkles" size={20} color="#6c63ff" />
+            </View>
+            <View style={[styles.message, styles.aiMessage]}>
+              <ActivityIndicator size="small" color="#6c63ff" />
+            </View>
+          </View>
+        )}
+
         <Text style={styles.footerNote}>
           BreatheWell is here to support you.
         </Text>
@@ -94,19 +156,26 @@ const AiScreen = () => {
 
       <View style={styles.inputBar}>
         <TextInput
-          placeholder="Messaging coming soon…"
+          ref={inputRef}
+          placeholder="How are you feeling?"
           placeholderTextColor="#aaa"
           style={styles.input}
           value={input}
-          editable={false}
+          onChangeText={setInput}
+          editable={!loading}
         />
 
         <TouchableOpacity
           style={styles.sendButton}
-          disabled={true}
+          disabled={loading || !input.trim()}
+          onPress={sendMessage}
           accessibilityLabel="Send message"
         >
-          <Ionicons name="send" size={20} color="#ccc" />
+          <Ionicons
+            name="send"
+            size={20}
+            color={loading || !input.trim() ? "#ccc" : "#6c63ff"}
+          />
         </TouchableOpacity>
       </View>
     </View>

@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: COPD chatbot with Bedrock
+Globals:
+  HttpApi:
+    CorsConfiguration:
+      AllowOrigins:
+      - '*'
+      AllowMethods:
+      - POST
+      AllowHeaders:
+      - '*'
+Resources:
+  BedrockChatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: BedrockChatFunction
+      Handler: index.handler
+      Runtime: nodejs20.x
+      Architectures:
+      - x86_64
+      MemorySize: 512
+      Timeout: 30
+      Environment:
+        Variables:
+          NODE_ENV: production
+      Policies:
+      - Statement:
+        - Sid: BedrockAccess
+          Effect: Allow
+          Action:
+          - bedrock:InvokeModel
+          Resource: '*'
+      Events:
+        ApiGateway:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: post
+    Metadata:
+      SamResourceId: BedrockChatFunction
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value:
+      Fn::Sub: https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/
