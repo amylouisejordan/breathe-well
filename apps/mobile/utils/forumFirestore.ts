@@ -10,15 +10,25 @@ import {
   orderBy,
   arrayUnion,
   getDoc,
+  where,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
+const forumRef = collection(db, "forum_posts");
 
 export const getForumPosts = async () => {
-  const q = query(collection(db, "forum_posts"), orderBy("createdAt", "desc"));
+  const uid = getAuth().currentUser?.uid;
+  if (!uid) return [];
+
+  const q = query(
+    forumRef,
+    where("authorId", "==", uid),
+    orderBy("createdAt", "desc")
+  );
   const snapshot = await getDocs(q);
 
   return snapshot.docs.map((d) => {
     const data = d.data();
-
     return {
       id: d.id,
       title: data.title ?? "",
@@ -31,8 +41,13 @@ export const getForumPosts = async () => {
 };
 
 export const addForumPost = async (post: any) => {
-  const docRef = await addDoc(collection(db, "forum_posts"), {
+  const uid = getAuth().currentUser?.uid;
+  if (!uid) throw new Error("No user logged in");
+
+  const docRef = await addDoc(forumRef, {
     ...post,
+    authorId: uid,
+    createdAt: new Date().toISOString(),
     comments: [],
   });
 
@@ -49,20 +64,14 @@ export const deleteForumPost = async (id: string) => {
 
 export const addCommentToPost = async (postId: string, comment: any) => {
   const postRef = doc(db, "forum_posts", postId);
-
-  await updateDoc(postRef, {
-    comments: arrayUnion(comment),
-  });
+  await updateDoc(postRef, { comments: arrayUnion(comment) });
 };
 
 export const getPostById = async (postId: string) => {
-  const postRef = doc(db, "forum_posts", postId);
-  const snap = await getDoc(postRef);
-
+  const snap = await getDoc(doc(db, "forum_posts", postId));
   if (!snap.exists()) return null;
 
   const data = snap.data();
-
   return {
     id: snap.id,
     title: data.title ?? "",

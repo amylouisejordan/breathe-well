@@ -27,9 +27,9 @@ import DayModal from "../history/DayModal";
 import { REFLECT_EMOTIONS } from "../(modals)/add-wellbeing-form";
 import MoodDotChart from "../history/MoodDotChart";
 import {
-  getAllMedications,
-  getAllSymptoms,
-  getAllWellbeing,
+  getMyMedications,
+  getMySymptoms,
+  getMyWellbeing,
 } from "@/utils/loggingFirestore";
 
 export type SymptomEntry = {
@@ -148,9 +148,9 @@ const HistoryScreen = () => {
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
-        const symptoms = await getAllSymptoms();
-        const medications = await getAllMedications();
-        const wellbeing = await getAllWellbeing();
+        const symptoms = await getMySymptoms();
+        const medications = await getMyMedications();
+        const wellbeing = await getMyWellbeing();
 
         setSymptoms(symptoms);
         setMedications(medications);
