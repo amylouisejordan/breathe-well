@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { router, Stack } from "expo-router";
+import * as Haptics from "expo-haptics";
 
 import {
   Container,
@@ -36,6 +37,7 @@ const AddSymptomForm = () => {
   const [severity, setSeverity] = useState(5);
   const [tags, setTags] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const toggleTag = (tag: string) => {
     setTags((prev) =>
@@ -50,15 +52,22 @@ const AddSymptomForm = () => {
   };
 
   const saveEntry = async () => {
-    const newEntry = {
-      severity,
-      tags,
-      notes,
-      date: new Date().toISOString(),
-    };
-
-    await saveSymptomEntry(newEntry);
-    router.back();
+    setSaving(true);
+    try {
+      await saveSymptomEntry({
+        severity,
+        tags,
+        notes: notes.trim(),
+        date: new Date().toISOString(),
+      });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.back();
+    } catch {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Oops", "Couldn't save – try again?");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const severityLabel =
@@ -146,10 +155,12 @@ const AddSymptomForm = () => {
             </ResetButton>
           </View>
 
-          <View>
-            <SaveButton onPress={saveEntry}>
+          <View style={{ marginTop: 12 }}>
+            <SaveButton onPress={saveEntry} disabled={!severity || saving}>
               <Ionicons name="checkmark" size={22} color="#fff" />
-              <SaveButtonText>Save Symptom</SaveButtonText>
+              <SaveButtonText>
+                {saving ? "Saving…" : "Save Symptom"}
+              </SaveButtonText>
             </SaveButton>
           </View>
 

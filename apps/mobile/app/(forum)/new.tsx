@@ -13,29 +13,33 @@ const NewPost = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const { user } = useAuth();
+  const [sending, setSending] = useState(false);
 
   const createPost = async () => {
     if (!title.trim() || !body.trim()) {
-      alert("Please enter both a title and a description.");
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Hold up", "Title and body can't be empty.");
       return;
     }
-
     if (!user) return;
 
-    await addForumPost({
-      title,
-      body,
-      author: user?.displayName?.split(" ")[0] || "You",
-      createdAt: Date.now(),
-      comments: [],
-    });
-
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-    Alert.alert("Success", "Your post has been published!");
-    router.back();
-
-    router.back();
+    setSending(true);
+    try {
+      await addForumPost({
+        title: title.trim(),
+        body: body.trim(),
+        author: user.displayName?.split(" ")[0] || "You",
+        createdAt: Date.now(),
+        comments: [],
+      });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.back();
+    } catch (e) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Oops", "Post failed – try again?");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -64,14 +68,15 @@ const NewPost = () => {
             />
 
             <Input
+              autoFocus
               placeholder="Write your post..."
               value={body}
               onChangeText={setBody}
               multiline
             />
 
-            <Button onPress={createPost}>
-              <ButtonText>Publish</ButtonText>
+            <Button onPress={createPost} disabled={sending}>
+              <ButtonText>{sending ? "Publishing…" : "Publish"}</ButtonText>
             </Button>
           </Card>
         </View>

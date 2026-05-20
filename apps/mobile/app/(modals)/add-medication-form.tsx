@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
+import * as Haptics from "expo-haptics";
 
 import {
   Container,
@@ -26,6 +27,7 @@ const AddMedicationForm = () => {
   const [name, setName] = useState("");
   const [dose, setDose] = useState("");
   const [notes, setNotes] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const resetForm = () => {
     setName("");
@@ -34,15 +36,26 @@ const AddMedicationForm = () => {
   };
 
   const saveEntry = async () => {
-    const newEntry = {
-      name,
-      dose,
-      notes,
-      date: new Date().toISOString(),
-    };
-
-    await saveMedicationEntry(newEntry);
-    router.back();
+    if (!name.trim()) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+    setSaving(true);
+    try {
+      await saveMedicationEntry({
+        name: name.trim(),
+        dose: dose.trim(),
+        notes: notes.trim(),
+        date: new Date().toISOString(),
+      });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.back();
+    } catch {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Oops", "Couldn't save – try again?");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -102,10 +115,12 @@ const AddMedicationForm = () => {
             </ResetButton>
           </View>
 
-          <View>
-            <SaveButton onPress={saveEntry}>
+          <View style={{ marginTop: 12 }}>
+            <SaveButton onPress={saveEntry} disabled={!name || saving}>
               <Ionicons name="checkmark" size={22} color="#fff" />
-              <SaveButtonText>Save Medication</SaveButtonText>
+              <SaveButtonText>
+                {saving ? "Saving…" : "Save Medication"}
+              </SaveButtonText>
             </SaveButton>
           </View>
 

@@ -45,6 +45,11 @@ const AiScreen = () => {
   }, [navigation]);
 
   const sendMessage = async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setLoading(true);
     if (!input.trim()) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const userMsg = { id: Date.now(), type: "user", text: input.trim() };
@@ -168,7 +173,7 @@ const AiScreen = () => {
         <View style={styles.inputBar}>
           <TextInput
             ref={inputRef}
-            placeholder="How are you feeling?"
+            placeholder={`Hi ${firstName}, how are you feeling?`}
             placeholderTextColor="#aaa"
             style={styles.input}
             value={input}

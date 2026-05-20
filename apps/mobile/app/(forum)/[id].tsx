@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   View,
+  RefreshControl,
 } from "react-native";
 import { getPostById, addCommentToPost } from "../../utils/forumFirestore";
 import { Avatar, AvatarText } from "./styled";
@@ -31,6 +32,12 @@ const PostDetail = () => {
   const { id } = useLocalSearchParams();
   const [post, setPost] = useState<ForumPost | null>(null);
   const [reply, setReply] = useState("");
+  const [sending, setSending] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchPost().finally(() => setRefreshing(false));
+  };
 
   const fetchPost = async () => {
     const data = await getPostById(id as string);
@@ -43,24 +50,29 @@ const PostDetail = () => {
   }, [id]);
 
   const addReply = async () => {
-    if (!reply.trim()) return;
-
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      text: reply,
-      author: "You",
-      createdAt: new Date().toISOString(),
-    };
-
-    await addCommentToPost(id as string, newComment);
-    setReply("");
-    fetchPost();
+    if (!reply.trim() || sending) return;
+    setSending(true);
+    try {
+      await addCommentToPost(id as string, {
+        id: Date.now().toString(),
+        text: reply.trim(),
+        author: "You",
+        createdAt: new Date().toISOString(),
+      });
+      setReply("");
+      await fetchPost();
+    } finally {
+      setSending(false);
+    }
   };
 
   if (!post) return null;
 
   return (
     <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       style={{ flex: 1, backgroundColor: "#fafafb" }}
       contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
     >
@@ -179,6 +191,7 @@ const PostDetail = () => {
 
         <TouchableOpacity
           onPress={addReply}
+          disabled={sending}
           style={{
             backgroundColor: "#6c63ff",
             padding: 14,
@@ -188,7 +201,7 @@ const PostDetail = () => {
           }}
         >
           <Text style={{ color: "#fff", fontWeight: "700", fontSize: 15 }}>
-            Comment
+            {sending ? "Sending..." : "Comment"}
           </Text>
         </TouchableOpacity>
       </View>

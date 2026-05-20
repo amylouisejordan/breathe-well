@@ -243,11 +243,6 @@ export default function ForumScreen() {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortMode, user]);
-
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchPosts();

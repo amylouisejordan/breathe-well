@@ -1,7 +1,14 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, View } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  View,
+} from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
+import * as Haptics from "expo-haptics";
 
 import {
   Container,
@@ -33,13 +40,6 @@ interface ReflectEmotion {
   color: string;
   score: number;
   tags: string[];
-}
-
-interface WellbeingEntry {
-  emotion: string;
-  tags: string[];
-  notes: string;
-  date: string;
 }
 
 export const REFLECT_EMOTIONS: ReflectEmotion[] = [
@@ -182,6 +182,8 @@ const AddWellbeingCheckin = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
 
+  const [saving, setSaving] = useState(false);
+
   const toggleTag = (tag: string) => {
     setTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
@@ -195,15 +197,23 @@ const AddWellbeingCheckin = () => {
   };
 
   const saveEntry = async () => {
-    const newEntry: WellbeingEntry = {
-      emotion: emotion!,
-      tags,
-      notes,
-      date: new Date().toISOString(),
-    };
-
-    await saveWellbeingEntry(newEntry);
-    router.back();
+    if (!emotion) return;
+    setSaving(true);
+    try {
+      await saveWellbeingEntry({
+        emotion,
+        tags,
+        notes: notes.trim(),
+        date: new Date().toISOString(),
+      });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.back();
+    } catch {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Oops", "Couldn't save – try again?");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const selectedEmotion = REFLECT_EMOTIONS.find((e) => e.key === emotion);
@@ -358,10 +368,12 @@ const AddWellbeingCheckin = () => {
             </ResetButton>
           </View>
 
-          <View>
-            <SaveButton onPress={saveEntry} disabled={!emotion}>
+          <View style={{ marginTop: 12 }}>
+            <SaveButton onPress={saveEntry} disabled={!emotion || saving}>
               <Ionicons name="checkmark" size={22} color="#fff" />
-              <SaveButtonText>Save Check‑in</SaveButtonText>
+              <SaveButtonText>
+                {saving ? "Saving…" : "Save Check‑in"}
+              </SaveButtonText>
             </SaveButton>
           </View>
 
