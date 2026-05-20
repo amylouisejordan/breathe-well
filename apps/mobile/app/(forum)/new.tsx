@@ -7,10 +7,12 @@ import { Screen, Card, Title, Input, Button, ButtonText } from "./styled";
 import { addForumPost } from "../../utils/forumFirestore";
 import * as Haptics from "expo-haptics";
 import { Alert } from "react-native";
+import { useAuth } from "../utils/useAuth";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const { user } = useAuth();
 
   const createPost = async () => {
     if (!title.trim() || !body.trim()) {
@@ -18,10 +20,12 @@ const NewPost = () => {
       return;
     }
 
+    if (!user) return;
+
     await addForumPost({
       title,
       body,
-      author: "You",
+      author: user?.displayName?.split(" ")[0] || "You",
       createdAt: Date.now(),
       comments: [],
     });

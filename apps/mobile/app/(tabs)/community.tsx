@@ -32,6 +32,7 @@ import {
 } from "../history/styled";
 
 import * as Haptics from "expo-haptics";
+import { useAuth } from "../utils/useAuth";
 
 export type ForumPost = {
   id: string;
@@ -231,12 +232,13 @@ export default function ForumScreen() {
     });
   };
 
-  const fetchPosts = async () => {
-    setLoading(true);
+  const { user } = useAuth();
 
+  const fetchPosts = async () => {
+    if (!user) return;
+    setLoading(true);
     const data = await getForumPosts();
     const sorted = sortPosts(data, sortMode);
-
     setPosts(sorted);
     setLoading(false);
   };
@@ -244,7 +246,7 @@ export default function ForumScreen() {
   useEffect(() => {
     fetchPosts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortMode]);
+  }, [sortMode, user]);
 
   const onRefresh = async () => {
     setRefreshing(true);

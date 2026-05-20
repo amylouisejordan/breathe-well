@@ -10,7 +10,6 @@ import {
   orderBy,
   arrayUnion,
   getDoc,
-  where,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -20,11 +19,7 @@ export const getForumPosts = async () => {
   const uid = getAuth().currentUser?.uid;
   if (!uid) return [];
 
-  const q = query(
-    forumRef,
-    where("authorId", "==", uid),
-    orderBy("createdAt", "desc")
-  );
+  const q = query(forumRef, orderBy("createdAt", "desc"));
   const snapshot = await getDocs(q);
 
   return snapshot.docs.map((d) => {

@@ -31,6 +31,7 @@ import {
   getMySymptoms,
   getMyWellbeing,
 } from "@/utils/loggingFirestore";
+import { useAuth } from "../utils/useAuth";
 
 export type SymptomEntry = {
   id: string;
@@ -145,8 +146,11 @@ const HistoryScreen = () => {
     return { values, labels: dayNames, dates };
   };
 
+  const { user } = useAuth();
+
   useFocusEffect(
     useCallback(() => {
+      if (!user) return;
       const fetchData = async () => {
         const symptoms = await getMySymptoms();
         const medications = await getMyMedications();
@@ -157,7 +161,7 @@ const HistoryScreen = () => {
         setWellbeing(wellbeing);
       };
       fetchData();
-    }, [])
+    }, [user])
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

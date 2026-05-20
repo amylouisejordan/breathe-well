@@ -6,14 +6,19 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useRef, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 import { useNavigation } from "expo-router/build/useNavigation";
 import { useAuth } from "../utils/useAuth";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AiScreen = () => {
+  const [barHeight, setBarHeight] = useState(88);
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const firstName = user?.displayName?.split(" ")[0] ?? user?.email ?? "friend";
 
@@ -28,8 +33,8 @@ const AiScreen = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    scrollRef.current?.scrollToEnd({ animated: true });
-  }, [messages]);
+    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+  }, [messages, barHeight]);
 
   const inputRef = useRef<TextInput>(null);
   useEffect(() => {
@@ -86,99 +91,107 @@ const AiScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>AI Companion</Text>
-        <Text style={styles.subtext}>
-          A gentle space to talk about how you’re feeling
-        </Text>
-      </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>AI Companion</Text>
+          <Text style={styles.subtext}>
+            A gentle space to talk about how you’re feeling
+          </Text>
+        </View>
 
-      <ScrollView
-        ref={scrollRef}
-        contentContainerStyle={{ paddingBottom: 120 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {messages.map((msg) => (
-          <View
-            key={msg.id}
-            style={[
-              styles.messageRow,
-              msg.type === "user" ? styles.rowRight : styles.rowLeft,
-            ]}
-            accessibilityRole="text"
-          >
-            {msg.type === "ai" && (
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={{
+            paddingBottom: barHeight + insets.bottom + 16,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {messages.map((msg) => (
+            <View
+              key={msg.id}
+              style={[
+                styles.messageRow,
+                msg.type === "user" ? styles.rowRight : styles.rowLeft,
+              ]}
+              accessibilityRole="text"
+            >
+              {msg.type === "ai" && (
+                <View style={styles.avatar}>
+                  <Ionicons name="sparkles" size={20} color="#6c63ff" />
+                </View>
+              )}
+
+              <View
+                style={[
+                  styles.message,
+                  msg.type === "user" ? styles.userMessage : styles.aiMessage,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.messageText,
+                    msg.type === "user" && styles.userMessageText,
+                  ]}
+                >
+                  {msg.text}
+                </Text>
+              </View>
+
+              {msg.type === "user" && (
+                <View style={styles.avatarUser}>
+                  <Ionicons name="person" size={20} color="#fff" />
+                </View>
+              )}
+            </View>
+          ))}
+
+          {loading && (
+            <View style={[styles.messageRow, styles.rowLeft]}>
               <View style={styles.avatar}>
                 <Ionicons name="sparkles" size={20} color="#6c63ff" />
               </View>
-            )}
-
-            <View
-              style={[
-                styles.message,
-                msg.type === "user" ? styles.userMessage : styles.aiMessage,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.messageText,
-                  msg.type === "user" && styles.userMessageText,
-                ]}
-              >
-                {msg.text}
-              </Text>
-            </View>
-
-            {msg.type === "user" && (
-              <View style={styles.avatarUser}>
-                <Ionicons name="person" size={20} color="#fff" />
+              <View style={[styles.message, styles.aiMessage]}>
+                <ActivityIndicator size="small" color="#6c63ff" />
               </View>
-            )}
-          </View>
-        ))}
-
-        {loading && (
-          <View style={[styles.messageRow, styles.rowLeft]}>
-            <View style={styles.avatar}>
-              <Ionicons name="sparkles" size={20} color="#6c63ff" />
             </View>
-            <View style={[styles.message, styles.aiMessage]}>
-              <ActivityIndicator size="small" color="#6c63ff" />
-            </View>
-          </View>
-        )}
+          )}
 
-        <Text style={styles.footerNote}>
-          BreatheWell is here to support you.
-        </Text>
-      </ScrollView>
+          <Text style={styles.footerNote}>
+            BreatheWell is here to support you.
+          </Text>
+        </ScrollView>
 
-      <View style={styles.inputBar}>
-        <TextInput
-          ref={inputRef}
-          placeholder="How are you feeling?"
-          placeholderTextColor="#aaa"
-          style={styles.input}
-          value={input}
-          onChangeText={setInput}
-          editable={!loading}
-        />
-
-        <TouchableOpacity
-          style={styles.sendButton}
-          disabled={loading || !input.trim()}
-          onPress={sendMessage}
-          accessibilityLabel="Send message"
-        >
-          <Ionicons
-            name="send"
-            size={20}
-            color={loading || !input.trim() ? "#ccc" : "#6c63ff"}
+        <View style={styles.inputBar}>
+          <TextInput
+            ref={inputRef}
+            placeholder="How are you feeling?"
+            placeholderTextColor="#aaa"
+            style={styles.input}
+            value={input}
+            onChangeText={setInput}
+            editable={!loading}
+            onLayout={(e) => setBarHeight(e.nativeEvent.layout.height)}
           />
-        </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.sendButton}
+            disabled={loading || !input.trim()}
+            onPress={sendMessage}
+            accessibilityLabel="Send message"
+          >
+            <Ionicons
+              name="send"
+              size={20}
+              color={loading || !input.trim() ? "#ccc" : "#6c63ff"}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -267,7 +280,7 @@ const styles = StyleSheet.create({
 
   inputBar: {
     position: "absolute",
-    bottom: 20,
+    bottom: 100,
     left: 20,
     right: 20,
     flexDirection: "row",
