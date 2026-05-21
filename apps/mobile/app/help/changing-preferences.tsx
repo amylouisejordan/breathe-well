@@ -1,36 +1,24 @@
-import { Text, StyleSheet } from "react-native";
 import HelpArticle from "./_article";
+import { Paragraph, Step } from "./styled";
 
-export default function ChangingPreferences() {
+const ChangingPreferences = () => {
   return (
     <HelpArticle title="How to change your preferences">
-      <Text style={styles.paragraph}>
+      <Paragraph>
         You can personalise BreatheWell to match your needs and comfort level.
-      </Text>
+      </Paragraph>
 
-      <Text style={styles.step}>1. Open the Profile tab</Text>
-      <Text style={styles.step}>2. Tap “Breathing preferences”</Text>
-      <Text style={styles.step}>3. Adjust your settings</Text>
-      <Text style={styles.step}>4. Save your changes</Text>
+      <Step>1. Open the Profile tab</Step>
+      <Step>2. Tap “Breathing preferences”</Step>
+      <Step>3. Adjust your settings</Step>
+      <Step>4. Save your changes</Step>
 
-      <Text style={styles.paragraph}>
+      <Paragraph>
         Your preferences help tailor the app to your breathing style and energy
         levels.
-      </Text>
+      </Paragraph>
     </HelpArticle>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  paragraph: {
-    fontSize: 16,
-    color: "#444",
-    marginBottom: 16,
-    lineHeight: 22,
-  },
-  step: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 12,
-  },
-});
+export default ChangingPreferences;

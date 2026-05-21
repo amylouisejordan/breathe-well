@@ -1,37 +1,25 @@
-import { Text, StyleSheet } from "react-native";
 import HelpArticle from "./_article";
+import { Paragraph, Step } from "./styled";
 
-export default function HowToLogSymptoms() {
+const HowToLogSymptoms = () => {
   return (
     <HelpArticle title="How to log symptoms">
-      <Text style={styles.paragraph}>
+      <Paragraph>
         Logging symptoms helps you spot patterns and understand how your COPD
         changes day‑to‑day.
-      </Text>
+      </Paragraph>
 
-      <Text style={styles.step}>1. Open the Symptoms tab</Text>
-      <Text style={styles.step}>2. Tap “Add symptom”</Text>
-      <Text style={styles.step}>3. Choose your symptoms from the list</Text>
-      <Text style={styles.step}>4. Add any notes that feel important</Text>
-      <Text style={styles.step}>5. Save your entry</Text>
+      <Step>1. Open the Symptoms tab</Step>
+      <Step>2. Tap “Add symptom”</Step>
+      <Step>3. Choose your symptoms from the list</Step>
+      <Step>4. Add any notes that feel important</Step>
+      <Step>5. Save your entry</Step>
 
-      <Text style={styles.paragraph}>
+      <Paragraph>
         You can view your full history anytime in the Symptom History screen.
-      </Text>
+      </Paragraph>
     </HelpArticle>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  paragraph: {
-    fontSize: 16,
-    color: "#444",
-    marginBottom: 16,
-    lineHeight: 22,
-  },
-  step: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 12,
-  },
-});
+export default HowToLogSymptoms;

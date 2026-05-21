@@ -1,13 +1,10 @@
 import {
-  View,
-  Text,
-  StyleSheet,
   ScrollView,
   TextInput,
-  TouchableOpacity,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  LayoutChangeEvent,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useRef, useEffect } from "react";
@@ -15,6 +12,20 @@ import * as Haptics from "expo-haptics";
 import { useNavigation } from "expo-router/build/useNavigation";
 import { useAuth } from "../utils/useAuth";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  Avatar,
+  Container,
+  FooterNote,
+  Header,
+  Input,
+  InputBar,
+  Message,
+  MessageRow,
+  MessageText,
+  SendButton,
+  Subtext,
+  Title,
+} from "./styled";
 
 const AiScreen = () => {
   const [barHeight, setBarHeight] = useState(88);
@@ -100,13 +111,11 @@ const AiScreen = () => {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>AI Companion</Text>
-          <Text style={styles.subtext}>
-            A gentle space to talk about how you’re feeling
-          </Text>
-        </View>
+      <Container>
+        <Header>
+          <Title>AI Companion</Title>
+          <Subtext>A gentle space to talk about how you’re feeling</Subtext>
+        </Header>
 
         <ScrollView
           ref={scrollRef}
@@ -116,76 +125,58 @@ const AiScreen = () => {
           showsVerticalScrollIndicator={false}
         >
           {messages.map((msg) => (
-            <View
+            <MessageRow
               key={msg.id}
-              style={[
-                styles.messageRow,
-                msg.type === "user" ? styles.rowRight : styles.rowLeft,
-              ]}
-              accessibilityRole="text"
+              side={msg.type === "user" ? "right" : "left"}
             >
               {msg.type === "ai" && (
-                <View style={styles.avatar}>
+                <Avatar>
                   <Ionicons name="sparkles" size={20} color="#6c63ff" />
-                </View>
+                </Avatar>
               )}
 
-              <View
-                style={[
-                  styles.message,
-                  msg.type === "user" ? styles.userMessage : styles.aiMessage,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.messageText,
-                    msg.type === "user" && styles.userMessageText,
-                  ]}
-                >
-                  {msg.text}
-                </Text>
-              </View>
+              <Message user={msg.type === "user"}>
+                <MessageText user={msg.type === "user"}>{msg.text}</MessageText>
+              </Message>
 
               {msg.type === "user" && (
-                <View style={styles.avatarUser}>
+                <Avatar user>
                   <Ionicons name="person" size={20} color="#fff" />
-                </View>
+                </Avatar>
               )}
-            </View>
+            </MessageRow>
           ))}
 
           {loading && (
-            <View style={[styles.messageRow, styles.rowLeft]}>
-              <View style={styles.avatar}>
+            <MessageRow side="left">
+              <Avatar>
                 <Ionicons name="sparkles" size={20} color="#6c63ff" />
-              </View>
-              <View style={[styles.message, styles.aiMessage]}>
+              </Avatar>
+              <Message>
                 <ActivityIndicator size="small" color="#6c63ff" />
-              </View>
-            </View>
+              </Message>
+            </MessageRow>
           )}
 
-          <Text style={styles.footerNote}>
-            BreatheWell is here to support you.
-          </Text>
+          <FooterNote>BreatheWell is here to support you.</FooterNote>
         </ScrollView>
 
-        <View style={styles.inputBar}>
-          <TextInput
+        <InputBar>
+          <Input
             ref={inputRef}
             placeholder={`Hi ${firstName}, how are you feeling?`}
             placeholderTextColor="#aaa"
-            style={styles.input}
             value={input}
             onChangeText={setInput}
             editable={!loading}
-            onLayout={(e) => setBarHeight(e.nativeEvent.layout.height)}
+            onLayout={(e: LayoutChangeEvent) =>
+              setBarHeight(e.nativeEvent.layout.height)
+            }
           />
 
-          <TouchableOpacity
-            style={styles.sendButton}
-            disabled={loading || !input.trim()}
+          <SendButton
             onPress={sendMessage}
+            disabled={loading || !input.trim()}
             accessibilityLabel="Send message"
           >
             <Ionicons
@@ -193,121 +184,11 @@ const AiScreen = () => {
               size={20}
               color={loading || !input.trim() ? "#ccc" : "#6c63ff"}
             />
-          </TouchableOpacity>
-        </View>
-      </View>
+          </SendButton>
+        </InputBar>
+      </Container>
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fafafb",
-    paddingHorizontal: 20,
-    paddingTop: 28,
-  },
-
-  header: {
-    marginBottom: 28,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: "#6c63ff",
-  },
-  subtext: {
-    fontSize: 15,
-    color: "#666",
-    marginTop: 4,
-  },
-
-  messageRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    marginBottom: 14,
-  },
-  rowLeft: {
-    justifyContent: "flex-start",
-  },
-  rowRight: {
-    justifyContent: "flex-end",
-  },
-
-  avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#eee",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 8,
-  },
-  avatarUser: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#6c63ff",
-    alignItems: "center",
-    justifyContent: "center",
-    marginLeft: 8,
-  },
-
-  message: {
-    padding: 14,
-    borderRadius: 18,
-    maxWidth: "75%",
-  },
-  userMessage: {
-    backgroundColor: "#6c63ff",
-  },
-  aiMessage: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#eee",
-  },
-
-  messageText: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: "#333",
-  },
-  userMessageText: {
-    color: "#fff",
-  },
-
-  footerNote: {
-    textAlign: "center",
-    color: "#999",
-    marginTop: 10,
-    fontSize: 13,
-  },
-
-  inputBar: {
-    position: "absolute",
-    bottom: 100,
-    left: 20,
-    right: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 28,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: "#333",
-    paddingRight: 10,
-  },
-  sendButton: {
-    padding: 6,
-  },
-});
 
 export default AiScreen;

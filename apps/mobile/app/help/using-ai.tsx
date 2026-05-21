@@ -1,42 +1,26 @@
-import { Text, StyleSheet } from "react-native";
 import HelpArticle from "./_article";
+import { Paragraph, Step } from "./styled";
 
-export default function UsingAI() {
+const UsingAI = () => {
   return (
     <HelpArticle title="Using the AI companion">
-      <Text style={styles.paragraph}>
+      <Paragraph>
         The AI companion is here to help you understand your symptoms,
         medication, and wellbeing. It can explain things in simple language and
         offer gentle guidance.
-      </Text>
+      </Paragraph>
 
-      <Text style={styles.step}>• Ask questions about symptoms</Text>
-      <Text style={styles.step}>
-        • Get explanations of inhalers and treatments
-      </Text>
-      <Text style={styles.step}>
-        • Learn how to use the app more effectively
-      </Text>
-      <Text style={styles.step}>• Get emotional support and reassurance</Text>
+      <Step>• Ask questions about symptoms</Step>
+      <Step>• Get explanations of inhalers and treatments</Step>
+      <Step>• Learn how to use the app more effectively</Step>
+      <Step>• Get emotional support and reassurance</Step>
 
-      <Text style={styles.paragraph}>
+      <Paragraph>
         The AI companion is not a medical professional, but it can help you feel
         more confident and informed.
-      </Text>
+      </Paragraph>
     </HelpArticle>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  paragraph: {
-    fontSize: 16,
-    color: "#444",
-    marginBottom: 16,
-    lineHeight: 22,
-  },
-  step: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 12,
-  },
-});
+export default UsingAI;

@@ -1,10 +1,8 @@
 import { Tabs, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
-  TouchableOpacity,
   StyleSheet,
   View,
-  Text,
   Dimensions,
   Platform,
   StatusBar,
@@ -15,6 +13,7 @@ import Svg, { Path } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { useAuth } from "../utils/useAuth";
+import { AddButton, Bell, Content, Dot, Greeting, Subline } from "./styled";
 
 const CustomHeader = () => {
   const { user } = useAuth();
@@ -60,22 +59,21 @@ const CustomHeader = () => {
           d="M0,224L48,202.7C96,181,192,139,288,144C384,149,480,203,576,229.3C672,256,768,256,864,240C960,224,1056,192,1152,170.7C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
         />
       </Svg>
-      <View style={styles.content}>
+      <Content>
         <View style={{ flex: 1 }}>
-          <Text style={styles.greeting}>
+          <Greeting>
             {greeting}, {firstName} 👋
-          </Text>
-          <Text style={styles.subline}>Breathe well, feel better</Text>
+          </Greeting>
+          <Subline>Breathe well, feel better</Subline>
         </View>
 
-        <TouchableOpacity
+        <Bell
           onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
-          style={styles.bell}
         >
           <Ionicons name="notifications-outline" size={24} color="#fff" />
-          <View style={styles.dot} />
-        </TouchableOpacity>
-      </View>
+          <Dot />
+        </Bell>
+      </Content>
     </View>
   );
 };
@@ -157,13 +155,9 @@ const TabsLayout = () => {
           name="add-placeholder"
           options={{
             tabBarButton: () => (
-              <TouchableOpacity
-                onPress={() => router.push("/(modals)/add-entry")}
-                style={styles.addButton}
-                accessibilityLabel="Add entry"
-              >
+              <AddButton onPress={() => router.push("/(modals)/add-entry")}>
                 <Ionicons name="add" size={32} color="#fff" />
-              </TouchableOpacity>
+              </AddButton>
             ),
           }}
         />
@@ -175,53 +169,5 @@ const TabsLayout = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  content: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    marginTop: 6,
-  },
-  greeting: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#fff",
-    letterSpacing: -0.5,
-  },
-  subline: {
-    fontSize: 13,
-    color: "#f0f0ff",
-    marginTop: 2,
-  },
-  bell: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.15)",
-  },
-  dot: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#FF4D4D",
-  },
-  addButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#6c63ff",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: -20,
-    shadowColor: "#6c63ff",
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 10,
-  },
-});
 
 export default TabsLayout;

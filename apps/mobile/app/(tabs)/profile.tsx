@@ -1,34 +1,41 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useAuth } from "../utils/useAuth";
+import {
+  SSection,
+  Avatar2,
+  Card,
+  Container,
+  Footer,
+  Header2,
+  HeaderCard,
+  Name,
+  Row,
+  SectionTitle,
+  Subtext,
+  RowIcon,
+  RowText,
+} from "./styled";
 
 const ProfileScreen = () => {
   const { user } = useAuth();
   const firstName = user?.displayName?.split(" ")[0] ?? user?.email ?? "friend";
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerCard}>
-        <View style={styles.header}>
-          <View style={styles.avatar}>
+    <Container>
+      <HeaderCard>
+        <Header2>
+          <Avatar2>
             <Ionicons name="person" size={40} color="#fff" />
-          </View>
+          </Avatar2>
 
           <View>
-            <Text accessibilityRole="header" style={styles.name}>
-              Welcome back{firstName ? `, ${firstName}` : ""}
-            </Text>
-            <Text style={styles.subtext}>Your wellbeing and app settings</Text>
+            <Name>Welcome back{firstName ? `, ${firstName}` : ""}</Name>
+            <Subtext>Your wellbeing and app settings</Subtext>
           </View>
-        </View>
-      </View>
+        </Header2>
+      </HeaderCard>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -97,9 +104,9 @@ const ProfileScreen = () => {
           />
         </Section>
 
-        <Text style={styles.footer}>BreatheWell • v1.0.0</Text>
+        <Footer>BreatheWell • v1.0.0</Footer>
       </ScrollView>
-    </View>
+    </Container>
   );
 };
 
@@ -107,10 +114,10 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
   title,
   children,
 }) => (
-  <View style={styles.section}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-    <View style={styles.card}>{children}</View>
-  </View>
+  <SSection>
+    <SectionTitle>{title}</SectionTitle>
+    <Card>{children}</Card>
+  </SSection>
 );
 
 interface SettingRowProps {
@@ -129,23 +136,21 @@ const SettingRow: React.FC<SettingRowProps> = ({
   accessibilityHint,
 }) => {
   const RowContent = (
-    <View style={styles.row}>
-      <Ionicons
-        name={icon}
-        size={22}
-        color={danger ? "#d9534f" : "#6c63ff"}
-        style={styles.rowIcon}
-      />
+    <Row>
+      <RowIcon>
+        <Ionicons
+          name={icon}
+          size={22}
+          color={danger ? "#d9534f" : "#6c63ff"}
+        />
+      </RowIcon>
 
-      <Text
-        style={[styles.rowText, danger && styles.dangerText]}
-        accessibilityRole="text"
-      >
+      <RowText danger={danger} accessibilityRole="text">
         {label}
-      </Text>
+      </RowText>
 
       <Ionicons name="chevron-forward" size={18} color="#bbb" />
-    </View>
+    </Row>
   );
 
   if (href) {
@@ -174,102 +179,5 @@ const SettingRow: React.FC<SettingRowProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fafafb",
-    paddingHorizontal: 20,
-    paddingTop: 28,
-  },
-
-  headerCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-  },
-
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: "#6c63ff",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 18,
-  },
-
-  name: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#222",
-  },
-  subtext: {
-    fontSize: 15,
-    color: "#666",
-    marginTop: 4,
-  },
-
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#6c63ff",
-    marginBottom: 12,
-  },
-
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-  },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-
-  rowIcon: {
-    width: 28,
-  },
-
-  rowText: {
-    flex: 1,
-    fontSize: 17,
-    color: "#333",
-    marginLeft: 10,
-  },
-
-  dangerText: {
-    color: "#d9534f",
-  },
-
-  footer: {
-    textAlign: "center",
-    color: "#aaa",
-    fontSize: 13,
-    marginTop: 8,
-  },
-});
 
 export default ProfileScreen;

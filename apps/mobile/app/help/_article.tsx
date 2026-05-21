@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { Container, Title } from "./styled";
 
 interface HelpArticleProps {
   title: string;
@@ -7,26 +7,9 @@ interface HelpArticleProps {
 
 export default function HelpArticle({ title, children }: HelpArticleProps) {
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
-      <Text style={styles.title}>{title}</Text>
+    <Container contentContainerStyle={{ paddingBottom: 40 }}>
+      <Title>{title}</Title>
       {children}
-    </ScrollView>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fafafb",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#6c63ff",
-    marginBottom: 20,
-  },
-});

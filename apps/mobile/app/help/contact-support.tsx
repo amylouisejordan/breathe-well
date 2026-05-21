@@ -1,13 +1,8 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Linking,
-} from "react-native";
+import { Linking } from "react-native";
 import HelpArticle from "./_article";
+import { Button, ButtonText, Paragraph } from "./styled";
 
-export default function ContactSupport() {
+const ContactSupport = () => {
   const sendEmail = () => {
     const subject = encodeURIComponent("BreatheWell Support Request");
     const body = encodeURIComponent(
@@ -20,32 +15,15 @@ export default function ContactSupport() {
 
   return (
     <HelpArticle title="Contact support">
-      <Text style={styles.paragraph}>
+      <Paragraph>
         If something isn’t working or you need help, we’re here for you.
-      </Text>
+      </Paragraph>
 
-      <TouchableOpacity style={styles.button} onPress={sendEmail}>
-        <Text style={styles.buttonText}>Send email to support</Text>
-      </TouchableOpacity>
+      <Button onPress={sendEmail}>
+        <ButtonText>Send email to support</ButtonText>
+      </Button>
     </HelpArticle>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  paragraph: {
-    fontSize: 16,
-    color: "#444",
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: "#6c63ff",
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});
+export default ContactSupport;

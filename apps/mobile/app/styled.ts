@@ -9,7 +9,7 @@ export const Container = styled.View`
 
 export const ScrollArea = styled.ScrollView.attrs({
   contentContainerStyle: { paddingBottom: 40 },
-})``;
+});
 
 export const Title = styled.Text`
   font-size: 26px;
@@ -96,7 +96,7 @@ export const Card = styled.View`
   background-color: #fff;
   border-radius: 16px;
   padding: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 
   shadow-color: #000;
   shadow-opacity: 0.05;
@@ -176,6 +176,7 @@ export const Input = styled(TextInput)`
   font-size: 15px;
   background-color: #fafafa;
   color: #333;
+  marginbottom: 20;
 `;
 
 export const TextArea = styled(Input)`
@@ -206,6 +207,34 @@ export const SaveButton = styled(TouchableOpacity)`
   align-items: center;
   gap: 8px;
   opacity: ${(props: { disabled: boolean }) => (props.disabled ? 0.5 : 1)};
+`;
+
+export const Button = styled(TouchableOpacity)`
+  position: absolute;
+  bottom: 20;
+  left: 20;
+  right: 20;
+  flex-direction: row;
+  background-color: #6c63ff;
+  padding-vertical: 16;
+  border-radius: 28;
+  justify-content: center;
+  align-items: center;
+  gap: 8;
+`;
+
+export const DeleteButton = styled(TouchableOpacity)`
+  position: absolute;
+  bottom: 20;
+  left: 20;
+  right: 20;
+  flex-direction: row;
+  background-color: #d9534f;
+  padding-vertical: 16;
+  border-radius: 28;
+  justify-content: center;
+  align-items: center;
+  gap: 8;
 `;
 
 export const SaveButtonText = styled.Text`
