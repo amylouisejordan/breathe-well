@@ -6,14 +6,29 @@ import {
   Dimensions,
   Platform,
   StatusBar,
+  TouchableOpacity,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { useAuth } from "../utils/useAuth";
-import { AddButton, Bell, Content, Dot, Greeting, Subline } from "./styled";
+import {
+  AddButton,
+  Content,
+  Greeting,
+  Overlay,
+  Pill,
+  PillText,
+  SheetGradient,
+  Subline,
+} from "./styled";
+
+const screenWidth = Dimensions.get("window").width;
+const topPadding = Platform.OS === "ios" ? 44 : StatusBar.currentHeight ?? 0;
 
 const CustomHeader = () => {
   const { user } = useAuth();
@@ -26,55 +41,94 @@ const CustomHeader = () => {
     return "Good evening";
   })();
 
-  const screenWidth = Dimensions.get("window").width;
-
-  const topPadding = Platform.OS === "ios" ? 44 : StatusBar.currentHeight ?? 0;
+  const [menuVisible, setMenuVisible] = useState(false);
 
   return (
-    <View
-      style={{
-        width: "100%",
-        paddingTop: topPadding,
-        paddingBottom: 10,
-      }}
-    >
-      <LinearGradient
-        colors={["#6c63ff", "#726dff", "#8a84ff"]}
-        start={{ x: 0.2, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <Svg
-        height={100}
-        width={screenWidth * 2}
-        viewBox="0 0 1440 320"
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: -screenWidth * 0.5,
-        }}
+    <>
+      <View
+        style={{ width: "100%", paddingTop: topPadding, paddingBottom: 10 }}
       >
-        <Path
-          fill="#6c63ff"
-          d="M0,224L48,202.7C96,181,192,139,288,144C384,149,480,203,576,229.3C672,256,768,256,864,240C960,224,1056,192,1152,170.7C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+        <LinearGradient
+          colors={["#6c63ff", "#726dff", "#8a84ff"]}
+          start={{ x: 0.2, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
         />
-      </Svg>
-      <Content>
-        <View style={{ flex: 1 }}>
-          <Greeting>
-            {greeting}, {firstName} 👋
-          </Greeting>
-          <Subline>Breathe well, feel better</Subline>
-        </View>
-
-        <Bell
-          onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+        <Svg
+          height={100}
+          width={screenWidth * 2}
+          viewBox="0 0 1440 320"
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: -screenWidth * 0.5,
+          }}
         >
-          <Ionicons name="notifications-outline" size={24} color="#fff" />
-          <Dot />
-        </Bell>
-      </Content>
-    </View>
+          <Path
+            fill="#6c63ff"
+            d="M0,224L48,202.7C96,181,192,139,288,144C384,149,480,203,576,229.3C672,256,768,256,864,240C960,224,1056,192,1152,170.7C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          />
+        </Svg>
+
+        <Content>
+          <View style={{ flex: 1 }}>
+            <Greeting>
+              {greeting}, {firstName} 👋
+            </Greeting>
+            <Subline>Breathe well, feel better</Subline>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setMenuVisible(true);
+            }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="menu" size={24} color="#fff" />
+          </TouchableOpacity>
+        </Content>
+      </View>
+
+      <Modal
+        transparent
+        animationType="slide"
+        visible={menuVisible}
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setMenuVisible(false)}>
+          <Overlay>
+            <TouchableWithoutFeedback>
+              <SheetGradient colors={["#6c63ff", "#726dff", "#8a84ff"]}>
+                {[
+                  {
+                    label: "Notifications",
+                    target: "/notifications",
+                    icon: "notifications-outline",
+                  },
+                  {
+                    label: "Profile",
+                    target: "/profile",
+                    icon: "person-outline",
+                  },
+                ].map(({ label, target, icon }) => (
+                  <Pill
+                    key={label}
+                    onPress={() => {
+                      setMenuVisible(false);
+                      router.push(target as any);
+                    }}
+                  >
+                    <Ionicons name={icon as any} size={20} color="#fff" />
+                    <PillText>{label}</PillText>
+                  </Pill>
+                ))}
+              </SheetGradient>
+            </TouchableWithoutFeedback>
+          </Overlay>
+        </TouchableWithoutFeedback>
+      </Modal>
+    </>
   );
 };
 
@@ -101,12 +155,11 @@ const TabsLayout = () => {
           tabBarInactiveTintColor: "#A0A3BD",
           tabBarStyle: {
             position: "absolute",
-            bottom: 16,
+            bottom: -30,
             left: 16,
             right: 16,
-            height: 64,
+            height: 70,
             backgroundColor: "#FFFFFF",
-            borderRadius: 24,
             borderTopWidth: 0,
             shadowColor: "#6c63ff",
             shadowOpacity: 0.15,
@@ -134,8 +187,8 @@ const TabsLayout = () => {
               case "history":
                 iconName = "stats-chart";
                 break;
-              case "profile":
-                iconName = "person";
+              case "articles":
+                iconName = "newspaper";
                 break;
             }
 
@@ -161,10 +214,8 @@ const TabsLayout = () => {
             ),
           }}
         />
-
         <Tabs.Screen name="history" />
-
-        <Tabs.Screen name="profile" />
+        <Tabs.Screen name="articles" />
       </Tabs>
     </SafeAreaView>
   );

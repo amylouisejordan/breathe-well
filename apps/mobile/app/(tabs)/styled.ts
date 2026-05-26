@@ -1,4 +1,5 @@
 import styled from "styled-components/native";
+import { LinearGradient } from "expo-linear-gradient";
 
 export const Content = styled.View`
   flex-direction: row;
@@ -231,4 +232,37 @@ export const Footer = styled.Text`
   color: #aaa;
   font-size: 13px;
   margin-top: 8px;
+`;
+
+export const Overlay = styled.View`
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: flex-end;
+`;
+
+export const SheetGradient = styled(LinearGradient).attrs({
+  colors: ["#6c63ff", "#726dff", "#8a84ff"],
+})`
+  margin-top: auto;
+  border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+  padding-top: 32px;
+  padding-bottom: 48px;
+  padding-horizontal: 24px;
+`;
+
+export const Pill = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  padding-vertical: 12px;
+  padding-horizontal: 20px;
+  border-radius: 24px;
+  margin-bottom: 12px;
+`;
+
+export const PillText = styled.Text`
+  color: #fff;
+  font-size: 16px;
+  margin-left: 12px;
 `;
