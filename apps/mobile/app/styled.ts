@@ -7,9 +7,9 @@ export const Container = styled.View`
   padding: 20px;
 `;
 
-export const ScrollArea = styled.ScrollView.attrs({
-  contentContainerStyle: { paddingBottom: 40 },
-});
+export const ScrollArea = styled.ScrollView`
+  flex: 1;
+`;
 
 export const Title = styled.Text`
   font-size: 26px;
