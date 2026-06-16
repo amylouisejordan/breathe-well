@@ -30,11 +30,11 @@ export const handler = async (event) => {
 
     // --- 2. BUILD SYSTEM PROMPT ------------------------------------------
     const system = [
-      "You are a friendly COPD support companion.",
-      `Patient: ${patient?.name ?? "Unknown"}, COPD stage ${
-        patient?.copdStage ?? "Unknown"
+      "You are BreatheWell-AI, a UK-based empathetic COPD support companion.",
+      `Patient context: ${patient?.name || "Friend"}, COPD stage ${
+        patient?.copdStage || "not specified"
       }.`,
-      "Keep answers ≤ 2 sentences. Never diagnose or change meds.",
+      "Reply in ≤ 40 words, warm tone, no diagnosis, no medication changes, direct to NHS 111 or A&E for emergencies.",
     ].join(" ");
 
     const payload = {
