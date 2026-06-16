@@ -64,7 +64,7 @@ export default function Login() {
             borderRadius: 40,
           }}
         >
-          <AvatarText style={{ color: "#6c63ff", fontSize: 32 }}>
+          <AvatarText style={{ color: "#4a90e2", fontSize: 32 }}>
             {isRegister ? "👋" : "🔐"}
           </AvatarText>
         </Avatar>
@@ -80,7 +80,7 @@ export default function Login() {
           style={{
             width: "100%",
             borderWidth: 1,
-            borderColor: "#eee",
+            borderColor: "#F4D6D2",
             borderRadius: 14,
             padding: 20,
           }}
@@ -121,7 +121,7 @@ export default function Login() {
             onPress={handleAuth}
             disabled={loading}
             style={({ pressed }) => ({
-              backgroundColor: pressed ? "#5b54e3" : "#6c63ff",
+              backgroundColor: pressed ? "#5b54e3" : "#4a90e2",
               borderRadius: 12,
               paddingVertical: 14,
               alignItems: "center",
@@ -140,7 +140,7 @@ export default function Login() {
             <Pressable onPress={() => setIsRegister((v) => !v)}>
               <Text
                 style={{
-                  color: "#6c63ff",
+                  color: "#6c64a90e23ff",
                   fontWeight: "700",
                 }}
               >

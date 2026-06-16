@@ -14,7 +14,7 @@ export const ScrollArea = styled.ScrollView`
 export const Title = styled.Text`
   font-size: 26px;
   font-weight: 700;
-  color: #6c63ff;
+  color: #4a90e2;
   margin-bottom: 4px;
 `;
 
@@ -39,6 +39,8 @@ export const OptionCard = styled(TouchableOpacity)`
   align-items: center;
   background-color: #fff;
   border-radius: 18px;
+  border-width: 1;
+  border-color: #f4d6d2;
   padding: 20px;
   margin-bottom: 18px;
 
@@ -112,7 +114,7 @@ export const Label = styled.Text`
 `;
 
 export const Severity = styled.Text`
-  color: #6c63ff;
+  color: #4a90e2;
   font-weight: 700;
 `;
 
@@ -150,7 +152,7 @@ export const Tag = styled(TouchableOpacity)<TagProps>`
   padding-horizontal: 16px;
   border-radius: 20px;
   background-color: ${(props: { active: any }) =>
-    props.active ? "#6c63ff" : "#f0f0f0"};
+    props.active ? "#4a90e2" : "#f0f0f0"};
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -160,12 +162,12 @@ export const Tag = styled(TouchableOpacity)<TagProps>`
 export const TagText = styled.Text<TagProps>`
   font-size: 14px;
   font-weight: 500;
-  color: ${({ active }: TagProps) => (active ? "#fff" : "#6c63ff")};
+  color: ${({ active }: TagProps) => (active ? "#fff" : "#4a90e2")};
 `;
 
 export const TagCount = styled.Text`
   font-size: 13px;
-  color: #6c63ff;
+  color: #4a90e2;
 `;
 
 export const Input = styled(TextInput)`
@@ -193,14 +195,14 @@ export const ResetButton = styled(TouchableOpacity)`
 `;
 
 export const ResetText = styled.Text`
-  color: #6c63ff;
+  color: #4a90e2;
   font-size: 15px;
   font-weight: 600;
 `;
 
 export const SaveButton = styled(TouchableOpacity)`
   flex-direction: row;
-  background-color: #6c63ff;
+  background-color: #4a90e2;
   padding-vertical: 16px;
   border-radius: 28px;
   justify-content: center;
@@ -215,7 +217,7 @@ export const Button = styled(TouchableOpacity)`
   left: 20;
   right: 20;
   flex-direction: row;
-  background-color: #6c63ff;
+  background-color: #4a90e2;
   padding-vertical: 16;
   border-radius: 28;
   justify-content: center;

@@ -73,10 +73,10 @@ const HelpScreen = () => {
           </Paragraph>
 
           <Row onPress={() => router.push("/help/contact-support")}>
-            <RowText style={{ color: "#6c63ff", fontWeight: "600" }}>
+            <RowText style={{ color: "#4a90e2", fontWeight: "600" }}>
               support@breathewell.app
             </RowText>
-            <Ionicons name="open-outline" size={20} color="#6c63ff" />
+            <Ionicons name="open-outline" size={20} color="#4a90e2" />
           </Row>
         </Card>
 

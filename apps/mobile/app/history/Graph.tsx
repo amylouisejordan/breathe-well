@@ -107,7 +107,7 @@ const Graph = (props: GraphProps) => {
     }).filter(Boolean).length;
 
     return (
-      <Card>
+      <Card style={{ marginBottom: 30 }}>
         <GraphLabel>{label}</GraphLabel>
 
         <LegendRow style={{ marginTop: 10, gap: 6 }}>
@@ -236,7 +236,7 @@ const Graph = (props: GraphProps) => {
                   style={
                     isToday
                       ? {
-                          borderColor: "#6c63ff",
+                          borderColor: "#4a90e2",
                           backgroundColor: "#f3f0ff",
                         }
                       : undefined

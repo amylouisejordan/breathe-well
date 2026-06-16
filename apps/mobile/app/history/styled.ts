@@ -13,7 +13,7 @@ export const Header = styled.View`
 export const Title = styled.Text`
   font-size: 28px;
   font-weight: 800;
-  color: #6c63ff;
+  color: #4a90e2;
 `;
 
 export const Subtext = styled.Text`
@@ -47,7 +47,7 @@ export const Toggle = styled.TouchableOpacity<{ active: boolean }>`
   border-radius: 26px;
   align-items: center;
   background: ${({ active }: { active: boolean }) =>
-    active ? "#6c63ff" : "transparent"};
+    active ? "#4a90e2" : "transparent"};
 `;
 
 export const ToggleText = styled.Text<{ active: boolean }>`
@@ -63,7 +63,7 @@ export const Section = styled.View`
 export const SectionTitle = styled.Text`
   font-size: 17px;
   font-weight: 700;
-  color: #6c63ff;
+  color: #4a90e2;
   margin-bottom: 14px;
 `;
 
@@ -84,7 +84,7 @@ export const LegendDot = styled.View`
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  background: #6c63ff;
+  background: #4a90e2;
   margin-right: 6px;
 `;
 
@@ -109,7 +109,7 @@ export const Grid = styled.View`
 
 export const GridLine = styled.View`
   height: 1px;
-  background: #eee;
+  background: #f4d6d2;
 `;
 
 export const BarRow = styled.View`
@@ -125,7 +125,7 @@ export const BarContainer = styled.TouchableOpacity`
 `;
 
 export const Bar = styled.View`
-  background: #6c63ff;
+  background: #4a90e2;
   border-radius: 8px;
   opacity: 0.9;
   width: 22px;
@@ -295,7 +295,7 @@ export const TodayCard = styled(TodayItem)`
   padding: 20px;
   border-radius: 18px;
   border-width: 1px;
-  border-color: #eee;
+  border-color: #f4d6d2;
   background-color: #fff;
 
   shadow-color: #000;
@@ -319,7 +319,7 @@ export const EntryBlock = styled.View`
   border-radius: 14px;
   padding: 16px;
   margin-bottom: 12px;
-  border: 1px solid #eee8ff;
+  border: 1px solid #f4d6d2;
 `;
 
 export const EntryTitle = styled.Text`
@@ -343,7 +343,7 @@ export const EntryNotes = styled.Text`
 
 export const CloseButton = styled.TouchableOpacity`
   margin-top: 24px;
-  background-color: #6c63ff;
+  background-color: #4a90e2;
   padding: 14px;
   border-radius: 12px;
   align-items: center;

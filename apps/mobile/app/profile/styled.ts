@@ -9,7 +9,7 @@ export const Container = styled.View`
 export const Title = styled.Text`
   font-size: 26px;
   font-weight: 700;
-  color: #6c63ff;
+  color: #6c634a90e2ff;
 `;
 
 export const Subtext = styled.Text`
@@ -47,7 +47,7 @@ export const Row = styled.TouchableOpacity`
   align-items: center;
   padding-vertical: 16px;
   border-bottom-width: 1px;
-  border-bottom-color: #eee;
+  border-bottom-color: #f4d6d2;
 `;
 
 export const RowIcon = styled.View`
@@ -85,7 +85,7 @@ export const FloatingButton = styled.TouchableOpacity`
   left: 20px;
   right: 20px;
   flex-direction: row;
-  background-color: #6c63ff;
+  background-color: #4a90e2;
   padding-vertical: 16px;
   border-radius: 28px;
   justify-content: center;
@@ -98,7 +98,7 @@ export const ToggleRow = styled.View`
   justify-content: space-between;
   padding-vertical: 14px;
   border-bottom-width: 1px;
-  border-bottom-color: #eee;
+  border-bottom-color: #f4d6d2;
 `;
 
 export const Hint = styled.Text`
@@ -151,7 +151,7 @@ export const BulletWrap = styled.View`
 export const Bullet = styled.Text`
   font-size: 16px;
   margin-right: 8px;
-  color: #6c63ff;
+  color: #4a90e2;
 `;
 
 export const BulletText = styled.Text`

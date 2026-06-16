@@ -66,7 +66,7 @@ const SettingRow = ({
     activeOpacity={0.6}
   >
     <RowIcon>
-      <Ionicons name={icon} size={22} color={danger ? "#d9534f" : "#6c63ff"} />
+      <Ionicons name={icon} size={22} color={danger ? "#d9534f" : "#4a90e2"} />
     </RowIcon>
     <RowText style={danger && { color: "#d9534f" }}>{label}</RowText>
     <Ionicons name="chevron-forward" size={18} color="#bbb" />

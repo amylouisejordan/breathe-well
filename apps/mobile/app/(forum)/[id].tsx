@@ -116,7 +116,7 @@ const PostDetail = () => {
         style={{
           fontSize: 17,
           fontWeight: "700",
-          color: "#6c63ff",
+          color: "#4a90e2",
           marginBottom: 12,
         }}
       >
@@ -131,13 +131,13 @@ const PostDetail = () => {
             padding: 14,
             borderRadius: 14,
             borderWidth: 1,
-            borderColor: "#eee",
+            borderColor: "#F4D6D2",
             marginBottom: 12,
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Avatar style={{ backgroundColor: "#f3f0ff", marginRight: 10 }}>
-              <AvatarText style={{ color: "#6c63ff" }}>
+              <AvatarText style={{ color: "#4a90e2" }}>
                 {c.author.charAt(0)}
               </AvatarText>
             </Avatar>
@@ -193,7 +193,7 @@ const PostDetail = () => {
           onPress={addReply}
           disabled={sending}
           style={{
-            backgroundColor: "#6c63ff",
+            backgroundColor: "#4a90e2",
             padding: 14,
             borderRadius: 12,
             marginTop: 12,

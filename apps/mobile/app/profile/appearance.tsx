@@ -43,7 +43,7 @@ const AppearanceScreen = () => {
             <Row key={option} onPress={() => setTheme(option)}>
               <RowText>{option}</RowText>
               {theme === option && (
-                <Ionicons name="checkmark-circle" size={22} color="#6c63ff" />
+                <Ionicons name="checkmark-circle" size={22} color="#4a90e2" />
               )}
             </Row>
           ))}
@@ -56,7 +56,7 @@ const AppearanceScreen = () => {
             <Row key={option} onPress={() => setTextSize(option)}>
               <RowText>{option}</RowText>
               {textSize === option && (
-                <Ionicons name="checkmark-circle" size={22} color="#6c63ff" />
+                <Ionicons name="checkmark-circle" size={22} color="#4a90e2" />
               )}
             </Row>
           ))}
@@ -70,7 +70,7 @@ const AppearanceScreen = () => {
             <Switch
               value={reduceMotion}
               onValueChange={setReduceMotion}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
 
@@ -79,7 +79,7 @@ const AppearanceScreen = () => {
             <Switch
               value={calmingMode}
               onValueChange={setCalmingMode}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
 

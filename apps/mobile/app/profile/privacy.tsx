@@ -97,7 +97,7 @@ const PrivacyScreen = () => {
 
           <Row>
             <RowText>View full privacy policy</RowText>
-            <Ionicons name="open-outline" size={20} color="#6c63ff" />
+            <Ionicons name="open-outline" size={20} color="#4a90e2" />
           </Row>
         </Card>
       </ScrollView>

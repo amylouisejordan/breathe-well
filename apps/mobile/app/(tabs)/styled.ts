@@ -41,11 +41,11 @@ export const AddButton = styled.TouchableOpacity`
   width: 56px;
   height: 56px;
   border-radius: 28px;
-  background-color: #6c63ff;
+  background-color: #4a90e2;
   align-items: center;
   justify-content: center;
   margin-top: -20px;
-  shadow-color: #6c63ff;
+  shadow-color: #4a90e2;
   shadow-opacity: 0.4;
   shadow-radius: 12px;
   shadow-offset: 0px 6px;
@@ -66,7 +66,7 @@ export const Header = styled.View`
 export const Title = styled.Text`
   font-size: 26px;
   font-weight: 700;
-  color: #6c63ff;
+  color: #4a90e2;
 `;
 
 export const Subtext = styled.Text`
@@ -88,7 +88,7 @@ export const Avatar = styled.View<{ user?: boolean }>`
   height: 32px;
   border-radius: 16px;
   background-color: ${({ user }: { user?: boolean }) =>
-    user ? "#6c63ff" : "#eee"};
+    user ? "#4a90e2" : "#F4D6D2"};
   align-items: center;
   justify-content: center;
   margin-right: ${({ user }: { user?: boolean }) => (user ? "0" : "8px")};
@@ -100,10 +100,10 @@ export const Message = styled.View<{ user?: boolean }>`
   border-radius: 18px;
   max-width: 75%;
   background-color: ${({ user }: { user?: boolean }) =>
-    user ? "#6c63ff" : "#fff"};
+    user ? "#4a90e2" : "#fff"};
   border-width: ${({ user }: { user?: boolean }) => (user ? "0" : "1px")};
   border-color: ${({ user }: { user?: boolean }) =>
-    user ? "transparent" : "#eee"};
+    user ? "transparent" : "#F4D6D2"};
 `;
 
 export const MessageText = styled.Text<{ user?: boolean }>`
@@ -169,7 +169,7 @@ export const Avatar2 = styled.View`
   width: 64px;
   height: 64px;
   border-radius: 32px;
-  background-color: #6c63ff;
+  background-color: #4a90e2;
   align-items: center;
   justify-content: center;
   margin-right: 18px;
@@ -188,7 +188,7 @@ export const SSection = styled.View`
 export const SectionTitle = styled.Text`
   font-size: 16px;
   font-weight: 600;
-  color: #6c63ff;
+  color: #4a90e2;
   margin-bottom: 12px;
 `;
 
@@ -209,7 +209,7 @@ export const Row = styled.View`
   align-items: center;
   padding-vertical: 16px;
   border-bottom-width: 1px;
-  border-bottom-color: #eee;
+  border-bottom-color: #f4d6d2;
 `;
 
 export const RowIcon = styled.View`
@@ -241,7 +241,7 @@ export const Overlay = styled.View`
 `;
 
 export const SheetGradient = styled(LinearGradient).attrs({
-  colors: ["#6c63ff", "#726dff", "#8a84ff"],
+  colors: ["#4a90e2", "#726dff", "#8a84ff"],
 })`
   margin-top: auto;
   border-top-left-radius: 32px;

@@ -49,7 +49,7 @@ const CustomHeader = () => {
         style={{ width: "100%", paddingTop: topPadding, paddingBottom: 10 }}
       >
         <LinearGradient
-          colors={["#6c63ff", "#726dff", "#8a84ff"]}
+          colors={["#4A90E2", "#5AA0F0", "#6BB0FF"]}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
@@ -65,7 +65,7 @@ const CustomHeader = () => {
           }}
         >
           <Path
-            fill="#6c63ff"
+            fill="#4a90e2"
             d="M0,224L48,202.7C96,181,192,139,288,144C384,149,480,203,576,229.3C672,256,768,256,864,240C960,224,1056,192,1152,170.7C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
           />
         </Svg>
@@ -99,7 +99,7 @@ const CustomHeader = () => {
         <TouchableWithoutFeedback onPress={() => setMenuVisible(false)}>
           <Overlay>
             <TouchableWithoutFeedback>
-              <SheetGradient colors={["#6c63ff", "#726dff", "#8a84ff"]}>
+              <SheetGradient colors={["#4a90e2", "#726dff", "#8a84ff"]}>
                 {[
                   {
                     label: "Notifications",
@@ -151,7 +151,7 @@ const TabsLayout = () => {
           headerShown: false,
           sceneStyle: { backgroundColor: "#F7F9FC" },
           tabBarShowLabel: false,
-          tabBarActiveTintColor: "#6c63ff",
+          tabBarActiveTintColor: "#4a90e2",
           tabBarInactiveTintColor: "#A0A3BD",
           tabBarStyle: {
             position: "absolute",
@@ -161,7 +161,7 @@ const TabsLayout = () => {
             height: 70,
             backgroundColor: "#FFFFFF",
             borderTopWidth: 0,
-            shadowColor: "#6c63ff",
+            shadowColor: "#4a90e2",
             shadowOpacity: 0.15,
             shadowRadius: 16,
             shadowOffset: { width: 0, height: 4 },

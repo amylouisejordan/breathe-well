@@ -42,7 +42,7 @@ const NotificationsScreen = () => {
             <Switch
               value={symptomReminder}
               onValueChange={setSymptomReminder}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
 
@@ -51,7 +51,7 @@ const NotificationsScreen = () => {
             <Switch
               value={medicationReminder}
               onValueChange={setMedicationReminder}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
 
@@ -60,7 +60,7 @@ const NotificationsScreen = () => {
             <Switch
               value={aiCheckins}
               onValueChange={setAiCheckins}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
         </Card>
@@ -73,7 +73,7 @@ const NotificationsScreen = () => {
             <Switch
               value={communityReplies}
               onValueChange={setCommunityReplies}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
 
@@ -82,7 +82,7 @@ const NotificationsScreen = () => {
             <Switch
               value={newPosts}
               onValueChange={setNewPosts}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
         </Card>
@@ -95,7 +95,7 @@ const NotificationsScreen = () => {
             <Switch
               value={quietHours}
               onValueChange={setQuietHours}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
 

@@ -31,7 +31,7 @@ const AddEntry = () => {
         <AnimatedCardWrapper delay={200}>
           <OptionCard onPress={() => router.push("/(modals)/add-symptom-form")}>
             <IconWrap>
-              <Ionicons name="pulse" size={28} color="#6c63ff" />
+              <Ionicons name="pulse" size={28} color="#4a90e2" />
             </IconWrap>
 
             <TextWrap>
@@ -50,7 +50,7 @@ const AddEntry = () => {
             onPress={() => router.push("/(modals)/add-medication-form")}
           >
             <IconWrap>
-              <Ionicons name="medkit" size={28} color="#6c63ff" />
+              <Ionicons name="medkit" size={28} color="#4a90e2" />
             </IconWrap>
 
             <TextWrap>
@@ -69,7 +69,7 @@ const AddEntry = () => {
             onPress={() => router.push("/(modals)/add-wellbeing-form")}
           >
             <IconWrap>
-              <Ionicons name="happy" size={28} color="#6c63ff" />
+              <Ionicons name="happy" size={28} color="#4a90e2" />
             </IconWrap>
 
             <TextWrap>

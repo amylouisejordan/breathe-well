@@ -59,7 +59,7 @@ export const BodyText = styled.Text`
 export const RepliesHeader = styled.Text`
   font-size: 17px;
   font-weight: 700;
-  color: #6c63ff;
+  color: #4a90e2;
   margin-bottom: 12px;
 `;
 
@@ -76,7 +76,7 @@ export const Avatar = styled.View`
 export const AvatarText = styled.Text`
   font-size: 16px;
   font-weight: 700;
-  color: #6c63ff;
+  color: #4a90e2;
 `;
 
 export const InputCard = styled.View`
@@ -98,7 +98,7 @@ export const Input = styled.TextInput`
 `;
 
 export const Button = styled.TouchableOpacity`
-  background: #6c63ff;
+  background: #4a90e2;
   padding: 14px;
   border-radius: 12px;
   align-items: center;
@@ -129,7 +129,7 @@ export const EditButton = styled.TouchableOpacity`
 `;
 
 export const EditButtonText = styled.Text`
-  color: #6c63ff;
+  color: #4a90e2;
   font-weight: 600;
 `;
 
@@ -155,7 +155,7 @@ export const BannerButton = styled.TouchableOpacity`
 `;
 
 export const BannerButtonText = styled.Text`
-  color: #6c63ff;
+  color: #4a90e2;
   font-size: 17px;
   font-weight: 700;
 `;
@@ -169,7 +169,7 @@ export const ActionRow = styled.View`
 `;
 
 export const ActionButton = styled.TouchableOpacity`
-  background: #6c63ff;
+  background: #4a90e2;
   padding: 12px 20px;
   border-radius: 14px;
   flex-direction: row;
@@ -201,7 +201,7 @@ export const ActionButtonText = styled.Text`
 `;
 
 export const ActionButtonTextSecondary = styled.Text`
-  color: #6c63ff;
+  color: #4a90e2;
   font-size: 15px;
   font-weight: 700;
 `;
@@ -232,5 +232,5 @@ export const SortOptionText = styled.Text`
 export const SortOptionTextActive = styled.Text`
   font-size: 15px;
   font-weight: 700;
-  color: #6c63ff;
+  color: #4a90e2;
 `;

@@ -99,9 +99,9 @@ const AddSymptomForm = () => {
                   step={1}
                   value={severity}
                   onValueChange={setSeverity}
-                  minimumTrackTintColor="#6c63ff"
+                  minimumTrackTintColor="#4a90e2"
                   maximumTrackTintColor="#ddd"
-                  thumbTintColor="#6c63ff"
+                  thumbTintColor="#4a90e2"
                   style={{ flex: 1 }}
                 />
                 <SeverityNumber>{severity}</SeverityNumber>
@@ -150,7 +150,7 @@ const AddSymptomForm = () => {
 
           <View>
             <ResetButton onPress={resetForm}>
-              <Ionicons name="refresh" size={18} color="#6c63ff" />
+              <Ionicons name="refresh" size={18} color="#4a90e2" />
               <ResetText>Reset</ResetText>
             </ResetButton>
           </View>

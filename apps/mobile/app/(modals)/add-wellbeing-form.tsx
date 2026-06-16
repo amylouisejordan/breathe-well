@@ -294,7 +294,7 @@ const AddWellbeingCheckin = () => {
                   alignItems: "center",
                   paddingVertical: 24,
                   borderWidth: 1,
-                  borderColor: "#eee",
+                  borderColor: "#F4D6D2",
                 }}
               >
                 <MaterialIcons
@@ -363,7 +363,7 @@ const AddWellbeingCheckin = () => {
 
           <View>
             <ResetButton onPress={resetForm}>
-              <Ionicons name="refresh" size={18} color="#6c63ff" />
+              <Ionicons name="refresh" size={18} color="#4a90e2" />
               <ResetText>Reset</ResetText>
             </ResetButton>
           </View>

@@ -68,10 +68,10 @@ const ArticleCard = React.memo(({ article }: { article: Article }) => (
       opacity: pressed ? 0.9 : 1,
     })}
   >
-    <Card style={{ borderWidth: 1, borderColor: "#eee", borderRadius: 14 }}>
+    <Card style={{ borderWidth: 1, borderColor: "#F4D6D2", borderRadius: 14 }}>
       <Row style={{ alignItems: "center", marginBottom: 4 }}>
         <Avatar style={{ backgroundColor: "#f3f0ff" }}>
-          <AvatarText style={{ color: "#6c63ff" }}>
+          <AvatarText style={{ color: "#4a90e2" }}>
             {article.author.charAt(0)}
           </AvatarText>
         </Avatar>
@@ -153,7 +153,7 @@ const ArticlesScreen = () => {
 
       <ActionRow>
         <ActionButtonSecondary onPress={showSortSheet}>
-          <Text style={{ color: "#6c63ff", fontWeight: "600" }}>
+          <Text style={{ color: "#4a90e2", fontWeight: "600" }}>
             Sort: {sortMode === "newest" ? "Newest" : "Oldest"}
           </Text>
         </ActionButtonSecondary>

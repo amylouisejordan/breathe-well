@@ -9,7 +9,7 @@ export const Container = styled.View`
 export const Title = styled.Text`
   font-size: 24px;
   font-weight: 700;
-  color: #6c63ff;
+  color: #4a90e2;
   margin-bottom: 20px;
 `;
 
@@ -27,7 +27,7 @@ export const Step = styled.Text`
 `;
 
 export const Button = styled.TouchableOpacity`
-  background-color: #6c63ff;
+  background-color: #4a90e2;
   padding-vertical: 14px;
   border-radius: 12px;
   align-items: center;

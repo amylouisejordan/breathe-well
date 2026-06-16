@@ -88,7 +88,7 @@ const MyMedications = () => {
               <Ionicons
                 name={iconForType(med.type)}
                 size={26}
-                color="#6c63ff"
+                color="#4a90e2"
               />
             </IconWrap>
 

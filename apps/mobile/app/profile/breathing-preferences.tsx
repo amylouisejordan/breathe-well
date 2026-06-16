@@ -69,7 +69,7 @@ const BreathingPreferences = () => {
             <Row key={option} onPress={() => setStyle(option)}>
               <RowText>{option}</RowText>
               {style === option && (
-                <Ionicons name="checkmark-circle" size={22} color="#6c63ff" />
+                <Ionicons name="checkmark-circle" size={22} color="#4a90e2" />
               )}
             </Row>
           ))}
@@ -82,7 +82,7 @@ const BreathingPreferences = () => {
             <Row key={option} onPress={() => setPace(option)}>
               <RowText>{option}</RowText>
               {pace === option && (
-                <Ionicons name="checkmark-circle" size={22} color="#6c63ff" />
+                <Ionicons name="checkmark-circle" size={22} color="#4a90e2" />
               )}
             </Row>
           ))}
@@ -95,7 +95,7 @@ const BreathingPreferences = () => {
             <Row key={option} onPress={() => setDuration(option)}>
               <RowText>{option}</RowText>
               {duration === option && (
-                <Ionicons name="checkmark-circle" size={22} color="#6c63ff" />
+                <Ionicons name="checkmark-circle" size={22} color="#4a90e2" />
               )}
             </Row>
           ))}
@@ -108,7 +108,7 @@ const BreathingPreferences = () => {
             <Row key={option} onPress={() => setCheckins(option)}>
               <RowText>{option}</RowText>
               {checkins === option && (
-                <Ionicons name="checkmark-circle" size={22} color="#6c63ff" />
+                <Ionicons name="checkmark-circle" size={22} color="#4a90e2" />
               )}
             </Row>
           ))}
@@ -121,7 +121,7 @@ const BreathingPreferences = () => {
             <Row key={option} onPress={() => setEncouragement(option)}>
               <RowText>{option}</RowText>
               {encouragement === option && (
-                <Ionicons name="checkmark-circle" size={22} color="#6c63ff" />
+                <Ionicons name="checkmark-circle" size={22} color="#4a90e2" />
               )}
             </Row>
           ))}
@@ -135,7 +135,7 @@ const BreathingPreferences = () => {
             <Switch
               value={calmingAnimations}
               onValueChange={setCalmingAnimations}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
 
@@ -144,7 +144,7 @@ const BreathingPreferences = () => {
             <Switch
               value={reduceMotion}
               onValueChange={setReduceMotion}
-              thumbColor="#6c63ff"
+              thumbColor="#4a90e2"
             />
           </ToggleRow>
         </Card>

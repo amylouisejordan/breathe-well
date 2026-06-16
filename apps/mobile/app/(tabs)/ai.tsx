@@ -131,7 +131,7 @@ const AiScreen = () => {
             >
               {msg.type === "ai" && (
                 <Avatar>
-                  <Ionicons name="sparkles" size={20} color="#6c63ff" />
+                  <Ionicons name="sparkles" size={20} color="#4a90e2" />
                 </Avatar>
               )}
 
@@ -150,10 +150,10 @@ const AiScreen = () => {
           {loading && (
             <MessageRow side="left">
               <Avatar>
-                <Ionicons name="sparkles" size={20} color="#6c63ff" />
+                <Ionicons name="sparkles" size={20} color="#4a90e2" />
               </Avatar>
               <Message>
-                <ActivityIndicator size="small" color="#6c63ff" />
+                <ActivityIndicator size="small" color="#4a90e2" />
               </Message>
             </MessageRow>
           )}
@@ -182,7 +182,7 @@ const AiScreen = () => {
             <Ionicons
               name="send"
               size={20}
-              color={loading || !input.trim() ? "#ccc" : "#6c63ff"}
+              color={loading || !input.trim() ? "#ccc" : "#4a90e2"}
             />
           </SendButton>
         </InputBar>
