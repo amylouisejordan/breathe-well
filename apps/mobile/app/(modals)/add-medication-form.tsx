@@ -175,7 +175,10 @@ const AddMedicationForm = () => {
           </View>
 
           <View style={{ marginTop: 12 }}>
-            <SaveButton onPress={saveEntry} disabled={!name || !slot || saving}>
+            <SaveButton
+              disabled={!name.trim() || !slot || saving}
+              onPress={saveEntry}
+            >
               <Ionicons name="checkmark" size={22} color="#fff" />
               <SaveButtonText>
                 {saving ? "Saving…" : "Save Medication"}
