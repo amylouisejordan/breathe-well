@@ -61,7 +61,7 @@ const PostCard = React.memo(({ post }: { post: ForumPost }) => {
       <Card
         style={{
           borderWidth: 1,
-          borderColor: "#eee",
+          borderColor: "#F4D6D2",
           borderRadius: 14,
         }}
       >
@@ -71,7 +71,7 @@ const PostCard = React.memo(({ post }: { post: ForumPost }) => {
               position: "absolute",
               top: 12,
               right: 12,
-              backgroundColor: "#6c63ff",
+              backgroundColor: "#FF6F61",
               borderRadius: 999,
               paddingHorizontal: 10,
               paddingVertical: 4,
@@ -158,7 +158,7 @@ const SkeletonCard = ({ index }: { index: number }) => (
     <Card
       style={{
         borderWidth: 1,
-        borderColor: "#eee",
+        borderColor: "#F4D6D2",
         borderRadius: 14,
       }}
     >
@@ -202,43 +202,47 @@ export default function ForumScreen() {
     "newest"
   );
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchPosts();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sortMode])
-  );
-
-  const sortPosts = (list: ForumPost[], mode: typeof sortMode) => {
-    return [...list].sort((a, b) => {
-      switch (mode) {
+  const sortPosts = useCallback(
+    (list: ForumPost[]) => {
+      const sorted = [...list];
+      switch (sortMode) {
         case "newest":
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          return sorted.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
         case "oldest":
-          return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          return sorted.sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
           );
-
         case "az":
-          return a.title.localeCompare(b.title);
+          return sorted.sort((a, b) => a.title.localeCompare(b.title));
         case "za":
-          return b.title.localeCompare(a.title);
+          return sorted.sort((a, b) => b.title.localeCompare(a.title));
         default:
-          return 0;
+          return sorted;
       }
-    });
-  };
+    },
+    [sortMode]
+  );
 
-  const { user } = useAuth();
+  useEffect(() => {
+    if (!user) return;
+    setLoading(true);
+    getForumPosts()
+      .then(sortPosts)
+      .then(setPosts)
+      .finally(() => setLoading(false));
+  }, [user, sortMode, sortPosts]);
 
   const fetchPosts = async () => {
     if (!user) return;
     setLoading(true);
     const data = await getForumPosts();
-    const sorted = sortPosts(data, sortMode);
+    const sorted = sortPosts(data);
     setPosts(sorted);
     setLoading(false);
   };
@@ -288,11 +292,12 @@ export default function ForumScreen() {
       </ActionRow>
 
       <Screen
+        testID="forum-screen"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {loading ? (
+        {loading && posts.length === 0 ? (
           <>
             {Array(3)
               .fill(0)

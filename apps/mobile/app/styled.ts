@@ -178,7 +178,7 @@ export const Input = styled(TextInput)`
   font-size: 15px;
   background-color: #fafafa;
   color: #333;
-  marginbottom: 20;
+  margin-bottom: 20px;
 `;
 
 export const TextArea = styled(Input)`

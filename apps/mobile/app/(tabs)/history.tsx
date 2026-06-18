@@ -47,6 +47,7 @@ export type MedicationEntry = {
   dose: string;
   notes: string;
   date: string;
+  slot: "morning" | "afternoon" | "evening";
 };
 
 export type WellbeingEntry = {
@@ -446,6 +447,83 @@ const HistoryScreen = () => {
     month: "long",
   });
 
+  const MedicationWeekGrid = ({
+    medications,
+  }: {
+    medications: MedicationEntry[];
+  }) => {
+    const slots = ["Morning", "Afternoon", "Evening"];
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+    // build a 2-D boolean map: [slot][day] → logged?
+    const grid = Array(slots.length)
+      .fill(null)
+      .map(() => Array(days.length).fill(false));
+
+    const monday = getStartOfWeek();
+
+    medications.forEach((med) => {
+      const d = new Date(med.date);
+      if (d < monday || d > new Date(monday.getTime() + 6 * 86400000)) return;
+
+      const dayIdx = (d.getDay() + 6) % 7; // 0 = Monday
+      const slotIdx =
+        med.slot === "afternoon" ? 1 : med.slot === "evening" ? 2 : 0;
+      grid[slotIdx][dayIdx] = true;
+    });
+
+    return (
+      <View style={{ marginTop: 8 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 4,
+          }}
+        >
+          <Text style={{ width: 70 }}></Text>
+          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+            <Text
+              key={d}
+              style={{ flex: 1, textAlign: "center", fontSize: 12 }}
+            >
+              {d}
+            </Text>
+          ))}
+        </View>
+
+        {slots.map((slot, sIdx) => (
+          <View
+            key={slot}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 8,
+            }}
+          >
+            <Text style={{ width: 70, fontSize: 12, fontWeight: "600" }}>
+              {slot}
+            </Text>
+            {days.map((_, dIdx) => (
+              <View
+                key={dIdx}
+                style={{
+                  flex: 1,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontSize: 18 }}>
+                  {grid[sIdx][dIdx] ? "✅" : "⚪️"}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ))}
+      </View>
+    );
+  };
+
   return (
     <Container>
       <Header>
@@ -477,7 +555,7 @@ const HistoryScreen = () => {
               flex: 1,
               paddingVertical: 10,
               borderRadius: 10,
-              backgroundColor: range === item ? "#6c63ff" : "transparent",
+              backgroundColor: range === item ? "#4a90e2" : "transparent",
               alignItems: "center",
             }}
             key={item}
@@ -660,7 +738,7 @@ const HistoryScreen = () => {
                               ? "#ff6b6b"
                               : entry.severity >= 4
                               ? "#f7b731"
-                              : "#6c63ff",
+                              : "#4a90e2",
                         }}
                       >
                         <View
@@ -673,7 +751,7 @@ const HistoryScreen = () => {
                           <MaterialIcons
                             name="healing"
                             size={18}
-                            color="#6c63ff"
+                            color="#4a90e2"
                           />
                           <TodayItemTitle style={{ marginLeft: 6 }}>
                             Symptom
@@ -703,7 +781,7 @@ const HistoryScreen = () => {
                         key={`m-${i}`}
                         style={{
                           borderLeftWidth: 4,
-                          borderLeftColor: "#6c63ff",
+                          borderLeftColor: "#4a90e2",
                         }}
                       >
                         <View
@@ -716,7 +794,7 @@ const HistoryScreen = () => {
                           <MaterialIcons
                             name="medication"
                             size={18}
-                            color="#6c63ff"
+                            color="#4a90e2"
                           />
                           <TodayItemTitle style={{ marginLeft: 6 }}>
                             Medication
@@ -790,25 +868,30 @@ const HistoryScreen = () => {
 
             <Divider style={{ marginTop: 15 }} />
 
-            <Section style={{ marginBottom: 10 }}>
+            <Section style={{ marginBottom: 80 }}>
               <SectionTitle>Medication</SectionTitle>
-              <Graph
-                label="Medication taken"
-                data={medicationGraph}
-                onSelectDay={(index) => {
-                  setSelectedType("medication");
-                  if (range === "week") {
-                    setSelectedWeekIndex(index);
-                    setSelectedCalendarDay(null);
-                  } else if (range === "month") {
-                    setSelectedCalendarDay(index + 1);
-                    setSelectedWeekIndex(null);
-                  } else {
-                    setSelectedWeekIndex(null);
-                    setSelectedCalendarDay(null);
-                  }
-                }}
-              />
+
+              {range === "week" ? (
+                <MedicationWeekGrid medications={monthMedications} />
+              ) : (
+                <Graph
+                  label="Medication taken"
+                  data={medicationGraph}
+                  onSelectDay={(index) => {
+                    setSelectedType("medication");
+                    if (range === "week") {
+                      setSelectedWeekIndex(index);
+                      setSelectedCalendarDay(null);
+                    } else if (range === "month") {
+                      setSelectedCalendarDay(index + 1);
+                      setSelectedWeekIndex(null);
+                    } else {
+                      setSelectedWeekIndex(null);
+                      setSelectedCalendarDay(null);
+                    }
+                  }}
+                />
+              )}
             </Section>
           </>
         )}
