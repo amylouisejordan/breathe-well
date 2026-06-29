@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, View } from "react-native";
+import { Modal, View, ScrollView, Dimensions, Text } from "react-native";
 import {
   ModalBackdrop,
   ModalCard,
@@ -15,6 +15,8 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { REFLECT_EMOTIONS } from "../(modals)/add-wellbeing-form";
 import { MedicationEntry, SymptomEntry } from "../(tabs)/history";
+
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 interface DayModalProps {
   visible: boolean;
@@ -69,84 +71,119 @@ const DayModal = (props: DayModalProps) => {
     : dayLabel;
 
   return (
-    <Modal transparent animationType="fade">
+    <Modal
+      transparent
+      animationType="fade"
+      visible={visible}
+      onRequestClose={onClose}
+    >
       <ModalBackdrop>
-        <ModalCard>
+        <ModalCard
+          style={{ maxHeight: SCREEN_HEIGHT * 0.8, paddingBottom: 12 }}
+        >
           <ModalTitle>{formatted}</ModalTitle>
 
-          {(type === "wellbeing" || type === "both") &&
-            wellbeing.length > 0 && (
-              <>
-                <SectionHeader>Wellbeing</SectionHeader>
-                {wellbeing.map((entry, i) => {
-                  const meta = getEmotionMeta(entry.emotion);
+          <ScrollView
+            showsVerticalScrollIndicator={true}
+            contentContainerStyle={{ paddingBottom: 16 }}
+          >
+            {(type === "wellbeing" || type === "both") &&
+              wellbeing.length > 0 && (
+                <>
+                  <SectionHeader>Wellbeing</SectionHeader>
+                  {wellbeing.map((entry, i) => {
+                    const meta = getEmotionMeta(entry.emotion);
 
-                  return (
-                    <EntryBlock key={`w-${i}`}>
-                      <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
-                      >
+                    return (
+                      <EntryBlock key={`w-${i}`}>
                         <View
-                          style={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 18,
-                            backgroundColor: meta?.color || "#ccc",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            marginRight: 12,
-                          }}
+                          style={{ flexDirection: "row", alignItems: "center" }}
                         >
-                          <MaterialIcons
-                            name={meta?.icon || "sentiment-neutral"}
-                            size={22}
-                            color="#fff"
-                          />
+                          <View
+                            style={{
+                              width: 36,
+                              height: 36,
+                              borderRadius: 18,
+                              backgroundColor: meta?.color || "#ccc",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              marginRight: 12,
+                            }}
+                          >
+                            <MaterialIcons
+                              name={meta?.icon || "sentiment-neutral"}
+                              size={22}
+                              color="#fff"
+                            />
+                          </View>
+
+                          <EntryTitle>
+                            {meta?.label || entry.emotion}
+                          </EntryTitle>
                         </View>
 
-                        <EntryTitle>{meta?.label || entry.emotion}</EntryTitle>
-                      </View>
+                        {entry.tags?.length > 0 && (
+                          <EntryTags>Tags: {entry.tags.join(", ")}</EntryTags>
+                        )}
 
-                      {entry.tags?.length > 0 && (
-                        <EntryTags>Tags: {entry.tags.join(", ")}</EntryTags>
-                      )}
+                        <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
+                      </EntryBlock>
+                    );
+                  })}
+                </>
+              )}
 
-                      <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                    </EntryBlock>
-                  );
-                })}
-              </>
-            )}
-
-          {(type === "symptom" || type === "both") && symptoms.length > 0 && (
-            <>
-              <SectionHeader>Symptoms</SectionHeader>
-              {symptoms.map((entry, i) => (
-                <EntryBlock key={`s-${i}`}>
-                  <EntryTitle>Severity: {entry.severity}</EntryTitle>
-                  <EntryTags>
-                    Tags: {entry.tags?.length ? entry.tags.join(", ") : "None"}
-                  </EntryTags>
-                  <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                </EntryBlock>
-              ))}
-            </>
-          )}
-
-          {(type === "medication" || type === "both") &&
-            medications.length > 0 && (
+            {(type === "symptom" || type === "both") && symptoms.length > 0 && (
               <>
-                <SectionHeader>Medication</SectionHeader>
-                {medications.map((entry, i) => (
-                  <EntryBlock key={`m-${i}`}>
-                    <EntryTitle>{entry.name}</EntryTitle>
-                    <EntryTags>Dose: {entry.dose}</EntryTags>
+                <SectionHeader>Symptoms</SectionHeader>
+                {symptoms.map((entry, i) => (
+                  <EntryBlock key={`s-${i}`}>
+                    <EntryTitle>Severity: {entry.severity}</EntryTitle>
+                    <EntryTags>
+                      Tags:{" "}
+                      {entry.tags?.length ? entry.tags.join(", ") : "None"}
+                    </EntryTags>
                     <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
                   </EntryBlock>
                 ))}
               </>
             )}
-          <CloseButton onPress={onClose}>
+
+            {(type === "medication" || type === "both") &&
+              medications.length > 0 && (
+                <>
+                  <SectionHeader>Medication</SectionHeader>
+                  {medications.map((entry, i) => (
+                    <EntryBlock key={`m-${i}`}>
+                      <EntryTitle>{entry.name}</EntryTitle>
+                      <EntryTags>Dose: {entry.dose}</EntryTags>
+                      <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
+                    </EntryBlock>
+                  ))}
+                </>
+              )}
+
+            {wellbeing.length === 0 &&
+              symptoms.length === 0 &&
+              medications.length === 0 && (
+                <View style={{ paddingVertical: 32, alignItems: "center" }}>
+                  <Text style={{ fontSize: 32, marginBottom: 12 }}>🌤️</Text>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      color: "#666",
+                      textAlign: "center",
+                      lineHeight: 22,
+                      paddingHorizontal: 16,
+                    }}
+                  >
+                    Nothing logged for this day - tap another day or add an
+                    entry.
+                  </Text>
+                </View>
+              )}
+          </ScrollView>
+          <CloseButton onPress={onClose} style={{ marginTop: 8 }}>
             <CloseButtonText>Close</CloseButtonText>
           </CloseButton>
         </ModalCard>

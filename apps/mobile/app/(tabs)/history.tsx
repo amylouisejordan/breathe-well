@@ -437,12 +437,6 @@ const HistoryScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wellbeing, range, selectedWeekIndex, selectedCalendarDay]);
 
-  const hasAnyEntry =
-    selectedDaySymptoms.length +
-      selectedDayMedications.length +
-      selectedDayWellbeing.length >
-    0;
-
   const monthName = new Date(year, month).toLocaleString("default", {
     month: "long",
   });
@@ -897,30 +891,20 @@ const HistoryScreen = () => {
         )}
       </ScrollView>
 
-      {hasAnyEntry ? (
-        <DayModal
-          visible={selectedWeekIndex !== null || selectedCalendarDay !== null}
-          dayLabel={getDayLabel()}
-          monthName={monthName}
-          symptoms={selectedDaySymptoms}
-          medications={selectedDayMedications}
-          wellbeing={selectedDayWellbeing}
-          type={selectedType}
-          onClose={() => {
-            setSelectedWeekIndex(null);
-            setSelectedCalendarDay(null);
-            setSelectedType(null);
-          }}
-        />
-      ) : (
-        (selectedWeekIndex !== null || selectedCalendarDay !== null) && (
-          <DailyCard>
-            <Insight>
-              Nothing logged for this day - tap another or add an entry.
-            </Insight>
-          </DailyCard>
-        )
-      )}
+      <DayModal
+        visible={selectedWeekIndex !== null || selectedCalendarDay !== null}
+        dayLabel={getDayLabel()}
+        monthName={monthName}
+        symptoms={selectedDaySymptoms}
+        medications={selectedDayMedications}
+        wellbeing={selectedDayWellbeing}
+        type={selectedType}
+        onClose={() => {
+          setSelectedWeekIndex(null);
+          setSelectedCalendarDay(null);
+          setSelectedType(null);
+        }}
+      />
     </Container>
   );
 };
