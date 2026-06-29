@@ -2,8 +2,8 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import { jest } from "@jest/globals";
-import { useAuth } from "../utils/useAuth";
-import AiScreen from "./ai";
+import { useAuth } from "../app/utils/useAuth";
+import AiScreen from "../app/(tabs)/ai";
 
 jest.mock("@expo/vector-icons", () => {
   const React = require("react");

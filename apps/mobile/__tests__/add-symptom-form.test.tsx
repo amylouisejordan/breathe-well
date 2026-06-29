@@ -3,7 +3,7 @@ import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import { jest } from "@jest/globals";
 import { Alert } from "react-native";
-import AddSymptomForm from "./add-symptom-form";
+import AddSymptomForm from "../app/(modals)/add-symptom-form";
 
 jest.mock("@expo/vector-icons", () => {
   const React = require("react");

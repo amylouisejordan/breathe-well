@@ -3,6 +3,8 @@
     "expo-application": "^55.0.14",
     "expo-build-properties": "~55.0.13",
     "expo-secure-store": "^55.0.13",
-    "firebase": "^11.10.0"
+    "firebase": "^11.10.0",
+    "jest": "~29.7.0",
+    "jest-expo": "~55.0.18"
   }
 }
