@@ -160,6 +160,7 @@ const ArticlesScreen = () => {
       </ActionRow>
 
       <Screen
+        testID="refresh-control"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }

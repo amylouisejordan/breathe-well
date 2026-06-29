@@ -94,6 +94,7 @@ const AddSymptomForm = () => {
 
               <SliderRow>
                 <Slider
+                  testID="mock-slider"
                   minimumValue={1}
                   maximumValue={10}
                   step={1}

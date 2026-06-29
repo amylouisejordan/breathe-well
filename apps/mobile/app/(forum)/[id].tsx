@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   TextInput,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   View,
   RefreshControl,
+  Modal,
 } from "react-native";
 import { getPostById, addCommentToPost } from "../../utils/forumFirestore";
 import { Avatar, AvatarText } from "./styled";
@@ -28,12 +29,20 @@ type ForumPost = {
   comments: Comment[];
 };
 
+type UserProfile = {
+  username: string;
+  joinDate: string;
+};
+
 const PostDetail = () => {
   const { id } = useLocalSearchParams();
   const [post, setPost] = useState<ForumPost | null>(null);
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const onRefresh = () => {
     setRefreshing(true);
     fetchPost().finally(() => setRefreshing(false));
@@ -48,6 +57,15 @@ const PostDetail = () => {
     fetchPost();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const handleAvatarPress = (username: string) => {
+    const mockProfile: UserProfile = {
+      username: username,
+      joinDate: "Jan 2024", // Mocked join date
+    };
+    setSelectedUser(mockProfile);
+    setIsModalVisible(true);
+  };
 
   const addReply = async () => {
     if (!reply.trim() || sending) return;
@@ -90,10 +108,21 @@ const PostDetail = () => {
           {post.title}
         </Text>
 
-        <View style={{ flexDirection: "row", marginTop: 6 }}>
-          <Text style={{ color: "#666", fontSize: 14, marginRight: 8 }}>
-            by {post.author}
-          </Text>
+        <View
+          style={{ flexDirection: "row", marginTop: 6, alignItems: "center" }}
+        >
+          <TouchableOpacity onPress={() => handleAvatarPress(post.author)}>
+            <Text
+              style={{
+                color: "#4a90e2",
+                fontSize: 14,
+                marginRight: 8,
+                fontWeight: "600",
+              }}
+            >
+              by {post.author}
+            </Text>
+          </TouchableOpacity>
 
           <Text style={{ color: "#aaa", fontSize: 14 }}>
             •{" "}
@@ -136,16 +165,20 @@ const PostDetail = () => {
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Avatar style={{ backgroundColor: "#f3f0ff", marginRight: 10 }}>
-              <AvatarText style={{ color: "#4a90e2" }}>
-                {c.author.charAt(0)}
-              </AvatarText>
-            </Avatar>
+            <TouchableOpacity onPress={() => handleAvatarPress(c.author)}>
+              <Avatar style={{ backgroundColor: "#f3f0ff", marginRight: 10 }}>
+                <AvatarText style={{ color: "#4a90e2" }}>
+                  {c.author.charAt(0)}
+                </AvatarText>
+              </Avatar>
+            </TouchableOpacity>
 
             <View style={{ flex: 1 }}>
-              <Text style={{ fontWeight: "600", color: "#333" }}>
-                {c.author}
-              </Text>
+              <TouchableOpacity onPress={() => handleAvatarPress(c.author)}>
+                <Text style={{ fontWeight: "600", color: "#333" }}>
+                  {c.author}
+                </Text>
+              </TouchableOpacity>
 
               <Text style={{ color: "#aaa", fontSize: 13 }}>
                 {new Date(c.createdAt).toLocaleDateString(undefined, {
@@ -205,6 +238,98 @@ const PostDetail = () => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <Modal
+        transparent
+        visible={isModalVisible}
+        animationType="fade"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          activeOpacity={1}
+          onPressOut={() => setIsModalVisible(false)}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              width: "80%",
+              padding: 24,
+              borderRadius: 20,
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 4,
+              elevation: 5,
+            }}
+          >
+            {selectedUser && (
+              <>
+                <Avatar
+                  style={{
+                    backgroundColor: "#f3f0ff",
+                    width: 70,
+                    height: 70,
+                    borderRadius: 35,
+                    marginBottom: 14,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <AvatarText
+                    style={{
+                      color: "#4a90e2",
+                      fontSize: 28,
+                      fontWeight: "700",
+                    }}
+                  >
+                    {selectedUser.username.charAt(0)}
+                  </AvatarText>
+                </Avatar>
+
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "700",
+                    color: "#333",
+                    marginBottom: 4,
+                  }}
+                >
+                  {selectedUser.username}
+                </Text>
+
+                <Text style={{ fontSize: 14, color: "#888", marginBottom: 20 }}>
+                  Joined: {selectedUser.joinDate}
+                </Text>
+
+                <TouchableOpacity
+                  onPress={() => setIsModalVisible(false)}
+                  style={{
+                    backgroundColor: "#f1f1f5",
+                    paddingVertical: 10,
+                    paddingHorizontal: 24,
+                    borderRadius: 10,
+                    width: "100%",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{ color: "#555", fontWeight: "600", fontSize: 15 }}
+                  >
+                    Close
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </ScrollView>
   );
 };
