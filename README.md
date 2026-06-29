@@ -1,5 +1,3 @@
-![BreatheWell Banner](assets/banner.png)
-
 # 🫁 BreatheWell
 
 ![Progress](https://img.shields.io/badge/status-in--progress-blue)
@@ -17,13 +15,19 @@ This repository houses the software prototype for my final-year dissertation pro
 The study explores how cross-platform mobile frameworks and serverless generative AI infrastructures can mitigate the unaddressed psychosomatic feedback loops of chronic illness — specifically targeting the clinical drivers of breathlessness alongside the psychosocial challenges of social isolation and low self-efficacy.
 
 > ### 🤍 Project Dedication
-> This project is affectionately dedicated to the memory of my **Nan** and my **Uncle Jay**, who both passed away from COPD. Their lived experiences profoundly illuminated the critical gaps in emotional and physical support for vulnerable patients. This software is built to honor their memory by proving that technology can —a nd should — be engineered with compassion.
+> This project is affectionately dedicated to the memory of my **Uncle Jay** and my **Nan**, who both passed away from COPD. Their lived experiences profoundly illuminated the critical gaps in emotional and physical support for vulnerable patients. This software is built to honor their memory by proving that technology can - and should - be engineered with compassion.
 
 ---
 
 ## 📖 Operational Documentation
 
 To explore the user interface mechanics, system workflows, and interactive components of the prototype application, please refer to the comprehensive **[BreatheWell Client User Guide](./docs/user-guide.md)**. This guide highlights feature navigation and operational workflows mapped to core engineering requirements.
+
+---
+
+## 📆 Development History & Tracking
+
+To trace the iterative growth of this MVP, please review the project's **[Changelog](./CHANGELOG.md)**. This log captures specific technical achievements made over the development lifecycle.
 
 ---
 
