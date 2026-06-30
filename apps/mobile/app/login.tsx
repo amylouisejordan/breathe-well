@@ -19,7 +19,7 @@ import { useRouter } from "expo-router";
 import { Container, Title, Subtext } from "./history/styled";
 import { Card, Row, Avatar, AvatarText } from "./(forum)/styled";
 
-export default function Login() {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [isRegister, setIsRegister] = useState(false);
@@ -63,13 +63,17 @@ export default function Login() {
             height: 80,
             borderRadius: 40,
           }}
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
         >
           <AvatarText style={{ color: "#4a90e2", fontSize: 32 }}>
             {isRegister ? "👋" : "🔐"}
           </AvatarText>
         </Avatar>
 
-        <Title>{isRegister ? "Create account" : "Welcome back"}</Title>
+        <Title accessibilityRole="header">
+          {isRegister ? "Create account" : "Welcome back"}
+        </Title>
         <Subtext style={{ marginBottom: 24 }}>
           {isRegister
             ? "Join the community and start breathing easier"
@@ -91,6 +95,10 @@ export default function Login() {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
+            autoComplete="email"
+            accessible={true}
+            accessibilityLabel="Email address input"
+            accessibilityHint="Type your profile communication email address account link"
             style={{
               borderWidth: 1,
               borderColor: "#ddd",
@@ -106,6 +114,10 @@ export default function Login() {
             value={pass}
             onChangeText={setPass}
             secureTextEntry
+            autoComplete="password"
+            accessible={true}
+            accessibilityLabel="Password input"
+            accessibilityHint="Type the security code secret assigned onto this email profile account"
             style={{
               borderWidth: 1,
               borderColor: "#ddd",
@@ -117,9 +129,35 @@ export default function Login() {
             }}
           />
 
+          <View
+            accessibilityLiveRegion="assertive"
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+            style={{ position: "absolute", width: 1, height: 1, opacity: 0 }}
+          >
+            <Text>
+              {loading
+                ? "Authentication process actively running, please hold"
+                : ""}
+            </Text>
+          </View>
+
           <Pressable
             onPress={handleAuth}
             disabled={loading}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={
+              isRegister
+                ? "Submit creation profile details"
+                : "Submit entry login criteria credentials"
+            }
+            accessibilityHint={
+              isRegister
+                ? "Submits account sign up configuration form"
+                : "Authenticates details to sign into profile dashboard hub"
+            }
+            accessibilityState={{ busy: loading }}
             style={({ pressed }) => ({
               backgroundColor: pressed ? "#5b54e3" : "#4a90e2",
               borderRadius: 12,
@@ -128,23 +166,28 @@ export default function Login() {
               opacity: loading ? 0.6 : 1,
             })}
           >
-            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 16 }}>
+            <Text
+              style={{ color: "#fff", fontWeight: "700", fontSize: 16 }}
+              importantForAccessibility="no"
+              accessibilityElementsHidden={true}
+            >
               {loading ? "Working…" : isRegister ? "Create account" : "Sign in"}
             </Text>
           </Pressable>
 
           <Row style={{ marginTop: 16, justifyContent: "center" }}>
-            <Text style={{ color: "#666" }}>
-              {isRegister ? "Already a member?" : "New here?"}{" "}
-            </Text>
-            <Pressable onPress={() => setIsRegister((v) => !v)}>
-              <Text
-                style={{
-                  color: "#6c64a90e23ff",
-                  fontWeight: "700",
-                }}
-              >
-                {isRegister ? "Login" : "Register"}
+            <Pressable
+              onPress={() => setIsRegister((v) => !v)}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={
+                isRegister
+                  ? "Already a member? Switch to standard login entry layout"
+                  : "New here? Switch to registration account sign up input panel form layout"
+              }
+            >
+              <Text style={{ color: "#666", textAlign: "center" }}>
+                {isRegister ? "Already a member? Login" : "New here? Register"}
               </Text>
             </Pressable>
           </Row>
@@ -153,3 +196,5 @@ export default function Login() {
     </Container>
   );
 }
+
+export default Login;

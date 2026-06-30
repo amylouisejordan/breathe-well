@@ -448,8 +448,16 @@ const HistoryScreen = () => {
   }) => {
     const slots = ["Morning", "Afternoon", "Evening"];
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const fullDays = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
 
-    // build a 2-D boolean map: [slot][day] → logged?
     const grid = Array(slots.length)
       .fill(null)
       .map(() => Array(days.length).fill(false));
@@ -467,16 +475,21 @@ const HistoryScreen = () => {
     });
 
     return (
-      <View style={{ marginTop: 8 }}>
+      <View
+        style={{ marginTop: 8 }}
+        accessibilityLabel="Weekly medication log overview matrix"
+      >
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
             marginBottom: 4,
           }}
+          importantForAccessibility="no-hide-descendants"
+          accessibilityElementsHidden={true}
         >
           <Text style={{ width: 70 }}></Text>
-          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+          {days.map((d) => (
             <Text
               key={d}
               style={{ flex: 1, textAlign: "center", fontSize: 12 }}
@@ -495,23 +508,37 @@ const HistoryScreen = () => {
               marginBottom: 8,
             }}
           >
-            <Text style={{ width: 70, fontSize: 12, fontWeight: "600" }}>
+            <Text
+              style={{ width: 70, fontSize: 12, fontWeight: "600" }}
+              accessibilityRole="header"
+            >
               {slot}
             </Text>
-            {days.map((_, dIdx) => (
-              <View
-                key={dIdx}
-                style={{
-                  flex: 1,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Text style={{ fontSize: 18 }}>
-                  {grid[sIdx][dIdx] ? "✅" : "⚪️"}
-                </Text>
-              </View>
-            ))}
+            {days.map((_, dIdx) => {
+              const isLogged = grid[sIdx][dIdx];
+              return (
+                <View
+                  key={dIdx}
+                  style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  accessible={true}
+                  accessibilityLabel={`${slot} schedule entry on ${
+                    fullDays[dIdx]
+                  }: ${isLogged ? "Medication taken" : "No medication logged"}`}
+                >
+                  <Text
+                    style={{ fontSize: 18 }}
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
+                  >
+                    {isLogged ? "✅" : "⚪️"}
+                  </Text>
+                </View>
+              );
+            })}
           </View>
         ))}
       </View>
@@ -521,13 +548,15 @@ const HistoryScreen = () => {
   return (
     <Container>
       <Header>
-        <Title>Your Progress</Title>
+        <Title accessibilityRole="header">Your Progress</Title>
         <Subtext style={{ marginTop: 4 }}>
           A gentle look at how you’ve been feeling over time
         </Subtext>
       </Header>
 
       <ToggleRow
+        accessibilityRole="tablist"
+        accessibilityLabel="Timeline chart range view filters"
         style={{
           backgroundColor: "#f3f0ff",
           padding: 6,
@@ -545,6 +574,9 @@ const HistoryScreen = () => {
         {["day", "week", "month"].map((item) => (
           <Toggle
             active={range === item}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: range === item }}
+            accessibilityLabel={`${item} context historical timeline display configuration option`}
             style={{
               flex: 1,
               paddingVertical: 10,
@@ -558,7 +590,7 @@ const HistoryScreen = () => {
               setSelectedType(null);
             }}
           >
-            <ToggleText active={range === item}>
+            <ToggleText active={range === item} importantForAccessibility="no">
               {item.charAt(0).toUpperCase() + item.slice(1)}
             </ToggleText>
           </Toggle>
@@ -568,10 +600,12 @@ const HistoryScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {range === "day" ? (
           <Section>
-            <SectionTitle>Today</SectionTitle>
+            <SectionTitle accessibilityRole="header">Today</SectionTitle>
 
             {todayWellbeing && (
               <DailyCard
+                accessible={true}
+                accessibilityLabel={`Today's summary metrics overview`}
                 style={{
                   borderLeftWidth: 4,
                   borderLeftColor:
@@ -601,6 +635,8 @@ const HistoryScreen = () => {
                           shadowRadius: 6,
                           shadowOffset: { width: 0, height: 2 },
                         }}
+                        importantForAccessibility="no"
+                        accessibilityElementsHidden={true}
                       >
                         <MaterialIcons
                           name={meta?.icon || "sentiment-neutral"}
@@ -678,14 +714,23 @@ const HistoryScreen = () => {
 
             {!todayWellbeing &&
               (todaySymptoms.length > 0 || todayMedications.length > 0) && (
-                <Card>
+                <Card
+                  accessible={true}
+                  accessibilityLabel="No emotional index check-in logged yet for today. Enter entry details to see summaries."
+                >
                   <View
                     style={{
                       flexDirection: "row",
                       alignItems: "center",
                     }}
                   >
-                    <Text style={{ fontSize: 32, marginRight: 8 }}>🌤️</Text>
+                    <Text
+                      style={{ fontSize: 32, marginRight: 8 }}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden={true}
+                    >
+                      🌤️
+                    </Text>
                     <Insight
                       style={{ fontSize: 16, opacity: 0.8, marginTop: 3 }}
                     >
@@ -699,6 +744,8 @@ const HistoryScreen = () => {
               todaySymptoms.length === 0 &&
               todayMedications.length === 0 && (
                 <DailyCard
+                  accessible={true}
+                  accessibilityLabel="Empty activity feed tracker. No elements logged yet for today."
                   style={{
                     padding: 28,
                     alignItems: "center",
@@ -707,7 +754,13 @@ const HistoryScreen = () => {
                     borderRadius: 18,
                   }}
                 >
-                  <Text style={{ fontSize: 48, marginBottom: 8 }}>🌤️</Text>
+                  <Text
+                    style={{ fontSize: 48, marginBottom: 8 }}
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
+                  >
+                    🌤️
+                  </Text>
                   <Insight style={{ fontSize: 16, opacity: 0.8 }}>
                     No entries logged yet today.
                   </Insight>
@@ -716,7 +769,10 @@ const HistoryScreen = () => {
 
             {(todaySymptoms.length > 0 || todayMedications.length > 0) && (
               <>
-                <SectionTitle style={{ marginTop: 20 }}>
+                <SectionTitle
+                  style={{ marginTop: 20 }}
+                  accessibilityRole="header"
+                >
                   Today’s items
                 </SectionTitle>
 
@@ -725,6 +781,12 @@ const HistoryScreen = () => {
                     {todaySymptoms.map((entry, i) => (
                       <TodayCard
                         key={`s-${i}`}
+                        accessible={true}
+                        accessibilityLabel={`Symptom element entry tracking item. Severity level marked at ${
+                          entry.severity
+                        }. Selected tags: ${
+                          entry.tags.length > 0 ? entry.tags.join(", ") : "None"
+                        }.`}
                         style={{
                           borderLeftWidth: 4,
                           borderLeftColor:
@@ -741,6 +803,8 @@ const HistoryScreen = () => {
                             alignItems: "center",
                             marginBottom: 6,
                           }}
+                          importantForAccessibility="no-hide-descendants"
+                          accessibilityElementsHidden={true}
                         >
                           <MaterialIcons
                             name="healing"
@@ -752,13 +816,19 @@ const HistoryScreen = () => {
                           </TodayItemTitle>
                         </View>
 
-                        <TodayItemText style={{ fontSize: 14, opacity: 0.9 }}>
+                        <TodayItemText
+                          style={{ fontSize: 14, opacity: 0.9 }}
+                          importantForAccessibility="no"
+                          accessibilityElementsHidden={true}
+                        >
                           Severity: {entry.severity}
                         </TodayItemText>
 
                         {entry.tags.length > 0 && (
                           <TodayItemText
                             style={{ marginTop: 4, fontSize: 14, opacity: 0.8 }}
+                            importantForAccessibility="no"
+                            accessibilityElementsHidden={true}
                           >
                             Tags: {entry.tags.join(", ")}
                           </TodayItemText>
@@ -773,6 +843,12 @@ const HistoryScreen = () => {
                     {todayMedications.map((entry, i) => (
                       <TodayCard
                         key={`m-${i}`}
+                        accessible={true}
+                        accessibilityLabel={`Medication distribution tracking item. Name field details: ${
+                          entry.name
+                        }. Volume details: ${entry.dose}. ${
+                          entry.notes ? "Notes text included" : ""
+                        }`}
                         style={{
                           borderLeftWidth: 4,
                           borderLeftColor: "#4a90e2",
@@ -784,6 +860,8 @@ const HistoryScreen = () => {
                             alignItems: "center",
                             marginBottom: 6,
                           }}
+                          importantForAccessibility="no-hide-descendants"
+                          accessibilityElementsHidden={true}
                         >
                           <MaterialIcons
                             name="medication"
@@ -795,13 +873,19 @@ const HistoryScreen = () => {
                           </TodayItemTitle>
                         </View>
 
-                        <TodayItemText style={{ fontSize: 14, opacity: 0.9 }}>
+                        <TodayItemText
+                          style={{ fontSize: 14, opacity: 0.9 }}
+                          importantForAccessibility="no"
+                          accessibilityElementsHidden={true}
+                        >
                           {entry.name} • {entry.dose}
                         </TodayItemText>
 
                         {entry.notes?.length > 0 && (
                           <TodayItemText
                             style={{ marginTop: 4, fontSize: 14, opacity: 0.8 }}
+                            importantForAccessibility="no"
+                            accessibilityElementsHidden={true}
                           >
                             Notes: {entry.notes}
                           </TodayItemText>
@@ -815,7 +899,7 @@ const HistoryScreen = () => {
           </Section>
         ) : range === "month" ? (
           <Section>
-            <SectionTitle>This month</SectionTitle>
+            <SectionTitle accessibilityRole="header">This month</SectionTitle>
             <Graph
               label="This month"
               data={{ values: [1], labels: [""] }}
@@ -825,7 +909,7 @@ const HistoryScreen = () => {
         ) : (
           <>
             <Section style={{ marginBottom: -10 }}>
-              <SectionTitle>Mood</SectionTitle>
+              <SectionTitle accessibilityRole="header">Mood</SectionTitle>
               <MoodDotChart
                 data={weeklyMood}
                 dates={weeklyMood.dates}
@@ -840,7 +924,7 @@ const HistoryScreen = () => {
             <Divider style={{ marginTop: 30 }} />
 
             <Section style={{ marginBottom: 10 }}>
-              <SectionTitle>Symptoms</SectionTitle>
+              <SectionTitle accessibilityRole="header">Symptoms</SectionTitle>
               <Graph
                 label="Breathlessness"
                 data={symptomGraph}
@@ -863,7 +947,7 @@ const HistoryScreen = () => {
             <Divider style={{ marginTop: 15 }} />
 
             <Section style={{ marginBottom: 80 }}>
-              <SectionTitle>Medication</SectionTitle>
+              <SectionTitle accessibilityRole="header">Medication</SectionTitle>
 
               {range === "week" ? (
                 <MedicationWeekGrid medications={monthMedications} />

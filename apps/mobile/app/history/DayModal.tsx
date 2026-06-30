@@ -79,9 +79,15 @@ const DayModal = (props: DayModalProps) => {
     >
       <ModalBackdrop>
         <ModalCard
+          aria-modal={true}
           style={{ maxHeight: SCREEN_HEIGHT * 0.8, paddingBottom: 12 }}
         >
-          <ModalTitle>{formatted}</ModalTitle>
+          <ModalTitle
+            accessibilityRole="header"
+            accessibilityLabel={`Logs for ${formatted}`}
+          >
+            {formatted}
+          </ModalTitle>
 
           <ScrollView
             showsVerticalScrollIndicator={true}
@@ -90,14 +96,28 @@ const DayModal = (props: DayModalProps) => {
             {(type === "wellbeing" || type === "both") &&
               wellbeing.length > 0 && (
                 <>
-                  <SectionHeader>Wellbeing</SectionHeader>
+                  <SectionHeader accessibilityRole="header">
+                    Wellbeing
+                  </SectionHeader>
                   {wellbeing.map((entry, i) => {
                     const meta = getEmotionMeta(entry.emotion);
+                    const tagString = entry.tags?.length
+                      ? entry.tags.join(", ")
+                      : "None";
+                    const noteText = entry.notes || "No notes";
 
                     return (
-                      <EntryBlock key={`w-${i}`}>
+                      <EntryBlock
+                        key={`w-${i}`}
+                        accessible={true}
+                        accessibilityLabel={`Wellbeing log: Feel ${
+                          meta?.label || entry.emotion
+                        }. Tags: ${tagString}. Note: ${noteText}`}
+                      >
                         <View
                           style={{ flexDirection: "row", alignItems: "center" }}
+                          importantForAccessibility="no-hide-descendants"
+                          accessibilityElementsHidden={true}
                         >
                           <View
                             style={{
@@ -123,10 +143,20 @@ const DayModal = (props: DayModalProps) => {
                         </View>
 
                         {entry.tags?.length > 0 && (
-                          <EntryTags>Tags: {entry.tags.join(", ")}</EntryTags>
+                          <EntryTags
+                            importantForAccessibility="no"
+                            accessibilityElementsHidden={true}
+                          >
+                            Tags: {entry.tags.join(", ")}
+                          </EntryTags>
                         )}
 
-                        <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
+                        <EntryNotes
+                          importantForAccessibility="no"
+                          accessibilityElementsHidden={true}
+                        >
+                          {entry.notes || "No notes"}
+                        </EntryNotes>
                       </EntryBlock>
                     );
                   })}
@@ -135,39 +165,100 @@ const DayModal = (props: DayModalProps) => {
 
             {(type === "symptom" || type === "both") && symptoms.length > 0 && (
               <>
-                <SectionHeader>Symptoms</SectionHeader>
-                {symptoms.map((entry, i) => (
-                  <EntryBlock key={`s-${i}`}>
-                    <EntryTitle>Severity: {entry.severity}</EntryTitle>
-                    <EntryTags>
-                      Tags:{" "}
-                      {entry.tags?.length ? entry.tags.join(", ") : "None"}
-                    </EntryTags>
-                    <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                  </EntryBlock>
-                ))}
+                <SectionHeader accessibilityRole="header">
+                  Symptoms
+                </SectionHeader>
+                {symptoms.map((entry, i) => {
+                  const tagString = entry.tags?.length
+                    ? entry.tags.join(", ")
+                    : "None";
+                  const noteText = entry.notes || "No notes";
+
+                  return (
+                    <EntryBlock
+                      key={`s-${i}`}
+                      accessible={true}
+                      accessibilityLabel={`Symptom log. Severity level: ${entry.severity}. Associated tags: ${tagString}. Note: ${noteText}`}
+                    >
+                      <EntryTitle
+                        importantForAccessibility="no"
+                        accessibilityElementsHidden={true}
+                      >
+                        Severity: {entry.severity}
+                      </EntryTitle>
+                      <EntryTags
+                        importantForAccessibility="no"
+                        accessibilityElementsHidden={true}
+                      >
+                        Tags:{" "}
+                        {entry.tags?.length ? entry.tags.join(", ") : "None"}
+                      </EntryTags>
+                      <EntryNotes
+                        importantForAccessibility="no"
+                        accessibilityElementsHidden={true}
+                      >
+                        {entry.notes || "No notes"}
+                      </EntryNotes>
+                    </EntryBlock>
+                  );
+                })}
               </>
             )}
 
             {(type === "medication" || type === "both") &&
               medications.length > 0 && (
                 <>
-                  <SectionHeader>Medication</SectionHeader>
-                  {medications.map((entry, i) => (
-                    <EntryBlock key={`m-${i}`}>
-                      <EntryTitle>{entry.name}</EntryTitle>
-                      <EntryTags>Dose: {entry.dose}</EntryTags>
-                      <EntryNotes>{entry.notes || "No notes"}</EntryNotes>
-                    </EntryBlock>
-                  ))}
+                  <SectionHeader accessibilityRole="header">
+                    Medication
+                  </SectionHeader>
+                  {medications.map((entry, i) => {
+                    const noteText = entry.notes || "No notes";
+
+                    return (
+                      <EntryBlock
+                        key={`m-${i}`}
+                        accessible={true}
+                        accessibilityLabel={`Medication log: ${entry.name}. Dose quantity: ${entry.dose}. Note: ${noteText}`}
+                      >
+                        <EntryTitle
+                          importantForAccessibility="no"
+                          accessibilityElementsHidden={true}
+                        >
+                          {entry.name}
+                        </EntryTitle>
+                        <EntryTags
+                          importantForAccessibility="no"
+                          accessibilityElementsHidden={true}
+                        >
+                          Dose: {entry.dose}
+                        </EntryTags>
+                        <EntryNotes
+                          importantForAccessibility="no"
+                          accessibilityElementsHidden={true}
+                        >
+                          {entry.notes || "No notes"}
+                        </EntryNotes>
+                      </EntryBlock>
+                    );
+                  })}
                 </>
               )}
 
             {wellbeing.length === 0 &&
               symptoms.length === 0 &&
               medications.length === 0 && (
-                <View style={{ paddingVertical: 32, alignItems: "center" }}>
-                  <Text style={{ fontSize: 32, marginBottom: 12 }}>🌤️</Text>
+                <View
+                  style={{ paddingVertical: 32, alignItems: "center" }}
+                  accessible={true}
+                  accessibilityLabel="Nothing logged for this day. Tap another day or close to add an entry."
+                >
+                  <Text
+                    style={{ fontSize: 32, marginBottom: 12 }}
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
+                  >
+                    🌤️
+                  </Text>
                   <Text
                     style={{
                       fontSize: 15,
@@ -176,6 +267,8 @@ const DayModal = (props: DayModalProps) => {
                       lineHeight: 22,
                       paddingHorizontal: 16,
                     }}
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
                   >
                     Nothing logged for this day - tap another day or add an
                     entry.
@@ -183,7 +276,13 @@ const DayModal = (props: DayModalProps) => {
                 </View>
               )}
           </ScrollView>
-          <CloseButton onPress={onClose} style={{ marginTop: 8 }}>
+          <CloseButton
+            onPress={onClose}
+            style={{ marginTop: 8 }}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel="Close daily logs display dialog"
+          >
             <CloseButtonText>Close</CloseButtonText>
           </CloseButton>
         </ModalCard>

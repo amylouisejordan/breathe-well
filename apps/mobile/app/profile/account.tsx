@@ -1,3 +1,4 @@
+import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import {
   Card,
@@ -13,34 +14,41 @@ import {
 const AccountScreen = () => {
   return (
     <Container>
-      <Title>Manage Account</Title>
+      <Title accessibilityRole="header">Manage Account</Title>
       <Subtext>Update your personal details and account preferences</Subtext>
 
-      <Card style={{ marginTop: 0 }}>
+      <Card
+        style={{ marginTop: 0 }}
+        accessibilityRole="list"
+        accessibilityLabel="Account settings options"
+      >
         <SettingRow
           icon="person-circle"
           label="Edit profile"
-          hint="Update your name or details"
+          hint="Opens form to update your name or details"
         />
         <SettingRow
           icon="mail"
           label="Change email"
-          hint="Update your email address"
+          hint="Opens form to update your email address"
         />
         <SettingRow
           icon="key"
           label="Change password"
-          hint="Update your password"
+          hint="Opens form to update your password"
         />
       </Card>
 
       <Section>
-        <Card>
+        <Card
+          accessibilityRole="list"
+          accessibilityLabel="Critical account actions"
+        >
           <SettingRow
             icon="trash"
             label="Delete account"
             danger
-            hint="Permanently remove your account"
+            hint="Permanently removes all of your data from BreatheWell"
           />
         </Card>
       </Section>
@@ -60,16 +68,30 @@ const SettingRow = ({
   danger?: boolean;
 }) => (
   <Row
+    accessible={true}
     accessibilityRole="button"
     accessibilityLabel={label}
     accessibilityHint={hint}
+    accessibilityState={{ destructive: danger }}
     activeOpacity={0.6}
   >
-    <RowIcon>
+    <RowIcon importantForAccessibility="no" accessibilityElementsHidden={true}>
       <Ionicons name={icon} size={22} color={danger ? "#d9534f" : "#4a90e2"} />
     </RowIcon>
-    <RowText style={danger && { color: "#d9534f" }}>{label}</RowText>
-    <Ionicons name="chevron-forward" size={18} color="#bbb" />
+    <RowText
+      style={danger && { color: "#d9534f" }}
+      importantForAccessibility="no"
+      accessibilityElementsHidden={true}
+    >
+      {label}
+    </RowText>
+    <Ionicons
+      name="chevron-forward"
+      size={18}
+      color="#bbb"
+      importantForAccessibility="no"
+      accessibilityElementsHidden={true}
+    />
   </Row>
 );
 

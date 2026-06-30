@@ -59,9 +59,9 @@ const Graph = (props: GraphProps) => {
 
   if (!isMonth && (!data.values.length || data.values.every((v) => v === 0))) {
     return (
-      <Card>
+      <Card accessible={true} accessibilityLabel="No health metrics logged yet. Log something to begin your charts.">
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={{ fontSize: 32, marginRight: 8 }}>🌤️</Text>
+          <Text style={{ fontSize: 32, marginRight: 8 }} importantForAccessibility="no" accessibilityElementsHidden={true}>🌤️</Text>
           <Insight style={{ fontSize: 16, opacity: 0.8, marginTop: 3 }}>
             No data yet - log something to begin
           </Insight>
@@ -108,14 +108,18 @@ const Graph = (props: GraphProps) => {
 
     return (
       <Card style={{ marginBottom: 30 }}>
-        <GraphLabel>{label}</GraphLabel>
+        <GraphLabel accessibilityRole="header">{label}</GraphLabel>
 
-        <LegendRow style={{ marginTop: 10, gap: 6 }}>
-          <SymptomDot />
+        <LegendRow 
+          style={{ marginTop: 10, gap: 6 }}
+          accessible={true}
+          accessibilityLabel="Graph Color Key. Pink indicator represents symptoms. Blue indicator represents medications. Grey indicator represents mood."
+        >
+          <SymptomDot importantForAccessibility="no" accessibilityElementsHidden={true} />
           <LegendText>Symptom</LegendText>
-          <MedicationDot />
+          <MedicationDot importantForAccessibility="no" accessibilityElementsHidden={true} />
           <LegendText>Medication</LegendText>
-          <MoodDot color="#aaa" />
+          <MoodDot color="#aaa" importantForAccessibility="no" accessibilityElementsHidden={true} />
           <LegendText>Mood</LegendText>
         </LegendRow>
 
@@ -134,8 +138,12 @@ const Graph = (props: GraphProps) => {
               marginBottom: 28,
               alignItems: "flex-start",
             }}
+            accessible={true}
+            accessibilityLabel={`Monthly summary block: Average symptom severity is ${monthlyAvgSeverity}. ${
+              moodMetaAvg ? `Predominant emotional state logged is ${moodMetaAvg.label}` : "No mood logs found this month"
+            }`}
           >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden={true}>
               <View style={{ position: "relative", marginRight: 16 }}>
                 <Circle severity={monthlyAvgSeverity}>
                   <CircleText>{monthlyAvgSeverity}</CircleText>
@@ -158,9 +166,7 @@ const Graph = (props: GraphProps) => {
               </View>
 
               <View style={{ flexShrink: 1 }}>
-                <Insight
-                  style={{ marginTop: 0, fontWeight: "600", textAlign: "left" }}
-                >
+                <Insight style={{ marginTop: 0, fontWeight: "600", textAlign: "left" }}>
                   Average severity this month
                 </Insight>
 
@@ -173,9 +179,9 @@ const Graph = (props: GraphProps) => {
             </View>
           </DailyCard>
 
-          <Divider style={{ marginTop: -7 }} />
+          <Divider style={{ marginTop: -7 }} importantForAccessibility="no" accessibilityElementsHidden={true} />
 
-          <SectionTitle style={{ marginBottom: 16 }}>
+          <SectionTitle style={{ marginBottom: 16 }} accessibilityRole="header">
             Calendar • {monthName} {monthlyContext.year}
           </SectionTitle>
 
@@ -185,6 +191,8 @@ const Graph = (props: GraphProps) => {
               justifyContent: "space-between",
               marginBottom: 8,
             }}
+            accessible={true}
+            accessibilityLabel="Days of the week grid header: Monday through Sunday"
           >
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
               <Text
@@ -195,6 +203,8 @@ const Graph = (props: GraphProps) => {
                   color: "#999",
                   fontSize: 12,
                 }}
+                importantForAccessibility="no"
+                accessibilityElementsHidden={true}
               >
                 {d}
               </Text>
@@ -207,6 +217,8 @@ const Graph = (props: GraphProps) => {
                 return (
                   <DayCell
                     key={index}
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
                     style={{
                       backgroundColor: "#fff",
                       borderColor: "transparent",
@@ -218,17 +230,27 @@ const Graph = (props: GraphProps) => {
               const isToday = day === new Date().getDate();
 
               const hasSymptom = symptoms.some((s) => utcDay(s.date) === day);
-              const hasMedication = medications.some(
-                (m) => utcDay(m.date) === day
-              );
+              const hasMedication = medications.some((m) => utcDay(m.date) === day);
               const moodEntry = wellbeing.find((w) => utcDay(w.date) === day);
               const moodMeta = moodEntry
                 ? REFLECT_EMOTIONS.find((e) => e.key === moodEntry.emotion)
                 : null;
 
+              const historyArray: string[] = [];
+              if (hasSymptom) historyArray.push("Symptom");
+              if (hasMedication) historyArray.push("Medication");
+              if (moodMeta) historyArray.push(`Mood: ${moodMeta.label}`);
+              
+              const historyText = historyArray.length > 0 
+                ? `data present for: ${historyArray.join(", ")}` 
+                : "no metrics recorded";
+
               return (
                 <DayCell
                   key={index}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${day}${isToday ? ", Today," : ""}. ${historyText}. Double tap to inspect entries`}
                   onPress={() => {
                     onSelectCalendarDay(day);
                     setSelectedMonthName?.(monthName);
@@ -242,7 +264,7 @@ const Graph = (props: GraphProps) => {
                       : undefined
                   }
                 >
-                  <DayNumber>{day}</DayNumber>
+                  <DayNumber importantForAccessibility="no" accessibilityElementsHidden={true}>{day}</DayNumber>
 
                   <View
                     style={{
@@ -250,6 +272,8 @@ const Graph = (props: GraphProps) => {
                       marginTop: 4,
                       gap: 4,
                     }}
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
                   >
                     {hasSymptom && <SymptomDot />}
                     {hasMedication && <MedicationDot />}
@@ -270,31 +294,37 @@ const Graph = (props: GraphProps) => {
 
   return (
     <Card>
-      <GraphLabel>{label}</GraphLabel>
+      <GraphLabel accessibilityRole="header">{label}</GraphLabel>
 
-      <LegendRow>
-        <LegendDot />
+      <LegendRow accessible={true} accessibilityLabel="Weekly tracking index bar container">
+        <LegendDot importantForAccessibility="no" accessibilityElementsHidden={true} />
         <LegendText>Your logged data</LegendText>
       </LegendRow>
 
       <GraphArea>
-        <Grid>
+        <Grid importantForAccessibility="no" accessibilityElementsHidden={true}>
           {[...Array(4)].map((_, i) => (
             <GridLine key={i} />
           ))}
         </Grid>
 
         <BarRow>
-          {data.values.map((value, index) => (
-            <BarContainer
-              key={index}
-              onPress={() => onSelectDay && onSelectDay(index)}
-            >
-              <Bar style={{ height: value * 10 }} />
-              <ValueLabel>{value}</ValueLabel>
-              <BarLabel>{data.labels[index]}</BarLabel>
-            </BarContainer>
-          ))}
+          {data.values.map((value, index) => {
+            const dayLabel = data.labels[index];
+            return (
+              <BarContainer
+                key={index}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel={`${dayLabel}. Severity index score: ${value}. Double tap to view breakdown.`}
+                onPress={() => onSelectDay && onSelectDay(index)}
+              >
+                <Bar style={{ height: value * 10 }} importantForAccessibility="no" accessibilityElementsHidden={true} />
+                <ValueLabel importantForAccessibility="no" accessibilityElementsHidden={true}>{value}</ValueLabel>
+                <BarLabel importantForAccessibility="no" accessibilityElementsHidden={true}>{dayLabel}</BarLabel>
+              </BarContainer>
+            );
+          })}
         </BarRow>
       </GraphArea>
 

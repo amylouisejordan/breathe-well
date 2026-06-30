@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   LayoutChangeEvent,
+  AccessibilityInfo,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useRef, useEffect } from "react";
@@ -61,12 +62,10 @@ const AiScreen = () => {
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setLoading(true);
-    if (!input.trim()) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const userMsg = { id: Date.now(), type: "user", text: input.trim() };
+    const userMsg = { id: Date.now(), type: "user", text: text };
     setMessages((m) => [...m, userMsg]);
     setInput("");
-    setLoading(true);
+    AccessibilityInfo.announceForAccessibility("Message sent.");
 
     try {
       const res = await fetch(CHAT_URL, {
@@ -81,26 +80,27 @@ const AiScreen = () => {
         }),
       });
       const data = await res.json();
+      const aiReply = (data.reply ?? "Sorry, something went wrong.").replace(/^\s+/, "");
       setMessages((m) => [
         ...m,
         {
           id: Date.now() + 1,
           type: "ai",
-          text: (data.reply ?? "Sorry, something went wrong.").replace(
-            /^\s+/,
-            ""
-          ),
+          text: aiReply,
         },
       ]);
+      AccessibilityInfo.announceForAccessibility(`AI Companion response received: ${aiReply}`);
     } catch {
+      const errorMsg = "Network error – please try again.";
       setMessages((m) => [
         ...m,
         {
           id: Date.now() + 1,
           type: "ai",
-          text: "Network error – please try again.".replace(/^\s+/, ""),
+          text: errorMsg,
         },
       ]);
+      AccessibilityInfo.announceForAccessibility(`AI Companion error: ${errorMsg}`);
     } finally {
       setLoading(false);
     }
@@ -113,7 +113,7 @@ const AiScreen = () => {
     >
       <Container>
         <Header>
-          <Title>AI Companion</Title>
+          <Title accessibilityRole="header">AI Companion</Title>
           <Subtext>A gentle space to talk about how you’re feeling</Subtext>
         </Header>
 
@@ -123,33 +123,39 @@ const AiScreen = () => {
             paddingBottom: barHeight + insets.bottom + 16,
           }}
           showsVerticalScrollIndicator={false}
+          accessibilityLiveRegion="polite"
         >
-          {messages.map((msg) => (
-            <MessageRow
-              key={msg.id}
-              side={msg.type === "user" ? "right" : "left"}
-            >
-              {msg.type === "ai" && (
-                <Avatar>
-                  <Ionicons name="sparkles" size={20} color="#4a90e2" />
-                </Avatar>
-              )}
+          {messages.map((msg) => {
+            const isUser = msg.type === "user";
+            return (
+              <MessageRow
+                key={msg.id}
+                side={isUser ? "right" : "left"}
+                accessible={true}
+                accessibilityLabel={isUser ? `You said: ${msg.text}` : `AI Companion says: ${msg.text}`}
+              >
+                {!isUser && (
+                  <Avatar importantForAccessibility="no" accessibilityElementsHidden={true}>
+                    <Ionicons name="sparkles" size={20} color="#4a90e2" />
+                  </Avatar>
+                )}
 
-              <Message user={msg.type === "user"}>
-                <MessageText user={msg.type === "user"}>{msg.text}</MessageText>
-              </Message>
+                <Message user={isUser}>
+                  <MessageText user={isUser}>{msg.text}</MessageText>
+                </Message>
 
-              {msg.type === "user" && (
-                <Avatar user>
-                  <Ionicons name="person" size={20} color="#fff" />
-                </Avatar>
-              )}
-            </MessageRow>
-          ))}
+                {isUser && (
+                  <Avatar user importantForAccessibility="no" accessibilityElementsHidden={true}>
+                    <Ionicons name="person" size={20} color="#fff" />
+                  </Avatar>
+                )}
+              </MessageRow>
+            );
+          })}
 
           {loading && (
-            <MessageRow side="left">
-              <Avatar>
+            <MessageRow side="left" accessible={true} accessibilityLabel="AI Companion is writing a response...">
+              <Avatar importantForAccessibility="no" accessibilityElementsHidden={true}>
                 <Ionicons name="sparkles" size={20} color="#4a90e2" />
               </Avatar>
               <Message>
@@ -169,6 +175,8 @@ const AiScreen = () => {
             value={input}
             onChangeText={setInput}
             editable={!loading}
+            accessibilityLabel="Message input field"
+            accessibilityHint="Type your message to the AI Companion here"
             onLayout={(e: LayoutChangeEvent) =>
               setBarHeight(e.nativeEvent.layout.height)
             }
@@ -177,12 +185,16 @@ const AiScreen = () => {
           <SendButton
             onPress={sendMessage}
             disabled={loading || !input.trim()}
+            accessibilityRole="button"
             accessibilityLabel="Send message"
+            accessibilityState={{ disabled: loading || !input.trim() }}
           >
             <Ionicons
               name="send"
               size={20}
               color={loading || !input.trim() ? "#ccc" : "#4a90e2"}
+              importantForAccessibility="no"
+              accessibilityElementsHidden={true}
             />
           </SendButton>
         </InputBar>

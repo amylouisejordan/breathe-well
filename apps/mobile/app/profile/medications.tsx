@@ -1,6 +1,6 @@
-import { ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { ScrollView, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   ButtonText,
@@ -61,46 +61,70 @@ const MyMedications = () => {
         contentContainerStyle={{ paddingBottom: 140 }}
         showsVerticalScrollIndicator={false}
       >
-        <Title>My Medications</Title>
+        <Title accessibilityRole="header">My Medications</Title>
         <Subtext style={{ marginBottom: 0 }}>
           Save all your prescribed medications to make logging quicker and
           easier
         </Subtext>
 
-        {medications.map((med) => (
-          <Card
-            key={med.id}
-            onPress={() =>
-              router.push({
-                pathname: "/edit-medication",
-                params: {
-                  id: med.id,
-                  name: med.name,
-                  dosage: med.dosage,
-                  notes: med.notes,
-                  type: med.type,
-                  list: JSON.stringify(medications),
-                },
-              })
-            }
-          >
-            <IconWrap>
+        <View
+          accessibilityRole="list"
+          accessibilityLabel="Your registered medications list"
+          style={{ marginTop: 20 }}
+        >
+          {medications.map((med) => (
+            <Card
+              key={med.id}
+              onPress={() =>
+                router.push({
+                  pathname: "/edit-medication",
+                  params: {
+                    id: med.id,
+                    name: med.name,
+                    dosage: med.dosage,
+                    notes: med.notes,
+                    type: med.type,
+                    list: JSON.stringify(medications),
+                  },
+                })
+              }
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={`${med.name}, dosage: ${med.dosage}. ${
+                med.notes ? `Note: ${med.notes}` : ""
+              }`}
+              accessibilityHint={`Edit medication details for ${med.name}`}
+            >
+              <IconWrap
+                importantForAccessibility="no"
+                accessibilityElementsHidden={true}
+              >
+                <Ionicons
+                  name={iconForType(med.type)}
+                  size={26}
+                  color="#4a90e2"
+                />
+              </IconWrap>
+
+              <CardMiddle
+                importantForAccessibility="no"
+                accessibilityElementsHidden={true}
+              >
+                <CardTitle>{med.name}</CardTitle>
+                <CardSub>{med.dosage}</CardSub>
+                {med.notes && <CardNotes>{med.notes}</CardNotes>}
+              </CardMiddle>
+
               <Ionicons
-                name={iconForType(med.type)}
-                size={26}
-                color="#4a90e2"
+                name="chevron-forward"
+                size={22}
+                color="#ccc"
+                importantForAccessibility="no"
+                accessibilityElementsHidden={true}
               />
-            </IconWrap>
-
-            <CardMiddle>
-              <CardTitle>{med.name}</CardTitle>
-              <CardSub>{med.dosage}</CardSub>
-              {med.notes && <CardNotes>{med.notes}</CardNotes>}
-            </CardMiddle>
-
-            <Ionicons name="chevron-forward" size={22} color="#ccc" />
-          </Card>
-        ))}
+            </Card>
+          ))}
+        </View>
       </ScrollView>
 
       <FloatingButton
@@ -110,9 +134,24 @@ const MyMedications = () => {
             params: { list: JSON.stringify(medications) },
           })
         }
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel="Add new medication"
+        accessibilityHint="Opens a form setup to register a new medicine item to your list"
       >
-        <Ionicons name="add" size={24} color="#fff" />
-        <ButtonText>Add Medication</ButtonText>
+        <Ionicons
+          name="add"
+          size={24}
+          color="#fff"
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        />
+        <ButtonText
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Add Medication
+        </ButtonText>
       </FloatingButton>
     </Container>
   );

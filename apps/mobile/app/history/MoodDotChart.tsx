@@ -29,15 +29,32 @@ export const EMOTION_COLORS: Record<number, string> = {
   5: "#F44336",
 };
 
+const EMOTION_LABELS: Record<number, string> = {
+  1: "Very Good",
+  2: "Good",
+  3: "Neutral",
+  4: "Low",
+  5: "Very Low",
+};
+
 const MoodDotChart = (props: MoodDotChartProps) => {
   const { data, dates, onSelectDay } = props;
   const { values, labels } = data;
 
   if (!values.some((v) => v !== null)) {
     return (
-      <Card>
+      <Card
+        accessible={true}
+        accessibilityLabel="Thoughts and feelings history chart. No data logged yet. Log something to begin."
+      >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={{ fontSize: 32, marginRight: 8 }}>🌤️</Text>
+          <Text
+            style={{ fontSize: 32, marginRight: 8 }}
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+          >
+            🌤️
+          </Text>
           <Insight style={{ fontSize: 16, opacity: 0.8, marginTop: 3 }}>
             No data yet - log something to begin
           </Insight>
@@ -61,20 +78,32 @@ const MoodDotChart = (props: MoodDotChartProps) => {
 
   return (
     <Card>
-      <GraphLabel>Thoughts & Feelings</GraphLabel>
+      <GraphLabel accessibilityRole="header">Thoughts & Feelings</GraphLabel>
 
-      <LegendRow>
-        <LegendDot />
+      <LegendRow
+        accessible={true}
+        accessibilityLabel="Chart index key: Displays your logged mood levels over time."
+      >
+        <LegendDot
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        />
         <LegendText>Your logged mood</LegendText>
       </LegendRow>
       <GraphArea style={{ height: 60, paddingTop: 32, paddingBottom: 36 }}>
-        <Grid>
+        <Grid importantForAccessibility="no" accessibilityElementsHidden={true}>
           {[...Array(2)].map((_, i) => (
             <GridLine key={i} />
           ))}
         </Grid>
 
-        <Svg width={width} height={height} style={{ position: "absolute" }}>
+        <Svg
+          width={width}
+          height={height}
+          style={{ position: "absolute" }}
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
           {points.map((p, i) =>
             p.v !== null ? (
               <Circle
@@ -90,10 +119,20 @@ const MoodDotChart = (props: MoodDotChartProps) => {
             ) : null
           )}
         </Svg>
-        {points.map((p, i) =>
-          p.v !== null && dates ? (
+
+        {points.map((p, i) => {
+          if (p.v === null) return null;
+
+          const dayLabel = labels[i];
+          const moodText = EMOTION_LABELS[p.v] || `Level ${p.v}`;
+
+          return (
             <TouchableOpacity
               key={i}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={`${dayLabel}. Mood level: ${moodText}.`}
+              accessibilityHint="Double tap to open mood notes and tags for this day."
               style={{
                 position: "absolute",
                 left: p.x - pointSpacing / 2,
@@ -102,10 +141,10 @@ const MoodDotChart = (props: MoodDotChartProps) => {
                 height: 40,
                 backgroundColor: "rgba(255,255,255,0.01)",
               }}
-              onPress={() => onSelectDay?.(dates[i])}
+              onPress={() => dates && onSelectDay?.(dates[i])}
             />
-          ) : null
-        )}
+          );
+        })}
 
         <View
           style={{
@@ -115,6 +154,8 @@ const MoodDotChart = (props: MoodDotChartProps) => {
             width,
             height: 20,
           }}
+          importantForAccessibility="no-hide-descendants"
+          accessibilityElementsHidden={true}
         >
           {labels.map((label, i) => (
             <View

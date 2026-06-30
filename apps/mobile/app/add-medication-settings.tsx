@@ -1,6 +1,6 @@
+import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
 import {
   Button,
   Card,
@@ -21,6 +21,8 @@ const AddMedicationSettings = () => {
   const [notes, setNotes] = useState("");
 
   const handleSave = () => {
+    if (!name.trim()) return;
+
     const newMed = {
       id: Date.now(),
       name,
@@ -39,37 +41,79 @@ const AddMedicationSettings = () => {
 
   return (
     <Container>
-      <Title>Add Medication</Title>
+      <Title accessibilityRole="header">Add Medication</Title>
       <Subtitle>
         Save a medication so you can select it quickly when logging
       </Subtitle>
 
       <Card>
-        <Label>Medication name</Label>
+        <Label
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Medication name
+        </Label>
         <Input
           placeholder="e.g. Salbutamol"
           value={name}
           onChangeText={setName}
+          accessible={true}
+          accessibilityLabel="Medication name"
+          accessibilityHint="Type the explicit or brand name of the prescribed medicine"
         />
 
-        <Label>Default dosage</Label>
+        <Label
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Default dosage
+        </Label>
         <Input
           placeholder="e.g. 2 puffs"
           value={dosage}
           onChangeText={setDosage}
+          accessible={true}
+          accessibilityLabel="Default dosage"
+          accessibilityHint="Type your typical baseline measurement intake volume details"
         />
 
-        <Label>Notes (optional)</Label>
+        <Label
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Notes (optional)
+        </Label>
         <Input
           placeholder="Colour, device, etc."
           value={notes}
           onChangeText={setNotes}
+          accessible={true}
+          accessibilityLabel="Notes (optional)"
+          accessibilityHint="Type clarifying physical descriptions, appearance markers, or reminders"
         />
       </Card>
 
-      <Button onPress={handleSave}>
-        <Ionicons name="checkmark" size={22} color="#fff" />
-        <SaveButtonText>Save Medication</SaveButtonText>
+      <Button
+        onPress={handleSave}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel="Save Medication"
+        accessibilityHint="Registers this item to your permanent medicine roster list and returns to management"
+        accessibilityState={{ disabled: !name.trim() }}
+      >
+        <Ionicons
+          name="checkmark"
+          size={22}
+          color="#fff"
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        />
+        <SaveButtonText
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Save Medication
+        </SaveButtonText>
       </Button>
     </Container>
   );

@@ -1,7 +1,17 @@
+import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
-import { Button, Card, Container, DeleteButton, Input, Label, SaveButtonText, Subtitle, Title } from "./styled";
+import {
+  Button,
+  Card,
+  Container,
+  DeleteButton,
+  Input,
+  Label,
+  SaveButtonText,
+  Subtitle,
+  Title,
+} from "./styled";
 
 const EditMedication = () => {
   const params = useLocalSearchParams();
@@ -14,6 +24,8 @@ const EditMedication = () => {
   const [notes, setNotes] = useState(params.notes as string);
 
   const handleSave = () => {
+    if (!name.trim()) return;
+
     const updatedList = list.map((m: { id: number }) =>
       m.id === id ? { ...m, name, dosage, notes } : m
     );
@@ -35,31 +47,97 @@ const EditMedication = () => {
 
   return (
     <Container>
-      <Title>Edit Medication</Title>
+      <Title accessibilityRole="header">Edit Medication</Title>
       <Subtitle>Update or remove this medication</Subtitle>
 
       <Card>
-        <Label>Medication name</Label>
-        <Input value={name} onChangeText={setName} />
+        <Label
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Medication name
+        </Label>
+        <Input
+          value={name}
+          onChangeText={setName}
+          accessible={true}
+          accessibilityLabel="Medication name"
+          accessibilityHint="Modify the explicit or brand name of this medication"
+        />
 
-        <Label>Default dosage</Label>
+        <Label
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Default dosage
+        </Label>
         <Input
           value={dosage}
           onChangeText={setDosage}
+          accessible={true}
+          accessibilityLabel="Default dosage"
+          accessibilityHint="Modify your baseline measurement intake volume details"
         />
 
-        <Label>Notes</Label>
-        <Input value={notes} onChangeText={setNotes} />
+        <Label
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Notes
+        </Label>
+        <Input
+          value={notes}
+          onChangeText={setNotes}
+          accessible={true}
+          accessibilityLabel="Notes"
+          accessibilityHint="Modify clarifying physical descriptions or structural reminders"
+        />
       </Card>
 
-      <DeleteButton onPress={handleDelete}>
-        <Ionicons name="trash" size={20} color="#fff" />
-        <SaveButtonText>Delete Medication</SaveButtonText>
+      <DeleteButton
+        onPress={handleDelete}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={`Delete ${name || "this medication"}`}
+        accessibilityHint="Permanently removes this medication item entry from your profile logs"
+        accessibilityState={{ destructive: true }}
+      >
+        <Ionicons
+          name="trash"
+          size={20}
+          color="#fff"
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        />
+        <SaveButtonText
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Delete Medication
+        </SaveButtonText>
       </DeleteButton>
 
-      <Button onPress={handleSave}>
-        <Ionicons name="checkmark" size={22} color="#fff" />
-        <SaveButtonText>Save Changes</SaveButtonText>
+      <Button
+        onPress={handleSave}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel="Save Changes"
+        accessibilityHint="Commits modifications onto your medication profile records and returns to management dashboard"
+        accessibilityState={{ disabled: !name.trim() }}
+      >
+        <Ionicons
+          name="checkmark"
+          size={22}
+          color="#fff"
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        />
+        <SaveButtonText
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        >
+          Save Changes
+        </SaveButtonText>
       </Button>
     </Container>
   );

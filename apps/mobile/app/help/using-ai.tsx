@@ -1,4 +1,6 @@
+import React from "react";
 import HelpArticle from "./_article";
+import { View } from "react-native";
 import { Paragraph, Step } from "./styled";
 
 const UsingAI = () => {
@@ -10,10 +12,43 @@ const UsingAI = () => {
         offer gentle guidance.
       </Paragraph>
 
-      <Step>• Ask questions about symptoms</Step>
-      <Step>• Get explanations of inhalers and treatments</Step>
-      <Step>• Learn how to use the app more effectively</Step>
-      <Step>• Get emotional support and reassurance</Step>
+      <View
+        accessibilityRole="list"
+        accessibilityLabel="Capabilities of the AI companion"
+        style={{ marginVertical: 12 }}
+      >
+        <Step
+          accessible={true}
+          accessibilityRole="listitem"
+          accessibilityLabel="Ask questions about symptoms"
+        >
+          • Ask questions about symptoms
+        </Step>
+
+        <Step
+          accessible={true}
+          accessibilityRole="listitem"
+          accessibilityLabel="Get explanations of inhalers and treatments"
+        >
+          • Get explanations of inhalers and treatments
+        </Step>
+
+        <Step
+          accessible={true}
+          accessibilityRole="listitem"
+          accessibilityLabel="Learn how to use the app more effectively"
+        >
+          • Learn how to use the app more effectively
+        </Step>
+
+        <Step
+          accessible={true}
+          accessibilityRole="listitem"
+          accessibilityLabel="Get emotional support and reassurance"
+        >
+          • Get emotional support and reassurance
+        </Step>
+      </View>
 
       <Paragraph>
         The AI companion is not a medical professional, but it can help you feel

@@ -6,6 +6,8 @@ import {
   Pressable,
   Text,
   ActionSheetIOS,
+  Platform,
+  Alert,
 } from "react-native";
 
 import {
@@ -62,6 +64,10 @@ const dummyArticles: Article[] = [
 const ArticleCard = React.memo(({ article }: { article: Article }) => (
   <Pressable
     onPress={() => router.navigate(`/articles/${article.id}`)}
+    accessible={true}
+    accessibilityRole="button"
+    accessibilityLabel={`Article: ${article.title}, by ${article.author}. ${article.readTime} minute read.`}
+    accessibilityHint="Double tap to open and view the full article text"
     style={({ pressed }) => ({
       width: "100%",
       transform: [{ scale: pressed ? 0.98 : 1 }],
@@ -69,7 +75,7 @@ const ArticleCard = React.memo(({ article }: { article: Article }) => (
     })}
   >
     <Card style={{ borderWidth: 1, borderColor: "#F4D6D2", borderRadius: 14 }}>
-      <Row style={{ alignItems: "center", marginBottom: 4 }}>
+      <Row style={{ alignItems: "center", marginBottom: 4 }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden={true}>
         <Avatar style={{ backgroundColor: "#f3f0ff" }}>
           <AvatarText style={{ color: "#4a90e2" }}>
             {article.author.charAt(0)}
@@ -88,16 +94,16 @@ const ArticleCard = React.memo(({ article }: { article: Article }) => (
         </Text>
       </Row>
 
-      <View style={{ flexDirection: "row", marginBottom: 8 }}>
+      <View style={{ flexDirection: "row", marginBottom: 8 }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden={true}>
         <Text style={{ color: "#666", fontSize: 14 }}>by {article.author}</Text>
         <Text style={{ color: "#aaa", fontSize: 14, marginLeft: 8 }}>
           • {article.readTime} min read
         </Text>
       </View>
 
-      <Divider />
+      <Divider importantForAccessibility="no" accessibilityElementsHidden={true} />
 
-      <BodyText numberOfLines={2} style={{ color: "#444" }}>
+      <BodyText numberOfLines={2} style={{ color: "#444" }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden={true}>
         {article.body}
       </BodyText>
     </Card>
@@ -106,8 +112,8 @@ const ArticleCard = React.memo(({ article }: { article: Article }) => (
 ArticleCard.displayName = "ArticleCard";
 
 const Empty = () => (
-  <View style={{ alignItems: "center", marginTop: 60 }}>
-    <Text style={{ fontSize: 64 }}>📚</Text>
+  <View style={{ alignItems: "center", marginTop: 60 }} accessible={true}>
+    <Text style={{ fontSize: 64 }} importantForAccessibility="no" accessibilityElementsHidden={true}>📚</Text>
     <Text style={{ marginTop: 12, color: "#666" }}>
       No articles yet – come back later!
     </Text>
@@ -133,26 +139,44 @@ const ArticlesScreen = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, []);
 
-  const showSortSheet = () =>
-    ActionSheetIOS.showActionSheetWithOptions(
-      { options: ["Newest", "Oldest", "Cancel"], cancelButtonIndex: 2 },
-      (idx) => {
-        if (idx === 0) setSortMode("newest");
-        if (idx === 1) setSortMode("oldest");
-      }
-    );
+  const showSortSheet = () => {
+    if (Platform.OS === "ios") {
+      ActionSheetIOS.showActionSheetWithOptions(
+        { options: ["Newest", "Oldest", "Cancel"], cancelButtonIndex: 2 },
+        (idx) => {
+          if (idx === 0) setSortMode("newest");
+          if (idx === 1) setSortMode("oldest");
+        }
+      );
+    } else {
+      Alert.alert(
+        "Sort Articles",
+        "Choose an option to reorder items:",
+        [
+          { text: "Newest First", onPress: () => setSortMode("newest") },
+          { text: "Oldest First", onPress: () => setSortMode("oldest") },
+          { text: "Cancel", style: "cancel" }
+        ]
+      );
+    }
+  };
 
   const sorted = sortArticles(articles, sortMode);
 
   return (
     <Container>
       <Header>
-        <Title>Articles</Title>
+        <Title accessibilityRole="header">Articles</Title>
         <Subtext>Read up on wellness, science, and stories</Subtext>
       </Header>
 
       <ActionRow>
-        <ActionButtonSecondary onPress={showSortSheet}>
+        <ActionButtonSecondary 
+          onPress={showSortSheet}
+          accessibilityRole="button"
+          accessibilityLabel={`Sorted by: ${sortMode === "newest" ? "Newest" : "Oldest"}`}
+          accessibilityHint="Double tap to open an option menu and swap filter settings"
+        >
           <Text style={{ color: "#4a90e2", fontWeight: "600" }}>
             Sort: {sortMode === "newest" ? "Newest" : "Oldest"}
           </Text>
@@ -162,7 +186,11 @@ const ArticlesScreen = () => {
       <Screen
         testID="refresh-control"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh} 
+            accessibilityLabel="Swipe down to look for fresh content pieces"
+          />
         }
       >
         {sorted.length === 0 ? (

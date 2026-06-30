@@ -5,6 +5,7 @@ import {
   Platform,
   Pressable,
   View,
+  AccessibilityInfo,
 } from "react-native";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
@@ -185,8 +186,12 @@ const AddWellbeingCheckin = () => {
   const [saving, setSaving] = useState(false);
 
   const toggleTag = (tag: string) => {
+    const isAdding = !tags.includes(tag);
     setTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+    AccessibilityInfo.announceForAccessibility(
+      `${tag} descriptor ${isAdding ? "added" : "removed"}.`
     );
   };
 
@@ -194,6 +199,7 @@ const AddWellbeingCheckin = () => {
     setEmotion(null);
     setTags([]);
     setNotes("");
+    AccessibilityInfo.announceForAccessibility("Wellbeing form cleared.");
   };
 
   const saveEntry = async () => {
@@ -207,9 +213,15 @@ const AddWellbeingCheckin = () => {
         date: new Date().toISOString(),
       });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      AccessibilityInfo.announceForAccessibility(
+        "Wellbeing check-in successfully logged."
+      );
       router.back();
     } catch {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      AccessibilityInfo.announceForAccessibility(
+        "Failed to save check-in details."
+      );
       Alert.alert("Oops", "Couldn't save – try again?");
     } finally {
       setSaving(false);
@@ -226,16 +238,18 @@ const AddWellbeingCheckin = () => {
       <Stack.Screen options={{ title: "Wellbeing Check‑in" }} />
       <Container>
         <ScrollArea showsVerticalScrollIndicator={false}>
-          <Title>Wellbeing Check‑in</Title>
+          <Title accessibilityRole="header">Wellbeing Check‑in</Title>
           <Subtitle>Choose the face that best matches how you feel</Subtitle>
 
           <Divider style={{ marginTop: 0 }} />
 
           <AnimatedCardWrapper style={{ marginTop: 12 }} delay={150}>
             <Card>
-              <Label>How are you feeling?</Label>
+              <Label accessibilityRole="header">How are you feeling?</Label>
 
               <TagWrap
+                accessibilityRole="radiogroup"
+                accessibilityLabel="Emotion options"
                 style={{
                   flexDirection: "row",
                   flexWrap: "wrap",
@@ -251,7 +265,13 @@ const AddWellbeingCheckin = () => {
                       onPress={() => {
                         setEmotion(e.key);
                         setTags([]);
+                        AccessibilityInfo.announceForAccessibility(
+                          `Selected ${e.label}. Emotion sub-descriptors options list expanded below.`
+                        );
                       }}
+                      accessibilityRole="radio"
+                      accessibilityState={{ checked: emotion === e.key }}
+                      accessibilityLabel={`${e.label} emotion button`}
                       style={({ pressed }) => ({
                         backgroundColor:
                           emotion === e.key ? e.color + "55" : e.color + "22",
@@ -274,10 +294,15 @@ const AddWellbeingCheckin = () => {
                         name={e.icon}
                         size={34}
                         color={emotion === e.key ? e.color : "#555"}
+                        importantForAccessibility="no"
+                        accessibilityElementsHidden={true}
                       />
                     </Pressable>
 
-                    <EmotionLabel active={emotion === e.key}>
+                    <EmotionLabel
+                      active={emotion === e.key}
+                      importantForAccessibility="no"
+                    >
                       {e.label}
                     </EmotionLabel>
                   </View>
@@ -287,7 +312,12 @@ const AddWellbeingCheckin = () => {
           </AnimatedCardWrapper>
 
           {selectedEmotion && (
-            <AnimatedCardWrapper style={{ marginTop: 12 }} delay={200}>
+            <AnimatedCardWrapper
+              style={{ marginTop: 12 }}
+              delay={200}
+              importantForAccessibility="no-hide-descendants"
+              accessibilityElementsHidden={true}
+            >
               <Card
                 style={{
                   backgroundColor: selectedEmotion.color + "10",
@@ -313,7 +343,7 @@ const AddWellbeingCheckin = () => {
           {selectedEmotion && (
             <AnimatedCardWrapper style={{ marginTop: 12 }} delay={250}>
               <Card>
-                <Label>
+                <Label accessibilityRole="header">
                   What best describes your feelings?
                   {tags.length > 0 && (
                     <TagCount>({tags.length} selected)</TagCount>
@@ -334,8 +364,14 @@ const AddWellbeingCheckin = () => {
                       <Tag
                         active={tags.includes(tag)}
                         onPress={() => toggleTag(tag)}
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: tags.includes(tag) }}
+                        accessibilityLabel={tag}
                       >
-                        <EmotionLabel active={tags.includes(tag)}>
+                        <EmotionLabel
+                          active={tags.includes(tag)}
+                          importantForAccessibility="no"
+                        >
                           {tag}
                         </EmotionLabel>
                       </Tag>
@@ -356,21 +392,48 @@ const AddWellbeingCheckin = () => {
                   value={notes}
                   onChangeText={setNotes}
                   multiline
+                  accessibilityLabel="Context entry text field"
+                  accessibilityHint="Describe your current reflection details here"
                 />
               </Card>
             </AnimatedCardWrapper>
           )}
 
           <View>
-            <ResetButton onPress={resetForm}>
-              <Ionicons name="refresh" size={18} color="#4a90e2" />
+            <ResetButton
+              onPress={resetForm}
+              accessibilityRole="button"
+              accessibilityLabel="Reset form fields"
+            >
+              <Ionicons
+                name="refresh"
+                size={18}
+                color="#4a90e2"
+                importantForAccessibility="no"
+              />
               <ResetText>Reset</ResetText>
             </ResetButton>
           </View>
 
           <View style={{ marginTop: 12 }}>
-            <SaveButton onPress={saveEntry} disabled={!emotion || saving}>
-              <Ionicons name="checkmark" size={22} color="#fff" />
+            <SaveButton
+              onPress={saveEntry}
+              disabled={!emotion || saving}
+              accessibilityRole="button"
+              accessibilityState={{
+                disabled: !emotion || saving,
+                busy: saving,
+              }}
+              accessibilityLabel={
+                saving ? "Saving check-in" : "Save Wellbeing Check-in"
+              }
+            >
+              <Ionicons
+                name="checkmark"
+                size={22}
+                color="#fff"
+                importantForAccessibility="no"
+              />
               <SaveButtonText>
                 {saving ? "Saving…" : "Save Check‑in"}
               </SaveButtonText>

@@ -8,6 +8,7 @@ import {
   View,
   RefreshControl,
   Modal,
+  AccessibilityInfo,
 } from "react-native";
 import { getPostById, addCommentToPost } from "../../utils/forumFirestore";
 import { Avatar, AvatarText } from "./styled";
@@ -45,7 +46,11 @@ const PostDetail = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchPost().finally(() => setRefreshing(false));
+    AccessibilityInfo.announceForAccessibility("Refreshing post content.");
+    fetchPost().finally(() => {
+      setRefreshing(false);
+      AccessibilityInfo.announceForAccessibility("Post content updated.");
+    });
   };
 
   const fetchPost = async () => {
@@ -79,6 +84,11 @@ const PostDetail = () => {
       });
       setReply("");
       await fetchPost();
+      AccessibilityInfo.announceForAccessibility(
+        "Comment posted successfully."
+      );
+    } catch {
+      AccessibilityInfo.announceForAccessibility("Failed to post comment.");
     } finally {
       setSending(false);
     }
@@ -95,6 +105,7 @@ const PostDetail = () => {
       contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
     >
       <View
+        accessibilityRole="summary"
         style={{
           backgroundColor: "#fff",
           padding: 20,
@@ -104,14 +115,22 @@ const PostDetail = () => {
           marginBottom: 20,
         }}
       >
-        <Text style={{ fontSize: 22, fontWeight: "700", color: "#333" }}>
+        <Text
+          accessibilityRole="header"
+          style={{ fontSize: 22, fontWeight: "700", color: "#333" }}
+        >
           {post.title}
         </Text>
 
         <View
-          style={{ flexDirection: "row", marginTop: 6, alignItems: "center" }}
+          style={{ flexDirection: "row", marginTop: 8, alignItems: "center" }}
         >
-          <TouchableOpacity onPress={() => handleAvatarPress(post.author)}>
+          <TouchableOpacity
+            onPress={() => handleAvatarPress(post.author)}
+            accessibilityRole="button"
+            accessibilityLabel={`View profile for author ${post.author}`}
+            accessibilityHint="Opens a profile summary sheet"
+          >
             <Text
               style={{
                 color: "#4a90e2",
@@ -124,7 +143,12 @@ const PostDetail = () => {
             </Text>
           </TouchableOpacity>
 
-          <Text style={{ color: "#aaa", fontSize: 14 }}>
+          <Text
+            accessibilityLabel={`Posted on ${new Date(
+              post.createdAt
+            ).toLocaleDateString()}`}
+            style={{ color: "#aaa", fontSize: 14 }}
+          >
             •{" "}
             {new Date(post.createdAt).toLocaleDateString(undefined, {
               day: "numeric",
@@ -142,6 +166,7 @@ const PostDetail = () => {
       </View>
 
       <Text
+        accessibilityRole="header"
         style={{
           fontSize: 17,
           fontWeight: "700",
@@ -155,6 +180,10 @@ const PostDetail = () => {
       {post.comments?.map((c) => (
         <View
           key={c.id}
+          accessible={true}
+          accessibilityLabel={`Comment by ${c.author}, text: ${
+            c.text
+          }, posted on ${new Date(c.createdAt).toLocaleDateString()}`}
           style={{
             backgroundColor: "#fff",
             padding: 14,
@@ -165,29 +194,34 @@ const PostDetail = () => {
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity onPress={() => handleAvatarPress(c.author)}>
-              <Avatar style={{ backgroundColor: "#f3f0ff", marginRight: 10 }}>
+            <TouchableOpacity
+              onPress={() => handleAvatarPress(c.author)}
+              accessibilityRole="button"
+              accessibilityLabel={`View ${c.author}'s profile`}
+              style={{ flexDirection: "row", alignItems: "center", flex: 1 }}
+            >
+              <Avatar
+                style={{ backgroundColor: "#f3f0ff", marginRight: 10 }}
+                importantForAccessibility="no"
+              >
                 <AvatarText style={{ color: "#4a90e2" }}>
                   {c.author.charAt(0)}
                 </AvatarText>
               </Avatar>
-            </TouchableOpacity>
 
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity onPress={() => handleAvatarPress(c.author)}>
+              <View style={{ flex: 1 }}>
                 <Text style={{ fontWeight: "600", color: "#333" }}>
                   {c.author}
                 </Text>
-              </TouchableOpacity>
-
-              <Text style={{ color: "#aaa", fontSize: 13 }}>
-                {new Date(c.createdAt).toLocaleDateString(undefined, {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </Text>
-            </View>
+                <Text style={{ color: "#aaa", fontSize: 13 }}>
+                  {new Date(c.createdAt).toLocaleDateString(undefined, {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
 
           <Text style={{ marginTop: 10, color: "#444", lineHeight: 20 }}>
@@ -211,6 +245,8 @@ const PostDetail = () => {
           value={reply}
           onChangeText={setReply}
           multiline
+          accessibilityLabel="Write a comment text input field"
+          accessibilityHint="Type your response to this forum post here"
           style={{
             backgroundColor: "#fafafa",
             padding: 14,
@@ -224,7 +260,12 @@ const PostDetail = () => {
 
         <TouchableOpacity
           onPress={addReply}
-          disabled={sending}
+          disabled={sending || !reply.trim()}
+          accessibilityRole="button"
+          accessibilityState={{
+            disabled: sending || !reply.trim(),
+            busy: sending,
+          }}
           style={{
             backgroundColor: "#4a90e2",
             padding: 14,
@@ -244,6 +285,7 @@ const PostDetail = () => {
         visible={isModalVisible}
         animationType="fade"
         onRequestClose={() => setIsModalVisible(false)}
+        accessibilityViewIsModal={true}
       >
         <TouchableOpacity
           style={{
@@ -254,8 +296,11 @@ const PostDetail = () => {
           }}
           activeOpacity={1}
           onPressOut={() => setIsModalVisible(false)}
+          accessibilityLabel="Close profile summary"
+          accessibilityRole="button"
         >
           <View
+            accessibilityRole="alert"
             style={{
               backgroundColor: "#fff",
               width: "80%",
@@ -272,6 +317,7 @@ const PostDetail = () => {
             {selectedUser && (
               <>
                 <Avatar
+                  importantForAccessibility="no"
                   style={{
                     backgroundColor: "#f3f0ff",
                     width: 70,
@@ -310,6 +356,7 @@ const PostDetail = () => {
 
                 <TouchableOpacity
                   onPress={() => setIsModalVisible(false)}
+                  accessibilityRole="button"
                   style={{
                     backgroundColor: "#f1f1f5",
                     paddingVertical: 10,
@@ -322,7 +369,7 @@ const PostDetail = () => {
                   <Text
                     style={{ color: "#555", fontWeight: "600", fontSize: 15 }}
                   >
-                    Close
+                    Close Profile
                   </Text>
                 </TouchableOpacity>
               </>

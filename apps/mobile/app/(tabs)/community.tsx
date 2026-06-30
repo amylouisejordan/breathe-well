@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { router, useFocusEffect } from "expo-router";
+import { router } from "expo-router";
 import {
   View,
   RefreshControl,

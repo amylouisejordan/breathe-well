@@ -7,7 +7,7 @@ const dummyArticles = [
   {
     id: "1",
     title: "Breathe Your Way to Calm",
-    body: `Discover how simple breathing techniques can lower stress in minutes.\n\nFollow our 4-7-8 guide:\n\n1️⃣ Inhale through your nose for 4 seconds.\n2️⃣ Hold your breath for 7 seconds.\n3️⃣ Exhale through your mouth for 8 seconds.\n\nRepeat four cycles. Research shows this pattern activates the parasympathetic nervous system, reducing heart rate and blood pressure almost instantly.`,
+    body: `Discover how simple breathing techniques can lower stress in minutes.\n\nFollow our 4-7-8 guide:\n\nStep 1: Inhale through your nose for 4 seconds.\nStep 2: Hold your breath for 7 seconds.\nStep 3: Exhale through your mouth for 8 seconds.\n\nRepeat four cycles. Research shows this pattern activates the parasympathetic nervous system, reducing heart rate and blood pressure almost instantly.`,
     author: "Dr. Lila Chen",
     createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
     readTime: 4,
@@ -34,16 +34,30 @@ const ArticleDetailScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {
     setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 800);
   };
   const { id } = useLocalSearchParams();
   const article = dummyArticles.find((a) => a.id === id);
 
   if (!article) return null;
 
+  const formattedDate = new Date(article.createdAt).toLocaleDateString(
+    undefined,
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }
+  );
+
   return (
     <ScrollView
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          accessibilityLabel="Swipe down to pull and refresh this article entry"
+        />
       }
       style={{ flex: 1, backgroundColor: "#fafafb" }}
       contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
@@ -58,28 +72,44 @@ const ArticleDetailScreen = () => {
           marginBottom: 20,
         }}
       >
-        <Text style={{ fontSize: 22, fontWeight: "700", color: "#333" }}>
+        <Text
+          style={{ fontSize: 22, fontWeight: "700", color: "#333" }}
+          accessibilityRole="header"
+        >
           {article.title}
         </Text>
 
-        <View style={{ flexDirection: "row", marginTop: 6 }}>
-          <Text style={{ color: "#666", fontSize: 14, marginRight: 8 }}>
+        <View
+          style={{ flexDirection: "row", marginTop: 6 }}
+          accessible={true}
+          accessibilityLabel={`Written by ${article.author}, published on ${formattedDate}`}
+        >
+          <Text
+            style={{ color: "#666", fontSize: 14, marginRight: 8 }}
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+          >
             by {article.author}
           </Text>
 
-          <Text style={{ color: "#aaa", fontSize: 14 }}>
-            •{" "}
-            {new Date(article.createdAt).toLocaleDateString(undefined, {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })}
+          <Text
+            style={{ color: "#aaa", fontSize: 14 }}
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+          >
+            • {formattedDate}
           </Text>
         </View>
 
-        <Divider />
+        <Divider
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        />
 
-        <Text style={{ fontSize: 16, lineHeight: 22, color: "#444" }}>
+        <Text
+          style={{ fontSize: 16, lineHeight: 22, color: "#444" }}
+          selectable={true}
+        >
           {article.body}
         </Text>
       </View>
