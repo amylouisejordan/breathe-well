@@ -1,22 +1,19 @@
 import { router, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { View } from "react-native";
 import {
-  Container,
   ScrollArea,
-  Title,
-  Subtitle,
-  Divider,
+  AnimatedCardWrapper,
   OptionCard,
   IconWrap,
-  TextWrap,
-  OptionTitle,
-  OptionText,
-  FooterNote,
   CancelButton,
   CancelText,
-  AnimatedCardWrapper,
-} from "../styled";
-import { View } from "react-native";
+  FooterNote,
+  OptionText,
+  OptionTitle,
+  TextWrap,
+} from "./styled";
+import { Container, Divider, Title, Subtitle } from "../styled";
 
 const AddEntry = () => {
   return (

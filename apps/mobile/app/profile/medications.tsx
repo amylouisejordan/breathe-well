@@ -3,18 +3,15 @@ import { ScrollView, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import {
-  ButtonText,
-  Card,
   CardMiddle,
   CardNotes,
   CardSub,
   CardTitle,
-  Container,
   FloatingButton,
   IconWrap,
   Subtext,
-  Title,
 } from "./styled";
+import { Container, Card, ButtonText, Title } from "../styled";
 
 const MyMedications = () => {
   const [medications, setMedications] = useState([

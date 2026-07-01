@@ -3,17 +3,14 @@ import { Switch, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {
-  ButtonText,
-  Card,
   CardSub,
-  Container,
   FloatingButton,
   RowText,
   SectionLabel,
   Subtext,
-  Title,
   ToggleRow,
 } from "./styled";
+import { Container, Card, ButtonText, Title } from "../styled";
 
 const NotificationsScreen = () => {
   const [symptomReminder, setSymptomReminder] = useState(true);

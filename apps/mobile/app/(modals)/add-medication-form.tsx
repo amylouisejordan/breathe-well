@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -12,24 +12,26 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
 import * as Haptics from "expo-haptics";
 
+import { saveMedicationEntry } from "@/utils/loggingFirestore";
+import { Label } from "@react-navigation/elements";
 import {
-  Container,
-  ScrollArea,
-  Title,
-  Subtitle,
-  Divider,
   AnimatedCardWrapper,
-  Card,
-  Label,
-  Input,
-  TextArea,
   ResetButton,
   ResetText,
   SaveButton,
-  SaveButtonText,
   FooterNote,
+  ScrollArea,
+  Input,
+  TextArea,
+} from "./styled";
+import {
+  Card,
+  Container,
+  Divider,
+  Title,
+  Subtitle,
+  ButtonText,
 } from "../styled";
-import { saveMedicationEntry } from "@/utils/loggingFirestore";
 
 type Slot = "morning" | "afternoon" | "evening";
 
@@ -107,6 +109,7 @@ const AddMedicationForm = () => {
             <Card>
               <Label nativeID="medicationNameLabel">Medication name</Label>
               <Input
+                style={{ marginTop: 10 }}
                 placeholder="e.g. Salbutamol inhaler"
                 placeholderTextColor="#999"
                 value={name}
@@ -121,6 +124,7 @@ const AddMedicationForm = () => {
             <Card>
               <Label nativeID="dosageLabel">Dosage</Label>
               <Input
+                style={{ marginTop: 10 }}
                 placeholder="e.g. 2 puffs"
                 placeholderTextColor="#999"
                 value={dose}
@@ -138,7 +142,7 @@ const AddMedicationForm = () => {
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-around",
-                  marginTop: 8,
+                  marginTop: 10,
                 }}
                 accessibilityRole="radiogroup"
                 accessibilityLabel="Time of day slots selection"
@@ -180,6 +184,7 @@ const AddMedicationForm = () => {
             <Card>
               <Label nativeID="notesLabel">Notes</Label>
               <TextArea
+                style={{ marginTop: 10 }}
                 placeholder="Add anything you'd like to remember"
                 placeholderTextColor="#999"
                 value={notes}
@@ -223,9 +228,7 @@ const AddMedicationForm = () => {
                 color="#fff"
                 importantForAccessibility="no"
               />
-              <SaveButtonText>
-                {saving ? "Saving…" : "Save Medication"}
-              </SaveButtonText>
+              <ButtonText>{saving ? "Saving…" : "Save Medication"}</ButtonText>
             </SaveButton>
           </View>
 

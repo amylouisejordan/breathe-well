@@ -11,31 +11,33 @@ import Slider from "@react-native-community/slider";
 import { router, Stack } from "expo-router";
 import * as Haptics from "expo-haptics";
 
+import { saveSymptomEntry } from "@/utils/loggingFirestore";
 import {
-  Container,
-  ScrollArea,
-  Title,
-  Subtitle,
-  Divider,
   AnimatedCardWrapper,
-  Card,
-  Label,
   Severity,
   SliderRow,
   SeverityNumber,
   ScaleHint,
+  TagCount,
   TagWrap,
   Tag,
   TagText,
-  TagCount,
   TextArea,
   ResetButton,
   ResetText,
   SaveButton,
-  SaveButtonText,
   FooterNote,
+  ScrollArea,
+} from "./styled";
+import {
+  Container,
+  Card,
+  Divider,
+  Title,
+  Subtitle,
+  ButtonText,
+  Label,
 } from "../styled";
-import { saveSymptomEntry } from "@/utils/loggingFirestore";
 
 const TAGS = ["Breathless", "Wheezy", "Tight chest", "Cough", "Fatigue"];
 
@@ -109,7 +111,7 @@ const AddSymptomForm = () => {
                 Severity: <Severity>{severityLabel}</Severity>
               </Label>
 
-              <SliderRow>
+              <SliderRow style={{ marginTop: 10 }}>
                 <Slider
                   testID="mock-slider"
                   minimumValue={1}
@@ -169,6 +171,7 @@ const AddSymptomForm = () => {
                 {TAGS.map((tag) => (
                   <View key={tag}>
                     <Tag
+                      style={{ marginTop: 10 }}
                       active={tags.includes(tag)}
                       onPress={() => toggleTag(tag)}
                       accessibilityRole="checkbox"
@@ -187,6 +190,7 @@ const AddSymptomForm = () => {
             <Card>
               <Label>Notes</Label>
               <TextArea
+                style={{ marginTop: 10 }}
                 placeholder="Add anything you’d like to remember"
                 placeholderTextColor="#aaa"
                 value={notes}
@@ -233,9 +237,7 @@ const AddSymptomForm = () => {
                 color="#fff"
                 importantForAccessibility="no"
               />
-              <SaveButtonText>
-                {saving ? "Saving…" : "Save Symptom"}
-              </SaveButtonText>
+              <ButtonText>{saving ? "Saving…" : "Save Symptom"}</ButtonText>
             </SaveButton>
           </View>
 

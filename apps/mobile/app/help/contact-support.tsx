@@ -1,7 +1,7 @@
 import React from "react";
 import { Linking } from "react-native";
 import HelpArticle from "./_article";
-import { Button, ButtonText, Paragraph } from "./styled";
+import { Button, ButtonText, Paragraph } from "../styled";
 
 const ContactSupport = () => {
   const sendEmail = () => {
@@ -20,7 +20,7 @@ const ContactSupport = () => {
         If something isn’t working or you need help, we’re here for you.
       </Paragraph>
 
-      <Button 
+      <Button
         onPress={sendEmail}
         accessible={true}
         accessibilityRole="button"

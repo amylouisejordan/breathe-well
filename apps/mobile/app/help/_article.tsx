@@ -1,4 +1,4 @@
-import { Container, Title } from "./styled";
+import { Container, Title } from "../styled";
 
 interface HelpArticleProps {
   title: string;

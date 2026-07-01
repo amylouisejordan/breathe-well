@@ -1,19 +1,7 @@
 import styled from "styled-components/native";
 
-export const Container = styled.View`
-  flex: 1;
-  background: #fafafb;
-  padding: 24px 16px 0;
-`;
-
 export const Header = styled.View`
   margin-bottom: 24px;
-`;
-
-export const Title = styled.Text`
-  font-size: 28px;
-  font-weight: 800;
-  color: #4a90e2;
 `;
 
 export const Subtext = styled.Text`
@@ -176,12 +164,6 @@ export const ModalTitle = styled.Text`
   color: #333;
 `;
 
-export const Divider = styled.View`
-  height: 1px;
-  background: #f1f1f5;
-  margin: 16px 0;
-`;
-
 export const CalendarGrid = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
@@ -281,12 +263,6 @@ const baseCard = `
   elevation: 2;
 `;
 
-export const Card = styled.View`
-  ${baseCard}
-`;
-export const DailyCard = styled.View`
-  ${baseCard}
-`;
 export const TodayItem = styled.TouchableOpacity`
   ${baseCard}
 `;

@@ -15,7 +15,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
-import { useAuth } from "../utils/useAuth";
+import { useAuth } from "../../utils/useAuth";
 import {
   AddButton,
   Content,

@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Card,
   GraphLabel,
   LegendRow,
   LegendDot,
@@ -20,15 +19,14 @@ import {
   SymptomDot,
   MedicationDot,
   SectionTitle,
-  DailyCard,
   Circle,
   CircleText,
   Insight,
   MoodDot,
-  Divider,
 } from "./styled";
 import { View, Text } from "react-native";
 import { REFLECT_EMOTIONS } from "../(modals)/add-wellbeing-form";
+import { Card, Divider } from "../styled";
 
 interface GraphProps {
   label: string;
@@ -59,9 +57,18 @@ const Graph = (props: GraphProps) => {
 
   if (!isMonth && (!data.values.length || data.values.every((v) => v === 0))) {
     return (
-      <Card accessible={true} accessibilityLabel="No health metrics logged yet. Log something to begin your charts.">
+      <Card
+        accessible={true}
+        accessibilityLabel="No health metrics logged yet. Log something to begin your charts."
+      >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={{ fontSize: 32, marginRight: 8 }} importantForAccessibility="no" accessibilityElementsHidden={true}>🌤️</Text>
+          <Text
+            style={{ fontSize: 32, marginRight: 8 }}
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+          >
+            🌤️
+          </Text>
           <Insight style={{ fontSize: 16, opacity: 0.8, marginTop: 3 }}>
             No data yet - log something to begin
           </Insight>
@@ -110,16 +117,26 @@ const Graph = (props: GraphProps) => {
       <Card style={{ marginBottom: 30 }}>
         <GraphLabel accessibilityRole="header">{label}</GraphLabel>
 
-        <LegendRow 
+        <LegendRow
           style={{ marginTop: 10, gap: 6 }}
           accessible={true}
           accessibilityLabel="Graph Color Key. Pink indicator represents symptoms. Blue indicator represents medications. Grey indicator represents mood."
         >
-          <SymptomDot importantForAccessibility="no" accessibilityElementsHidden={true} />
+          <SymptomDot
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+          />
           <LegendText>Symptom</LegendText>
-          <MedicationDot importantForAccessibility="no" accessibilityElementsHidden={true} />
+          <MedicationDot
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+          />
           <LegendText>Medication</LegendText>
-          <MoodDot color="#aaa" importantForAccessibility="no" accessibilityElementsHidden={true} />
+          <MoodDot
+            color="#aaa"
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+          />
           <LegendText>Mood</LegendText>
         </LegendRow>
 
@@ -132,7 +149,7 @@ const Graph = (props: GraphProps) => {
         </Insight>
 
         <GraphArea>
-          <DailyCard
+          <Card
             style={{
               marginTop: 12,
               marginBottom: 28,
@@ -140,10 +157,16 @@ const Graph = (props: GraphProps) => {
             }}
             accessible={true}
             accessibilityLabel={`Monthly summary block: Average symptom severity is ${monthlyAvgSeverity}. ${
-              moodMetaAvg ? `Predominant emotional state logged is ${moodMetaAvg.label}` : "No mood logs found this month"
+              moodMetaAvg
+                ? `Predominant emotional state logged is ${moodMetaAvg.label}`
+                : "No mood logs found this month"
             }`}
           >
-            <View style={{ flexDirection: "row", alignItems: "center" }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden={true}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center" }}
+              importantForAccessibility="no-hide-descendants"
+              accessibilityElementsHidden={true}
+            >
               <View style={{ position: "relative", marginRight: 16 }}>
                 <Circle severity={monthlyAvgSeverity}>
                   <CircleText>{monthlyAvgSeverity}</CircleText>
@@ -166,7 +189,9 @@ const Graph = (props: GraphProps) => {
               </View>
 
               <View style={{ flexShrink: 1 }}>
-                <Insight style={{ marginTop: 0, fontWeight: "600", textAlign: "left" }}>
+                <Insight
+                  style={{ marginTop: 0, fontWeight: "600", textAlign: "left" }}
+                >
                   Average severity this month
                 </Insight>
 
@@ -177,9 +202,13 @@ const Graph = (props: GraphProps) => {
                 </Insight>
               </View>
             </View>
-          </DailyCard>
+          </Card>
 
-          <Divider style={{ marginTop: -7 }} importantForAccessibility="no" accessibilityElementsHidden={true} />
+          <Divider
+            style={{ marginTop: -7 }}
+            importantForAccessibility="no"
+            accessibilityElementsHidden={true}
+          />
 
           <SectionTitle style={{ marginBottom: 16 }} accessibilityRole="header">
             Calendar • {monthName} {monthlyContext.year}
@@ -230,7 +259,9 @@ const Graph = (props: GraphProps) => {
               const isToday = day === new Date().getDate();
 
               const hasSymptom = symptoms.some((s) => utcDay(s.date) === day);
-              const hasMedication = medications.some((m) => utcDay(m.date) === day);
+              const hasMedication = medications.some(
+                (m) => utcDay(m.date) === day
+              );
               const moodEntry = wellbeing.find((w) => utcDay(w.date) === day);
               const moodMeta = moodEntry
                 ? REFLECT_EMOTIONS.find((e) => e.key === moodEntry.emotion)
@@ -240,17 +271,20 @@ const Graph = (props: GraphProps) => {
               if (hasSymptom) historyArray.push("Symptom");
               if (hasMedication) historyArray.push("Medication");
               if (moodMeta) historyArray.push(`Mood: ${moodMeta.label}`);
-              
-              const historyText = historyArray.length > 0 
-                ? `data present for: ${historyArray.join(", ")}` 
-                : "no metrics recorded";
+
+              const historyText =
+                historyArray.length > 0
+                  ? `data present for: ${historyArray.join(", ")}`
+                  : "no metrics recorded";
 
               return (
                 <DayCell
                   key={index}
                   accessible={true}
                   accessibilityRole="button"
-                  accessibilityLabel={`${day}${isToday ? ", Today," : ""}. ${historyText}. Double tap to inspect entries`}
+                  accessibilityLabel={`${day}${
+                    isToday ? ", Today," : ""
+                  }. ${historyText}. Double tap to inspect entries`}
                   onPress={() => {
                     onSelectCalendarDay(day);
                     setSelectedMonthName?.(monthName);
@@ -264,7 +298,12 @@ const Graph = (props: GraphProps) => {
                       : undefined
                   }
                 >
-                  <DayNumber importantForAccessibility="no" accessibilityElementsHidden={true}>{day}</DayNumber>
+                  <DayNumber
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
+                  >
+                    {day}
+                  </DayNumber>
 
                   <View
                     style={{
@@ -296,8 +335,14 @@ const Graph = (props: GraphProps) => {
     <Card>
       <GraphLabel accessibilityRole="header">{label}</GraphLabel>
 
-      <LegendRow accessible={true} accessibilityLabel="Weekly tracking index bar container">
-        <LegendDot importantForAccessibility="no" accessibilityElementsHidden={true} />
+      <LegendRow
+        accessible={true}
+        accessibilityLabel="Weekly tracking index bar container"
+      >
+        <LegendDot
+          importantForAccessibility="no"
+          accessibilityElementsHidden={true}
+        />
         <LegendText>Your logged data</LegendText>
       </LegendRow>
 
@@ -319,9 +364,23 @@ const Graph = (props: GraphProps) => {
                 accessibilityLabel={`${dayLabel}. Severity index score: ${value}. Double tap to view breakdown.`}
                 onPress={() => onSelectDay && onSelectDay(index)}
               >
-                <Bar style={{ height: value * 10 }} importantForAccessibility="no" accessibilityElementsHidden={true} />
-                <ValueLabel importantForAccessibility="no" accessibilityElementsHidden={true}>{value}</ValueLabel>
-                <BarLabel importantForAccessibility="no" accessibilityElementsHidden={true}>{dayLabel}</BarLabel>
+                <Bar
+                  style={{ height: value * 10 }}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden={true}
+                />
+                <ValueLabel
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden={true}
+                >
+                  {value}
+                </ValueLabel>
+                <BarLabel
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden={true}
+                >
+                  {dayLabel}
+                </BarLabel>
               </BarContainer>
             );
           })}

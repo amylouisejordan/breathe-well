@@ -6,17 +6,13 @@ import {
   Bullet,
   BulletText,
   BulletWrap,
-  ButtonText,
-  Card,
-  Container,
   FloatingButton,
-  Paragraph,
   Row,
   RowText,
   SectionLabel,
   Subtext,
-  Title,
 } from "./styled";
+import { Container, ButtonText, Card, Paragraph, Title } from "../styled";
 
 const PrivacyScreen = () => {
   return (

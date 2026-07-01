@@ -3,10 +3,10 @@ import { render, fireEvent, waitFor, act } from "@testing-library/react-native";
 import { jest } from "@jest/globals";
 import { router } from "expo-router";
 import { getForumPosts } from "../utils/forumFirestore";
-import { useAuth } from "../app/utils/useAuth";
+import { useAuth } from "../utils/useAuth";
 import * as Haptics from "expo-haptics";
 import { ActionSheetIOS } from "react-native";
-import ForumScreen from "../../__tests__/community";
+import ForumScreen from "@/app/(tabs)/community";
 
 jest.mock("expo-router", () => ({
   router: {

@@ -1,6 +1,17 @@
 import styled from "styled-components/native";
 import { LinearGradient } from "expo-linear-gradient";
 
+export const Screen = styled.ScrollView.attrs({
+  contentContainerStyle: {
+    paddingHorizontal: 0,
+    paddingBottom: 120,
+    paddingTop: 8,
+  },
+})`
+  flex: 1;
+  background: #fafafb;
+`;
+
 export const Content = styled.View`
   flex-direction: row;
   align-items: center;
@@ -52,21 +63,8 @@ export const AddButton = styled.TouchableOpacity`
   elevation: 10;
 `;
 
-export const Container = styled.View`
-  flex: 1;
-  background-color: #fafafb;
-  padding-horizontal: 20px;
-  padding-top: 28px;
-`;
-
 export const Header = styled.View`
   margin-bottom: 28px;
-`;
-
-export const Title = styled.Text`
-  font-size: 26px;
-  font-weight: 700;
-  color: #4a90e2;
 `;
 
 export const Subtext = styled.Text`
@@ -160,6 +158,12 @@ export const HeaderCard = styled.View`
   elevation: 3; /* Android shadow */
 `;
 
+export const BodyText = styled.Text`
+  font-size: 16px;
+  line-height: 22px;
+  color: #444;
+`;
+
 export const Header2 = styled.View`
   flex-direction: row;
   align-items: center;
@@ -192,24 +196,10 @@ export const SectionTitle = styled.Text`
   margin-bottom: 12px;
 `;
 
-export const Card = styled.View`
-  background-color: #fff;
-  border-radius: 16px;
-  padding-horizontal: 12px;
-  padding-vertical: 4px;
-  shadow-color: #000;
-  shadow-opacity: 0.04;
-  shadow-radius: 8px;
-  shadow-offset: 0px 3px;
-  elevation: 2;
-`;
-
 export const Row = styled.View`
   flex-direction: row;
   align-items: center;
   padding-vertical: 16px;
-  border-bottom-width: 1px;
-  border-bottom-color: #f4d6d2;
 `;
 
 export const RowIcon = styled.View`
@@ -240,6 +230,13 @@ export const Overlay = styled.View`
   justify-content: flex-end;
 `;
 
+export const GraphLabel = styled.Text`
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #333;
+`;
+
 export const SheetGradient = styled(LinearGradient).attrs({
   colors: ["#4a90e2", "#726dff", "#8a84ff"],
 })`
@@ -259,6 +256,46 @@ export const Pill = styled.TouchableOpacity`
   padding-horizontal: 20px;
   border-radius: 24px;
   margin-bottom: 12px;
+`;
+
+export const ActionRow = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 4px;
+`;
+
+export const ActionButton = styled.TouchableOpacity`
+  background: #4a90e2;
+  padding: 12px 20px;
+  border-radius: 14px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  shadow-color: #000;
+  shadow-opacity: 0.08;
+  shadow-radius: 6px;
+  shadow-offset: 0px 3px;
+`;
+
+export const ActionButtonSecondary = styled.TouchableOpacity`
+  background: #ecebff;
+  padding: 12px 20px;
+  border-radius: 14px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  shadow-color: #000;
+  shadow-opacity: 0.08;
+  shadow-radius: 6px;
+  shadow-offset: 0px 3px;
+`;
+
+export const ActionButtonText = styled.Text`
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
 `;
 
 export const PillText = styled.Text`

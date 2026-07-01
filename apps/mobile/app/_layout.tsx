@@ -1,4 +1,4 @@
-import { useAuth } from "@/app/utils/useAuth";
+import { useAuth } from "../utils/useAuth";
 import {
   Stack,
   useRootNavigationState,

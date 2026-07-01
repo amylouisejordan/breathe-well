@@ -1,17 +1,5 @@
 import styled from "styled-components/native";
 
-export const Container = styled.View`
-  flex: 1;
-  background-color: #fafafb;
-  padding: 28px 20px 0 20px;
-`;
-
-export const Title = styled.Text`
-  font-size: 26px;
-  font-weight: 700;
-  color: #6c634a90e2ff;
-`;
-
 export const Subtext = styled.Text`
   font-size: 15px;
   color: #666;
@@ -19,27 +7,8 @@ export const Subtext = styled.Text`
   margin-bottom: 28px;
 `;
 
-export const Card = styled.View`
-  background-color: #fff;
-  border-radius: 16px;
-  padding: 4px 12px;
-  shadow-color: #000;
-  shadow-opacity: 0.04;
-  shadow-radius: 8px;
-  shadow-offset: 0px 3px;
-  elevation: 2;
-  margin-top: 20px;
-`;
-
 export const Section = styled.View`
   margin-top: 32px;
-`;
-
-export const SectionTitle = styled.Text`
-  font-size: 16px;
-  font-weight: 600;
-  color: #d9534f;
-  margin-bottom: 12px;
 `;
 
 export const Row = styled.TouchableOpacity`
@@ -61,22 +30,11 @@ export const RowText = styled.Text`
   margin-left: 10px;
 `;
 
-export const DangerText = styled.Text`
-  color: #d9534f;
-  font-weight: 600;
-`;
-
 export const SectionLabel = styled.Text`
   font-size: 16px;
   font-weight: 600;
   color: #444;
   margin-bottom: 12px;
-`;
-
-export const ButtonText = styled.Text`
-  color: #fff;
-  font-size: 17px;
-  font-weight: 600;
 `;
 
 export const FloatingButton = styled.TouchableOpacity`
@@ -105,13 +63,6 @@ export const Hint = styled.Text`
   font-size: 13px;
   color: #777;
   margin-top: 10px;
-`;
-
-export const Paragraph = styled.Text`
-  font-size: 15;
-  color: #444;
-  margin-bottom: 12;
-  line-height: 22;
 `;
 
 export const IconWrap = styled.View`

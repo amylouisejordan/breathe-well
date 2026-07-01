@@ -4,22 +4,17 @@ import { useFocusEffect } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import {
-  Container,
   Header,
-  Title,
   Subtext,
   ToggleRow,
   Toggle,
   ToggleText,
   Section,
   SectionTitle,
-  DailyCard,
   Insight,
   TodayItemTitle,
   TodayItemText,
   TodayCard,
-  Card,
-  Divider,
 } from "../history/styled";
 
 import Graph from "../history/Graph";
@@ -31,7 +26,8 @@ import {
   getMySymptoms,
   getMyWellbeing,
 } from "@/utils/loggingFirestore";
-import { useAuth } from "../utils/useAuth";
+import { useAuth } from "../../utils/useAuth";
+import { Container, Title, Divider, Card } from "../styled";
 
 export type SymptomEntry = {
   id: string;
@@ -603,7 +599,7 @@ const HistoryScreen = () => {
             <SectionTitle accessibilityRole="header">Today</SectionTitle>
 
             {todayWellbeing && (
-              <DailyCard
+              <Card
                 accessible={true}
                 accessibilityLabel={`Today's summary metrics overview`}
                 style={{
@@ -709,7 +705,7 @@ const HistoryScreen = () => {
                     </>
                   );
                 })()}
-              </DailyCard>
+              </Card>
             )}
 
             {!todayWellbeing &&
@@ -743,7 +739,7 @@ const HistoryScreen = () => {
             {!todayWellbeing &&
               todaySymptoms.length === 0 &&
               todayMedications.length === 0 && (
-                <DailyCard
+                <Card
                   accessible={true}
                   accessibilityLabel="Empty activity feed tracker. No elements logged yet for today."
                   style={{
@@ -764,7 +760,7 @@ const HistoryScreen = () => {
                   <Insight style={{ fontSize: 16, opacity: 0.8 }}>
                     No entries logged yet today.
                   </Insight>
-                </DailyCard>
+                </Card>
               )}
 
             {(todaySymptoms.length > 0 || todayMedications.length > 0) && (
@@ -944,7 +940,7 @@ const HistoryScreen = () => {
               />
             </Section>
 
-            <Divider style={{ marginTop: 15 }} />
+            <Divider style={{ marginTop: 5 }} />
 
             <Section style={{ marginBottom: 80 }}>
               <SectionTitle accessibilityRole="header">Medication</SectionTitle>

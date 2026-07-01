@@ -11,28 +11,20 @@ import { getForumPosts } from "../../utils/forumFirestore";
 
 import {
   Screen,
-  Card,
   BodyText,
-  Avatar,
-  AvatarText,
   Row,
   ActionRow,
   ActionButton,
   ActionButtonText,
   ActionButtonSecondary,
-} from "../(forum)/styled";
-
-import {
-  Container,
   Header,
   Subtext,
-  Title,
   GraphLabel,
-  Divider,
-} from "../history/styled";
+} from "./styled";
 
 import * as Haptics from "expo-haptics";
-import { useAuth } from "../utils/useAuth";
+import { useAuth } from "../../utils/useAuth";
+import { Card, Avatar, Container, Divider, AvatarText, Title } from "../styled";
 
 export type ForumPost = {
   id: string;
@@ -90,9 +82,9 @@ const PostCard = React.memo(({ post }: { post: ForumPost }) => {
           </View>
         )}
 
-        <Row style={{ alignItems: "center", marginBottom: 4 }}>
+        <Row style={{ alignItems: "center", marginBottom: 4, marginTop: -15 }}>
           <Avatar style={{ backgroundColor: "#f3f0ff", marginTop: -10 }}>
-            <AvatarText style={{ color: "#6c63ff" }}>
+            <AvatarText style={{ color: "#4a90e2" }}>
               {post.author.charAt(0)}
             </AvatarText>
           </Avatar>
@@ -110,7 +102,7 @@ const PostCard = React.memo(({ post }: { post: ForumPost }) => {
           </GraphLabel>
         </Row>
 
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", marginTop: -10 }}>
           <Text style={{ color: "#666", fontSize: 14, marginRight: 8 }}>
             by {post.author}
           </Text>
@@ -279,7 +271,7 @@ export default function ForumScreen() {
         <Subtext>You’re among friends here – share, ask, or read along</Subtext>
       </Header>
 
-      <ActionRow>
+      <ActionRow style={{ marginBottom: 10 }}>
         <ActionButton onPress={() => router.push("/new")}>
           <ActionButtonText>+ New Post</ActionButtonText>
         </ActionButton>
@@ -290,6 +282,8 @@ export default function ForumScreen() {
           </Text>
         </ActionButtonSecondary>
       </ActionRow>
+
+      <Divider />
 
       <Screen
         testID="forum-screen"

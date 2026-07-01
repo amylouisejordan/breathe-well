@@ -11,11 +11,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState, useRef, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 import { useNavigation } from "expo-router/build/useNavigation";
-import { useAuth } from "../utils/useAuth";
+import { useAuth } from "../../utils/useAuth";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Avatar,
-  Container,
   FooterNote,
   Header,
   Input,
@@ -25,8 +24,8 @@ import {
   MessageText,
   SendButton,
   Subtext,
-  Title,
 } from "./styled";
+import { Container, Title } from "../styled";
 
 const AiScreen = () => {
   const [barHeight, setBarHeight] = useState(88);
@@ -80,7 +79,10 @@ const AiScreen = () => {
         }),
       });
       const data = await res.json();
-      const aiReply = (data.reply ?? "Sorry, something went wrong.").replace(/^\s+/, "");
+      const aiReply = (data.reply ?? "Sorry, something went wrong.").replace(
+        /^\s+/,
+        ""
+      );
       setMessages((m) => [
         ...m,
         {
@@ -89,7 +91,9 @@ const AiScreen = () => {
           text: aiReply,
         },
       ]);
-      AccessibilityInfo.announceForAccessibility(`AI Companion response received: ${aiReply}`);
+      AccessibilityInfo.announceForAccessibility(
+        `AI Companion response received: ${aiReply}`
+      );
     } catch {
       const errorMsg = "Network error – please try again.";
       setMessages((m) => [
@@ -100,7 +104,9 @@ const AiScreen = () => {
           text: errorMsg,
         },
       ]);
-      AccessibilityInfo.announceForAccessibility(`AI Companion error: ${errorMsg}`);
+      AccessibilityInfo.announceForAccessibility(
+        `AI Companion error: ${errorMsg}`
+      );
     } finally {
       setLoading(false);
     }
@@ -132,10 +138,17 @@ const AiScreen = () => {
                 key={msg.id}
                 side={isUser ? "right" : "left"}
                 accessible={true}
-                accessibilityLabel={isUser ? `You said: ${msg.text}` : `AI Companion says: ${msg.text}`}
+                accessibilityLabel={
+                  isUser
+                    ? `You said: ${msg.text}`
+                    : `AI Companion says: ${msg.text}`
+                }
               >
                 {!isUser && (
-                  <Avatar importantForAccessibility="no" accessibilityElementsHidden={true}>
+                  <Avatar
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
+                  >
                     <Ionicons name="sparkles" size={20} color="#4a90e2" />
                   </Avatar>
                 )}
@@ -145,7 +158,11 @@ const AiScreen = () => {
                 </Message>
 
                 {isUser && (
-                  <Avatar user importantForAccessibility="no" accessibilityElementsHidden={true}>
+                  <Avatar
+                    user
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden={true}
+                  >
                     <Ionicons name="person" size={20} color="#fff" />
                   </Avatar>
                 )}
@@ -154,8 +171,15 @@ const AiScreen = () => {
           })}
 
           {loading && (
-            <MessageRow side="left" accessible={true} accessibilityLabel="AI Companion is writing a response...">
-              <Avatar importantForAccessibility="no" accessibilityElementsHidden={true}>
+            <MessageRow
+              side="left"
+              accessible={true}
+              accessibilityLabel="AI Companion is writing a response..."
+            >
+              <Avatar
+                importantForAccessibility="no"
+                accessibilityElementsHidden={true}
+              >
                 <Ionicons name="sparkles" size={20} color="#4a90e2" />
               </Avatar>
               <Message>

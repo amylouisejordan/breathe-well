@@ -11,28 +11,29 @@ import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
 import * as Haptics from "expo-haptics";
 
+import { saveWellbeingEntry } from "@/utils/loggingFirestore";
 import {
-  Container,
-  ScrollArea,
-  Title,
-  Subtitle,
-  Divider,
   AnimatedCardWrapper,
-  Card,
-  Label,
   TagWrap,
-  Tag,
   EmotionLabel,
   TagCount,
+  Tag,
   TextArea,
   ResetButton,
   ResetText,
   SaveButton,
-  SaveButtonText,
   FooterNote,
+  ScrollArea,
+} from "./styled";
+import {
+  Container,
+  Card,
+  Title,
+  Divider,
+  Subtitle,
+  ButtonText,
+  Label,
 } from "../styled";
-
-import { saveWellbeingEntry } from "@/utils/loggingFirestore";
 
 interface ReflectEmotion {
   key: string;
@@ -345,9 +346,9 @@ const AddWellbeingCheckin = () => {
               <Card>
                 <Label accessibilityRole="header">
                   What best describes your feelings?
-                  {tags.length > 0 && (
-                    <TagCount>({tags.length} selected)</TagCount>
-                  )}
+                  {tags.length > 0 ? (
+                    <TagCount> ({tags.length} selected)</TagCount>
+                  ) : null}
                 </Label>
 
                 <TagWrap
@@ -434,9 +435,7 @@ const AddWellbeingCheckin = () => {
                 color="#fff"
                 importantForAccessibility="no"
               />
-              <SaveButtonText>
-                {saving ? "Saving…" : "Save Check‑in"}
-              </SaveButtonText>
+              <ButtonText>{saving ? "Saving…" : "Save Check‑in"}</ButtonText>
             </SaveButton>
           </View>
 

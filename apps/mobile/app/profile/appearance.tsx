@@ -3,18 +3,15 @@ import { ScrollView, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {
-  ButtonText,
-  Card,
-  Container,
   FloatingButton,
   Hint,
   Row,
   RowText,
   SectionLabel,
   Subtext,
-  Title,
   ToggleRow,
 } from "./styled";
+import { Container, Card, Title, ButtonText } from "../styled";
 
 const THEMES = ["Light", "Dark", "High contrast"];
 const TEXT_SIZES = ["Small", "Medium", "Large", "Extra large"];

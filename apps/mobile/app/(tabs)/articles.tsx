@@ -11,19 +11,17 @@ import {
 } from "react-native";
 
 import {
+  Header,
+  Subtext,
   Screen,
-  Card,
   BodyText,
-  Avatar,
-  AvatarText,
   Row,
   ActionRow,
   ActionButtonSecondary,
-} from "../(forum)/styled";
-
-import { Container, Header, Subtext, Title, Divider } from "../history/styled";
+} from "./styled";
 
 import * as Haptics from "expo-haptics";
+import { Card, Container, Divider, AvatarText, Avatar, Title } from "../styled";
 
 type Article = {
   id: string;
@@ -75,7 +73,11 @@ const ArticleCard = React.memo(({ article }: { article: Article }) => (
     })}
   >
     <Card style={{ borderWidth: 1, borderColor: "#F4D6D2", borderRadius: 14 }}>
-      <Row style={{ alignItems: "center", marginBottom: 4 }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden={true}>
+      <Row
+        style={{ alignItems: "center", marginBottom: 4, marginTop: -15 }}
+        importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden={true}
+      >
         <Avatar style={{ backgroundColor: "#f3f0ff" }}>
           <AvatarText style={{ color: "#4a90e2" }}>
             {article.author.charAt(0)}
@@ -87,23 +89,35 @@ const ArticleCard = React.memo(({ article }: { article: Article }) => (
             fontSize: 17,
             fontWeight: "700",
             color: "#333",
-            marginLeft: 12,
+            marginLeft: 5,
           }}
         >
           {article.title}
         </Text>
       </Row>
 
-      <View style={{ flexDirection: "row", marginBottom: 8 }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden={true}>
+      <View
+        style={{ flexDirection: "row", marginBottom: -10 }}
+        importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden={true}
+      >
         <Text style={{ color: "#666", fontSize: 14 }}>by {article.author}</Text>
         <Text style={{ color: "#aaa", fontSize: 14, marginLeft: 8 }}>
           • {article.readTime} min read
         </Text>
       </View>
 
-      <Divider importantForAccessibility="no" accessibilityElementsHidden={true} />
+      <Divider
+        importantForAccessibility="no"
+        accessibilityElementsHidden={true}
+      />
 
-      <BodyText numberOfLines={2} style={{ color: "#444" }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden={true}>
+      <BodyText
+        numberOfLines={2}
+        style={{ color: "#444" }}
+        importantForAccessibility="no-hide-descendants"
+        accessibilityElementsHidden={true}
+      >
         {article.body}
       </BodyText>
     </Card>
@@ -113,7 +127,13 @@ ArticleCard.displayName = "ArticleCard";
 
 const Empty = () => (
   <View style={{ alignItems: "center", marginTop: 60 }} accessible={true}>
-    <Text style={{ fontSize: 64 }} importantForAccessibility="no" accessibilityElementsHidden={true}>📚</Text>
+    <Text
+      style={{ fontSize: 64 }}
+      importantForAccessibility="no"
+      accessibilityElementsHidden={true}
+    >
+      📚
+    </Text>
     <Text style={{ marginTop: 12, color: "#666" }}>
       No articles yet – come back later!
     </Text>
@@ -149,15 +169,11 @@ const ArticlesScreen = () => {
         }
       );
     } else {
-      Alert.alert(
-        "Sort Articles",
-        "Choose an option to reorder items:",
-        [
-          { text: "Newest First", onPress: () => setSortMode("newest") },
-          { text: "Oldest First", onPress: () => setSortMode("oldest") },
-          { text: "Cancel", style: "cancel" }
-        ]
-      );
+      Alert.alert("Sort Articles", "Choose an option to reorder items:", [
+        { text: "Newest First", onPress: () => setSortMode("newest") },
+        { text: "Oldest First", onPress: () => setSortMode("oldest") },
+        { text: "Cancel", style: "cancel" },
+      ]);
     }
   };
 
@@ -170,11 +186,13 @@ const ArticlesScreen = () => {
         <Subtext>Read up on wellness, science, and stories</Subtext>
       </Header>
 
-      <ActionRow>
-        <ActionButtonSecondary 
+      <ActionRow style={{ marginBottom: 10 }}>
+        <ActionButtonSecondary
           onPress={showSortSheet}
           accessibilityRole="button"
-          accessibilityLabel={`Sorted by: ${sortMode === "newest" ? "Newest" : "Oldest"}`}
+          accessibilityLabel={`Sorted by: ${
+            sortMode === "newest" ? "Newest" : "Oldest"
+          }`}
           accessibilityHint="Double tap to open an option menu and swap filter settings"
         >
           <Text style={{ color: "#4a90e2", fontWeight: "600" }}>
@@ -183,12 +201,14 @@ const ArticlesScreen = () => {
         </ActionButtonSecondary>
       </ActionRow>
 
+      <Divider />
+
       <Screen
         testID="refresh-control"
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
-            onRefresh={onRefresh} 
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
             accessibilityLabel="Swipe down to look for fresh content pieces"
           />
         }

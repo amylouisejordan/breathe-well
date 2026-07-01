@@ -11,8 +11,7 @@ import {
   AccessibilityInfo,
 } from "react-native";
 import { getPostById, addCommentToPost } from "../../utils/forumFirestore";
-import { Avatar, AvatarText } from "./styled";
-import { Divider } from "../history/styled";
+import { Divider, AvatarText, Avatar } from "../styled";
 
 type Comment = {
   id: string;

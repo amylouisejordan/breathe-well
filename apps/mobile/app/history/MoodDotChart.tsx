@@ -2,7 +2,6 @@ import React from "react";
 import { View, TouchableOpacity, Text, Dimensions } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import {
-  Card,
   GraphLabel,
   LegendRow,
   LegendDot,
@@ -14,6 +13,7 @@ import {
   BarLabel,
   Insight,
 } from "./styled";
+import { Card } from "../styled";
 
 interface MoodDotChartProps {
   data: { values: (number | null)[]; labels: string[] };

@@ -1,17 +1,9 @@
 import React from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import {
-  Card,
-  Container,
-  Paragraph,
-  Row,
-  RowText,
-  SectionLabel,
-  Subtext,
-  Title,
-} from "./styled";
+import { Row, RowText, SectionLabel, Subtext } from "./styled";
+import { Container, Card, Paragraph, Title } from "../styled";
 
 const HelpScreen = () => {
   return (

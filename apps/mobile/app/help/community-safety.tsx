@@ -1,7 +1,8 @@
 import React from "react";
 import HelpArticle from "./_article";
 import { View } from "react-native";
-import { Paragraph, Step } from "./styled";
+import { Step } from "./styled";
+import { Paragraph } from "../styled";
 
 const CommunitySafety = () => {
   return (

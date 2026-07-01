@@ -15,9 +15,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useRouter } from "expo-router";
-
-import { Container, Title, Subtext } from "./history/styled";
-import { Card, Row, Avatar, AvatarText } from "./(forum)/styled";
+import { Avatar, AvatarText, Card, Container, Row, Subtitle, Title } from "./styled";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -74,11 +72,11 @@ const Login = () => {
         <Title accessibilityRole="header">
           {isRegister ? "Create account" : "Welcome back"}
         </Title>
-        <Subtext style={{ marginBottom: 24 }}>
+        <Subtitle style={{ marginBottom: 24 }}>
           {isRegister
             ? "Join the community and start breathing easier"
             : "You’re among friends here – log in to continue"}
-        </Subtext>
+        </Subtitle>
 
         <Card
           style={{
@@ -195,6 +193,6 @@ const Login = () => {
       </KeyboardAvoidingView>
     </Container>
   );
-}
+};
 
 export default Login;

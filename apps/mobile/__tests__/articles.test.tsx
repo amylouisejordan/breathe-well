@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import { jest } from "@jest/globals";
 import { ActionSheetIOS } from "react-native";
 import { router } from "expo-router";
-import ArticlesScreen from "./articles";
+import ArticlesScreen from "@/app/(tabs)/articles";
 
 jest.mock("expo-router", () => ({
   router: {

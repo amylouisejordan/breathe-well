@@ -3,11 +3,11 @@ import { router, Stack } from "expo-router";
 import { TouchableOpacity, View, AccessibilityInfo, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { Screen, Card, Input, Button, ButtonText } from "./styled";
+import { Screen, Input } from "./styled";
 import { addForumPost } from "../../utils/forumFirestore";
 import * as Haptics from "expo-haptics";
-import { useAuth } from "../utils/useAuth";
-import { Divider, Title, Subtitle } from "../styled";
+import { useAuth } from "../../utils/useAuth";
+import { Divider, Card, Title, Subtitle, Button, ButtonText } from "../styled";
 
 const NewPost = () => {
   const [title, setTitle] = useState("");

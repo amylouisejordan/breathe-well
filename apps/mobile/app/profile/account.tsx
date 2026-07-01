@@ -1,15 +1,7 @@
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Card,
-  Container,
-  Row,
-  RowIcon,
-  RowText,
-  Section,
-  Subtext,
-  Title,
-} from "./styled";
+import { Row, RowIcon, RowText, Section, Subtext } from "./styled";
+import { Container, Card, Title } from "../styled";
 
 const AccountScreen = () => {
   return (
